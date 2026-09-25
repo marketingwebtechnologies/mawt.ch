@@ -35,8 +35,11 @@ export function GoogleAnalytics() {
       loader.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;
       document.head.appendChild(loader);
       window.dataLayer = window.dataLayer || [];
-      window.gtag = function gtag(...args: unknown[]) {
-        window.dataLayer!.push(args);
+      // gtag.js only processes the native `arguments` object: pushing a rest
+      // array is silently ignored and no hit is ever sent.
+      window.gtag = function gtag() {
+        // eslint-disable-next-line prefer-rest-params
+        window.dataLayer!.push(arguments);
       };
       window.gtag("js", new Date());
       window.gtag("config", MEASUREMENT_ID, { send_page_view: false });
