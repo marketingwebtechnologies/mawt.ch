@@ -16,11 +16,17 @@ const landingSchema = z.object({
   phone: z
     .string()
     .trim()
-    .refine((v) => v.replace(/[^0-9+]/g, "").length >= 9, {
-      message: "Numéro de téléphone invalide.",
-    }),
+    .refine(
+      (v) => {
+        // Swiss formats only: +41 79 123 45 67 or 079 123 45 67 (any spacing).
+        const n = v.replace(/[\s.\-()]/g, "");
+        return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n);
+      },
+      { message: "Numéro de téléphone invalide." },
+    ),
   email: z.string().trim().email().toLowerCase(),
   pain: z.string().trim().max(100).optional().default(""),
+  pain_detail: z.string().trim().max(200).optional().default(""),
   origin: z.string().trim().max(50).optional().default(""),
 });
 
@@ -59,10 +65,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, phone, email, pain, origin } = validated.data;
+  const { name, phone, email, pain, pain_detail, origin } = validated.data;
   const message = [
     `Téléphone : ${phone}`,
     pain ? `Douleur choisie : ${pain}` : null,
+    pain_detail ? `Précision : ${pain_detail}` : null,
     origin ? `Origine du CTA : ${origin}` : null,
     "",
     "Lead landing 500 CHF — à rappeler sous 24 h ouvrées.",

@@ -204,7 +204,7 @@ const landingHtml = `<!doctype html>
     <p>par employ&eacute;, chaque semaine, sans&nbsp;le&nbsp;voir.</p>
     <p class="promesse">R&eacute;cup&eacute;rez-les, sans embaucher.</p>
     <button class="cta" data-origine="hero">R&eacute;server l&rsquo;appel, c&rsquo;est gratuit</button>
-    <span class="micro">Appel de 30 minutes. On vous rappelle par t&eacute;l&eacute;phone.</span>
+    <span class="micro">Appel de 30 minutes. On vous rappelle sous 24&#8239;h ouvr&eacute;es.</span>
   </section>
 
   <div class="defile" id="douleurs"><div class="defile-espace"><div class="defile-ecran">
@@ -253,7 +253,7 @@ const landingHtml = `<!doctype html>
         <div class="champ-groupe">
           <label for="f-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label>
           <input id="f-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required>
-          <span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle.</span>
+          <span class="erreur-msg">Format attenduUn num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle.#8239;: +41 79 123 45 67 ou 079 123 45 67.</span>
         </div>
         <div class="champ-groupe">
           <label for="f-mail">Votre e-mail</label>
@@ -268,6 +268,10 @@ const landingHtml = `<!doctype html>
             <option value="questions">Les questions permanentes</option>
             <option value="autre">Autre chose</option>
           </select>
+        </div>
+        <div class="champ-groupe autre-groupe" hidden>
+          <label for="f-autre">Pr&eacute;cisez en quelques mots</label>
+          <input id="f-autre" name="pain_detail" type="text" maxlength="200">
         </div>
         <input type="hidden" name="origin" value="footer-form">
         <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
@@ -312,7 +316,7 @@ const landingHtml = `<!doctype html>
     <div class="champ-groupe">
       <label for="p-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label>
       <input id="p-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required>
-      <span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle.</span>
+      <span class="erreur-msg">Format attenduUn num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle.#8239;: +41 79 123 45 67 ou 079 123 45 67.</span>
     </div>
     <div class="champ-groupe">
       <label for="p-mail">Votre e-mail</label>
@@ -328,6 +332,10 @@ const landingHtml = `<!doctype html>
         <option value="autre">Autre chose</option>
       </select>
       <span class="indice-origine" id="indice-origine" hidden>Pr&eacute;s&eacute;lectionn&eacute; selon le bouton cliqu&eacute;</span>
+    </div>
+    <div class="champ-groupe autre-groupe" hidden>
+      <label for="p-autre">Pr&eacute;cisez en quelques mots</label>
+      <input id="p-autre" name="pain_detail" type="text" maxlength="200">
     </div>
     <input type="hidden" name="origin" id="p-origine" value="">
     <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
@@ -401,6 +409,15 @@ const landingHtml = `<!doctype html>
   var voile = document.getElementById("voile");
   var feuille = document.getElementById("feuille");
   var champOrigine = document.getElementById("p-origine");
+  function majAutre(form){
+    var sel = form.querySelector('select[name="pain"]');
+    var grp = form.querySelector(".autre-groupe");
+    if (sel && grp) { grp.hidden = sel.value !== "autre"; }
+  }
+  document.querySelectorAll("form").forEach(function(f){
+    var sel = f.querySelector('select[name="pain"]');
+    if (sel) { sel.addEventListener("change", function(){ majAutre(f); }); }
+  });
   var selectPain = document.getElementById("p-pain");
   var indice = document.getElementById("indice-origine");
   var dernierFocus = null;
@@ -410,6 +427,7 @@ const landingHtml = `<!doctype html>
     champOrigine.value = origine;
     var mappe = ["copier-coller","tete","questions"].indexOf(origine) !== -1;
     if (mappe) { selectPain.value = origine; }
+    majAutre(document.getElementById("form-popup"));
     indice.hidden = !mappe;
     voile.classList.add("ouvert");
     feuille.classList.add("ouvert");
@@ -461,7 +479,8 @@ const landingHtml = `<!doctype html>
         var input = g.querySelector("input[required]");
         if (!input) return;
         var vide = !input.value.trim();
-        var telInvalide = input.type === "tel" && input.value.replace(/[^0-9+]/g, "").length < 9;
+        var num = input.value.replace(/[\\s.\\-()]/g, "");
+        var telInvalide = input.type === "tel" && !(/^\\+41[1-9]\\d{8}$/.test(num) || /^0[1-9]\\d{8}$/.test(num));
         var mailInvalide = input.type === "email" && input.value.indexOf("@") === -1;
         var invalide = vide || telInvalide || mailInvalide;
         g.classList.toggle("invalide", invalide);
