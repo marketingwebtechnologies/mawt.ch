@@ -156,6 +156,6 @@ export const config = {
   // (sitemap, robots, llms.txt, /.well-known/*, favicon) so they are served
   // as-is and never caught by the locale redirect/rewrite.
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|llms.txt|\\.well-known).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|llms.txt|500-chf-assets|\\.well-known).*)",
   ],
 };
