@@ -175,6 +175,7 @@ const landingHtml = `<!doctype html>
     .feuille,.barre{transition:none}
   }
   .poignee{display:none}
+  .autre-groupe[hidden]{display:none}
   .feuille-titre{display:flex;align-items:center;justify-content:space-between}
   .feuille-titre h3{margin:0;font-size:22px;font-weight:800}
   .fermer{width:36px;height:36px;border:none;background:none;font-size:24px;line-height:1;color:var(--gris);cursor:pointer;font-family:inherit}
