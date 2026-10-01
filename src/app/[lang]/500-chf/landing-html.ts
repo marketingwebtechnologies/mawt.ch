@@ -106,6 +106,8 @@ const landingHtml = `<!doctype html>
     border:1px solid var(--champ);border-radius:8px;background:var(--fond);color:var(--encre);
   }
   input:focus,select:focus{outline:2px solid var(--mint);outline-offset:1px;border-color:var(--mint)}
+  .succes-ou{margin:18px 0 0;font-size:15px;color:var(--corps)}
+  a.cta{text-decoration:none;display:block}
   .erreur-msg{font-size:13px;color:#B4472E;display:none}
   .invalide input{border-color:#B4472E}
   .invalide .erreur-msg{display:block}
@@ -278,7 +280,7 @@ const landingHtml = `<!doctype html>
         <button type="submit" class="cta">R&eacute;server l&rsquo;appel</button>
         <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
       </form>
-      <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.<br>Gardez votre t&eacute;l&eacute;phone &agrave; port&eacute;e de main.</p></div>
+      <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div>
     </div>
   </section>
 </main>
@@ -342,7 +344,7 @@ const landingHtml = `<!doctype html>
     <button type="submit" class="cta">R&eacute;server l&rsquo;appel</button>
     <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
   </form>
-  <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.<br>Gardez votre t&eacute;l&eacute;phone &agrave; port&eacute;e de main.</p></div>
+  <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div>
 </div>
 
 <script>
@@ -462,6 +464,13 @@ const landingHtml = `<!doctype html>
 
   /* Validation et faux envoi (le vrai envoi = action serveur Next.js) */
   function brancher(form, conteneur){
+  function majCal(form, conteneur){
+    var lien = conteneur.querySelector(".cal-lien");
+    if (!lien) return;
+    var d = new FormData(form);
+    lien.href = "https://cal.com/rdv-mawt/appel?name=" + encodeURIComponent(d.get("name") || "")
+      + "&email=" + encodeURIComponent(d.get("email") || "");
+  }
   function alertErreur(form, msg){
     var e = form.querySelector(".erreur-envoi");
     if (!e) {
@@ -489,7 +498,7 @@ const landingHtml = `<!doctype html>
       if (!ok) return;
       var bouton = form.querySelector('button[type="submit"]');
       var reel = location.hostname.indexOf("mawt.ch") !== -1;
-      if (!reel) { conteneur.classList.add("envoye"); return; }
+      if (!reel) { majCal(form, conteneur); conteneur.classList.add("envoye"); return; }
       bouton.disabled = true;
       var donnees = {};
       new FormData(form).forEach(function(v, k){ donnees[k] = v; });
@@ -498,7 +507,7 @@ const landingHtml = `<!doctype html>
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(donnees)
       }).then(function(r){ return r.json(); }).then(function(rep){
-        if (rep && rep.success) { conteneur.classList.add("envoye"); }
+        if (rep && rep.success) { majCal(form, conteneur); conteneur.classList.add("envoye"); }
         else { alertErreur(form, rep && rep.error); bouton.disabled = false; }
       }).catch(function(){ alertErreur(form, null); bouton.disabled = false; });
     });
