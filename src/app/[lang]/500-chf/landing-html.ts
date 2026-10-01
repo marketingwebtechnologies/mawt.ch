@@ -196,6 +196,23 @@ const landingHtml = `<!doctype html>
   fbq('track','PageView');
 })();
 </script>
+<script>
+(function(){
+  try { if (localStorage.getItem("mawt-cookie-consent") === "essential") return; } catch(e) {}
+  if (location.hostname.indexOf("mawt.ch") === -1) return;
+  /* GA4 */
+  var g = document.createElement("script"); g.async = true;
+  g.src = "https://www.googletagmanager.com/gtag/js?id=G-J3FHJ45Y5L";
+  document.head.appendChild(g);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ dataLayer.push(arguments); };
+  gtag("js", new Date());
+  gtag("config", "G-J3FHJ45Y5L");
+  /* Microsoft Clarity : sessions + heatmaps */
+  (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ynxcutb3fv");
+})();
+function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}); } }
+</script>
 </head>
 <body>
 
@@ -451,7 +468,11 @@ const landingHtml = `<!doctype html>
   }
 
   document.querySelectorAll("[data-origine]").forEach(function(btn){
-    btn.addEventListener("click", function(){ ouvrir(btn.getAttribute("data-origine")); });
+    btn.addEventListener("click", function(){
+      var o = btn.getAttribute("data-origine");
+      suivre("cta_click", { origin: o });
+      ouvrir(o);
+    });
   });
   document.getElementById("fermer").addEventListener("click", fermer);
   voile.addEventListener("click", fermer);
@@ -492,6 +513,7 @@ const landingHtml = `<!doctype html>
     var a = e.target.closest(".cal-lien");
     if (!a || !window.Cal) return;
     e.preventDefault();
+    suivre("cal_open", {});
     Cal("modal", { calLink: "rdv-mawt/appel", config: { name: a.dataset.nom || "", email: a.dataset.mail || "" } });
   });
   function alertErreur(form, msg){
@@ -531,6 +553,7 @@ const landingHtml = `<!doctype html>
         body: JSON.stringify(donnees)
       }).then(function(r){ return r.json(); }).then(function(rep){
         if (rep && rep.success) { majCal(form, conteneur); conteneur.classList.add("envoye");
+          suivre("form_submit", { origin: donnees.origin || "", pain: donnees.pain || "" });
           if (window.fbq) { fbq("track", "Lead", { content_name: donnees.origin || "landing-500" }); }
         }
         else { alertErreur(form, rep && rep.error); bouton.disabled = false; }
