@@ -190,6 +190,15 @@ const landingHtml = `<!doctype html>
   .section-form.envoye form{display:none}
   .section-form.envoye .succes{display:block}
 </style>
+<script>
+(function(){
+  try { if (localStorage.getItem("mawt-cookie-consent") === "essential") return; } catch(e) {}
+  if (location.hostname.indexOf("mawt.ch") === -1) return;
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init','959258244767672');
+  fbq('track','PageView');
+})();
+</script>
 </head>
 <body>
 
@@ -507,7 +516,9 @@ const landingHtml = `<!doctype html>
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(donnees)
       }).then(function(r){ return r.json(); }).then(function(rep){
-        if (rep && rep.success) { majCal(form, conteneur); conteneur.classList.add("envoye"); }
+        if (rep && rep.success) { majCal(form, conteneur); conteneur.classList.add("envoye");
+          if (window.fbq) { fbq("track", "Lead", { content_name: donnees.origin || "landing-500" }); }
+        }
         else { alertErreur(form, rep && rep.error); bouton.disabled = false; }
       }).catch(function(){ alertErreur(form, null); bouton.disabled = false; });
     });
