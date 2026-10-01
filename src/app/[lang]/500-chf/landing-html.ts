@@ -162,23 +162,19 @@ const landingHtml = `<!doctype html>
   }
   .voile.ouvert{display:block}
   .feuille{
-    position:fixed;left:0;right:0;bottom:0;z-index:60;
-    max-width:640px;margin:0 auto;
-    background:var(--fond);border-radius:16px 16px 0 0;
-    padding:12px 24px calc(28px + env(safe-area-inset-bottom));
-    transform:translateY(100%);transition:transform .3s ease;
-    max-height:92vh;overflow-y:auto;
+    position:fixed;z-index:60;top:50%;left:50%;
+    width:calc(100% - 32px);max-width:480px;
+    background:var(--fond);border-radius:12px;
+    padding:20px 24px 28px;
+    transform:translate(-50%,-46%);opacity:0;pointer-events:none;
+    transition:opacity .2s ease,transform .2s ease;
+    max-height:88vh;max-height:88dvh;overflow-y:auto;
   }
-  .feuille.ouvert{transform:none}
+  .feuille.ouvert{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
   @media (prefers-reduced-motion: reduce){
     .feuille,.barre{transition:none}
   }
-  @media (min-width:700px){
-    .feuille{bottom:auto;top:50%;left:50%;right:auto;width:480px;margin:0;
-      transform:translate(-50%,-46%) ;opacity:0;pointer-events:none;border-radius:12px;transition:opacity .2s ease}
-    .feuille.ouvert{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
-  }
-  .poignee{width:40px;height:4px;background:var(--champ);border-radius:2px;margin:0 auto 12px}
+  .poignee{display:none}
   .feuille-titre{display:flex;align-items:center;justify-content:space-between}
   .feuille-titre h3{margin:0;font-size:22px;font-weight:800}
   .fermer{width:36px;height:36px;border:none;background:none;font-size:24px;line-height:1;color:var(--gris);cursor:pointer;font-family:inherit}
