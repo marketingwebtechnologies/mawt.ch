@@ -469,13 +469,30 @@ const landingHtml = `<!doctype html>
 
   /* Validation et faux envoi (le vrai envoi = action serveur Next.js) */
   function brancher(form, conteneur){
+  var calPret = false;
+  function chargerCal(){
+    if (calPret) return;
+    calPret = true;
+    (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+    Cal("init", { origin: "https://app.cal.com" });
+    Cal("ui", { theme: "light", cssVarsPerTheme: { light: { "cal-brand": "#1E9E72" } }, hideEventTypeDetails: false });
+  }
   function majCal(form, conteneur){
     var lien = conteneur.querySelector(".cal-lien");
     if (!lien) return;
     var d = new FormData(form);
-    lien.href = "https://cal.com/rdv-mawt/appel?name=" + encodeURIComponent(d.get("name") || "")
-      + "&email=" + encodeURIComponent(d.get("email") || "");
+    lien.dataset.nom = d.get("name") || "";
+    lien.dataset.mail = d.get("email") || "";
+    lien.href = "https://cal.com/rdv-mawt/appel?name=" + encodeURIComponent(lien.dataset.nom)
+      + "&email=" + encodeURIComponent(lien.dataset.mail);
+    chargerCal();
   }
+  document.addEventListener("click", function(e){
+    var a = e.target.closest(".cal-lien");
+    if (!a || !window.Cal) return;
+    e.preventDefault();
+    Cal("modal", { calLink: "rdv-mawt/appel", config: { name: a.dataset.nom || "", email: a.dataset.mail || "" } });
+  });
   function alertErreur(form, msg){
     var e = form.querySelector(".erreur-envoi");
     if (!e) {
