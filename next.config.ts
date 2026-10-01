@@ -25,6 +25,12 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Landing fonts: allow cross-origin loading so Clarity session
+        // replays (served from clarity.microsoft.com) render Gilroy too.
+        source: "/500-chf-assets/fonts/:path*",
+        headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
+      },
+      {
         source: "/:path*",
         headers: [
           // Baseline security headers (audit C3). HSTS is injected by the
