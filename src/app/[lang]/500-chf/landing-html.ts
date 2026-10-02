@@ -213,6 +213,51 @@ const landingHtml = `<!doctype html>
 })();
 function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}); } }
 </script>
+<script>
+/* Moniteur d'erreurs client : remonte vers /api/js-error, GA4 et Clarity.
+   Plafonne a 3 envois par session pour ne jamais devenir un probleme lui-meme. */
+(function(){
+  var envoyes = 0;
+  function remonter(kind, message, source, line, column, stack){
+    if (envoyes >= 3) return;
+    envoyes++;
+    var charge = {
+      kind: kind,
+      message: String(message || "").slice(0, 500),
+      source: String(source || "").slice(0, 300),
+      line: parseInt(line, 10) || 0,
+      column: parseInt(column, 10) || 0,
+      stack: String(stack || "").slice(0, 1500),
+      page: location.pathname + location.search.slice(0, 120),
+      ua: navigator.userAgent.slice(0, 400),
+      viewport: window.innerWidth + "x" + window.innerHeight
+    };
+    try {
+      if (window.gtag) { gtag("event", "js_error", { message: charge.message, source: charge.source, line: charge.line }); }
+      if (window.clarity) { clarity("set", "js_error", charge.message.slice(0, 100)); }
+    } catch (e) {}
+    try {
+      var corps = JSON.stringify(charge);
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/js-error", new Blob([corps], { type: "application/json" }));
+      } else {
+        fetch("/api/js-error", { method: "POST", headers: { "Content-Type": "application/json" }, body: corps, keepalive: true });
+      }
+    } catch (e) {}
+  }
+  window.addEventListener("error", function(e){
+    if (e && e.target && e.target !== window && (e.target.src || e.target.href)) {
+      remonter("resource", "Ressource non chargee: " + (e.target.src || e.target.href), e.target.tagName, 0, 0, "");
+      return;
+    }
+    remonter("error", e.message, e.filename, e.lineno, e.colno, e.error && e.error.stack);
+  }, true);
+  window.addEventListener("unhandledrejection", function(e){
+    var r = e.reason;
+    remonter("unhandledrejection", (r && r.message) || String(r), "", 0, 0, r && r.stack);
+  });
+})();
+</script>
 </head>
 <body>
 
