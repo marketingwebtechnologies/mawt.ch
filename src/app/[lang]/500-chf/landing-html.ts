@@ -75,7 +75,7 @@ const landingHtml = `<!doctype html>
 
   /* Carrousel fondu pilote par le defilement */
   .defile-espace{height:340vh;position:relative}
-  .defile-ecran{position:sticky;top:56px;height:calc(100vh - 56px);height:calc(100dvh - 56px);overflow:hidden;border-top:1px solid var(--filet)}
+  .defile-ecran{position:sticky;top:56px;height:calc(100vh - 56px);height:calc(100svh - 56px);overflow:hidden;border-top:1px solid var(--filet)}
   .diapo{position:absolute;inset:0;display:flex;align-items:center;opacity:0;pointer-events:none;will-change:opacity,transform}
   .diapo.active{pointer-events:auto}
   .diapo.douleur{border-top:none;padding:0}
@@ -168,7 +168,7 @@ const landingHtml = `<!doctype html>
     padding:20px 24px 28px;
     transform:translate(-50%,-46%);opacity:0;pointer-events:none;
     transition:opacity .2s ease,transform .2s ease;
-    max-height:88vh;max-height:88dvh;overflow-y:auto;
+    max-height:88vh;max-height:88svh;overflow-y:auto;overscroll-behavior:contain;
   }
   .feuille.ouvert{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
   @media (prefers-reduced-motion: reduce){
@@ -488,6 +488,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     var sel = f.querySelector('select[name="pain"]');
     if (sel) { sel.addEventListener("change", function(){ majAutre(f); }); }
   });
+  var posScrollAvant = 0;
   var selectPain = document.getElementById("p-pain");
   var indice = document.getElementById("indice-origine");
   var dernierFocus = null;
@@ -501,14 +502,24 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     indice.hidden = !mappe;
     voile.classList.add("ouvert");
     feuille.classList.add("ouvert");
-    document.body.style.overflow = "hidden";
+    posScrollAvant = window.scrollY || window.pageYOffset || 0;
+    document.body.style.position = "fixed";
+    document.body.style.top = (-posScrollAvant) + "px";
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
     document.getElementById("p-nom").focus();
     /* Tracking : cta_click + popup_open partent ici (GA4 + pixel) */
   }
   function fermer(){
     voile.classList.remove("ouvert");
     feuille.classList.remove("ouvert");
-    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    window.scrollTo(0, posScrollAvant);
     if (dernierFocus) { dernierFocus.focus(); }
   }
 
