@@ -75,6 +75,7 @@ const landingHtml = `<!doctype html>
 
   /* Carrousel fondu pilote par le defilement */
   .defile-espace{height:340vh;position:relative}
+  .diapo{will-change:opacity,transform}
   .defile-ecran{position:sticky;top:56px;height:calc(100vh - 56px);height:calc(100svh - 56px);overflow:hidden;border-top:1px solid var(--filet)}
   .diapo{position:absolute;inset:0;display:flex;align-items:center;opacity:0;pointer-events:none;will-change:opacity,transform}
   .diapo.active{pointer-events:auto}
@@ -200,14 +201,20 @@ const landingHtml = `<!doctype html>
 (function(){
   try { if (localStorage.getItem("mawt-cookie-consent") === "essential") return; } catch(e) {}
   if (location.hostname.indexOf("mawt.ch") === -1) return;
-  /* GA4 */
-  var g = document.createElement("script"); g.async = true;
-  g.src = "https://www.googletagmanager.com/gtag/js?id=G-J3FHJ45Y5L";
-  document.head.appendChild(g);
+  /* GA4, charge quand le fil principal est libre pour ne pas retarder
+     la reaction au premier tap. La file dataLayer existe des maintenant,
+     donc aucun evenement envoye entre-temps n'est perdu. */
   window.dataLayer = window.dataLayer || [];
   window.gtag = function(){ dataLayer.push(arguments); };
   gtag("js", new Date());
   gtag("config", "G-J3FHJ45Y5L");
+  var chargerGA = function(){
+    var g = document.createElement("script"); g.async = true;
+    g.src = "https://www.googletagmanager.com/gtag/js?id=G-J3FHJ45Y5L";
+    document.head.appendChild(g);
+  };
+  if (window.requestIdleCallback) { requestIdleCallback(chargerGA, { timeout: 3000 }); }
+  else { setTimeout(chargerGA, 1500); }
   /* Microsoft Clarity : sessions + heatmaps */
   (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ynxcutb3fv");
 })();
@@ -452,26 +459,44 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     document.documentElement.classList.add("sans-defile");
   } else {
     var attente = false;
+    var hautEspace = 0, topEspace = 0, totalEspace = 0;
+    var dernieresOpacites = [], dernierPoint = -1;
+    var mesurer = function(){
+      /* Lectures de mise en page groupees, hors de la boucle de defilement */
+      var r = espace.getBoundingClientRect();
+      topEspace = r.top + (window.scrollY || window.pageYOffset || 0);
+      hautEspace = espace.offsetHeight;
+      totalEspace = hautEspace - window.innerHeight;
+    };
     var majDefile = function(){
       attente = false;
-      var vh = window.innerHeight;
-      var total = espace.offsetHeight - vh;
-      var r = espace.getBoundingClientRect();
-      var brut = Math.min(Math.max(-r.top, 0), total);
-      var idx = total > 0 ? (brut / total) * (diapos.length - 1) : 0;
-      diapos.forEach(function(d, i){
+      var y = window.scrollY || window.pageYOffset || 0;
+      var brut = Math.min(Math.max(y - topEspace, 0), totalEspace);
+      var idx = totalEspace > 0 ? (brut / totalEspace) * (diapos.length - 1) : 0;
+      for (var i = 0; i < diapos.length; i++) {
+        var d = diapos[i];
         var e = idx - i;
         /* Fenetres d'opacite disjointes : une diapo disparait completement avant que la suivante apparaisse */
         var o = Math.max(0, Math.min(1, (0.45 - Math.abs(e)) / 0.33));
-        d.style.opacity = o;
-        d.style.transform = "translateY(" + (e * -36) + "px)";
-        d.classList.toggle("active", o > 0.5);
-      });
-      points.forEach(function(pt, i){ pt.classList.toggle("actif", Math.round(idx) === i); });
+        var oArrondi = Math.round(o * 100) / 100;
+        if (dernieresOpacites[i] !== oArrondi) {
+          dernieresOpacites[i] = oArrondi;
+          d.style.opacity = oArrondi;
+          d.style.transform = "translate3d(0," + Math.round(e * -36) + "px,0)";
+          d.classList.toggle("active", oArrondi > 0.5);
+        }
+      }
+      var pointActif = Math.round(idx);
+      if (pointActif !== dernierPoint) {
+        dernierPoint = pointActif;
+        for (var j = 0; j < points.length; j++) { points[j].classList.toggle("actif", j === pointActif); }
+      }
     };
     var demande = function(){ if (!attente) { attente = true; requestAnimationFrame(majDefile); } };
+    mesurer();
     window.addEventListener("scroll", demande, { passive: true });
-    window.addEventListener("resize", demande);
+    window.addEventListener("resize", function(){ mesurer(); demande(); }, { passive: true });
+    window.addEventListener("orientationchange", function(){ setTimeout(function(){ mesurer(); demande(); }, 200); });
     majDefile();
   }
 
