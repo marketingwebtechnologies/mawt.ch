@@ -110,7 +110,7 @@ const landingHtml = `<!doctype html>
   .succes-ou{margin:18px 0 0;font-size:15px;color:var(--corps)}
   a.cta{text-decoration:none;display:block}
   .erreur-msg{font-size:13px;color:#B4472E;display:none}
-  .invalide input{border-color:#B4472E}
+  .invalide input,.invalide select{border-color:#B4472E}
   .invalide .erreur-msg{display:block}
 
   /* Footer */
@@ -274,7 +274,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
 
 <main>
   <section class="hero conteneur" id="hero">
-    <span class="kicker">Dirigeant de PME</span>
+    <span class="kicker">Pour les dirigeants de PME de 5 &agrave; 20 personnes</span>
     <h1>Perdu avec l&rsquo;IA&#8239;?</h1>
     <p>Vous perdez&#8239;:</p>
     <div class="chiffre">&minus;&#8239;500&#8239;CHF</div>
@@ -288,19 +288,19 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
   <article class="douleur diapo" id="copier-coller">
     <div class="conteneur">
       <svg width="40" height="40" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,40V168H168V88H88V40Z" fill="var(--mint)"/><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"/></svg>
-      <h2>Marre des copier-coller inutiles&#8239;?</h2>
-      <p>Des commandes ressaisies d&rsquo;un outil &agrave; l&rsquo;autre, deux heures par jour, six jours sur sept. Chez un client r&eacute;el, &ccedil;a faisait 14 heures par semaine.</p>
-      <p class="resultat">Aujourd&rsquo;hui, elles sont trait&eacute;es automatiquement. <strong>14 heures r&eacute;cup&eacute;r&eacute;es</strong>, chaque semaine.</p>
-      <button class="cta" data-origine="copier-coller">Stopper les copier-coller</button>
+      <h2>Vous payez vos &eacute;quipes &agrave; ressaisir&#8239;?</h2>
+      <p>Vos collaborateurs recopient les m&ecirc;mes commandes d&rsquo;un outil &agrave; l&rsquo;autre, deux heures par jour, six jours sur sept. Ces heures-l&agrave;, vous les payez plein tarif. Chez un client r&eacute;el, &ccedil;a faisait 14 heures par semaine.</p>
+      <p class="resultat">Aujourd&rsquo;hui elles se traitent toutes seules. <strong>14 heures rendues &agrave; son &eacute;quipe</strong>, chaque semaine, sans un franc de salaire en plus.</p>
+      <button class="cta" data-origine="copier-coller">Arr&ecirc;ter de payer la ressaisie</button>
     </div>
   </article>
 
   <article class="douleur diapo" id="tete">
     <div class="conteneur">
       <svg width="40" height="40" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,124a48,48,0,0,1-32,45.27h0V176a40,40,0,0,1-80,0,40,40,0,0,1-80,0v-6.73h0a48,48,0,0,1,0-90.54V72a40,40,0,0,1,80,0,40,40,0,0,1,80,0v6.73A48,48,0,0,1,240,124Z" fill="var(--mint)"/><path d="M248,124a56.11,56.11,0,0,0-32-50.61V72a48,48,0,0,0-88-26.49A48,48,0,0,0,40,72v1.39a56,56,0,0,0,0,101.2V176a48,48,0,0,0,88,26.49A48,48,0,0,0,216,176v-1.41A56.09,56.09,0,0,0,248,124ZM88,208a32,32,0,0,1-31.81-28.56A55.87,55.87,0,0,0,64,180h8a8,8,0,0,0,0-16H64A40,40,0,0,1,50.67,86.27,8,8,0,0,0,56,78.73V72a32,32,0,0,1,64,0v68.26A47.8,47.8,0,0,0,88,128a8,8,0,0,0,0,16,32,32,0,0,1,0,64Zm104-44h-8a8,8,0,0,0,0,16h8a55.87,55.87,0,0,0,7.81-.56A32,32,0,1,1,168,144a8,8,0,0,0,0-16,47.8,47.8,0,0,0-32,12.26V72a32,32,0,0,1,64,0v6.73a8,8,0,0,0,5.33,7.54A40,40,0,0,1,192,164Zm16-52a8,8,0,0,1-8,8h-4a36,36,0,0,1-36-36V80a8,8,0,0,1,16,0v4a20,20,0,0,0,20,20h4A8,8,0,0,1,208,112ZM60,120H56a8,8,0,0,1,0-16h4A20,20,0,0,0,80,84V80a8,8,0,0,1,16,0v4A36,36,0,0,1,60,120Z"/></svg>
-      <h2>Tout est dans votre t&ecirc;te&#8239;?</h2>
-      <p>Les prix, l&rsquo;&eacute;tat des chantiers, ce qui a &eacute;t&eacute; promis &agrave; qui. Quand vous n&rsquo;&ecirc;tes pas l&agrave;, tout s&rsquo;arr&ecirc;te ou tout vous attend.</p>
-      <p class="resultat">On sort ces informations de votre t&ecirc;te et de vos carnets, pour que l&rsquo;&eacute;quipe avance <strong>sans vous interrompre</strong>.</p>
+      <h2>Votre entreprise s&rsquo;arr&ecirc;te quand vous partez&#8239;?</h2>
+      <p>Les prix, l&rsquo;&eacute;tat des chantiers, ce qui a &eacute;t&eacute; promis &agrave; qui&#8239;: tout est dans votre t&ecirc;te. Une semaine d&rsquo;absence co&ucirc;te une semaine de retard, et vos vacances se passent au t&eacute;l&eacute;phone.</p>
+      <p class="resultat">On sort ces informations de votre t&ecirc;te et de vos carnets. L&rsquo;&eacute;quipe avance <strong>sans vous interrompre</strong>, m&ecirc;me quand vous n&rsquo;&ecirc;tes pas l&agrave;.</p>
       <button class="cta" data-origine="tete">Sortir &ccedil;a de ma t&ecirc;te</button>
     </div>
   </article>
@@ -308,9 +308,9 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
   <article class="douleur diapo" id="questions">
     <div class="conteneur">
       <svg width="40" height="40" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M231.66,213.73a8,8,0,0,1-9.93,9.93L194,215.5A72.05,72.05,0,0,1,92.06,175.89h0c1.31.07,2.62.11,3.94.11a72,72,0,0,0,67.93-95.88h0A72,72,0,0,1,223.5,186Z" fill="var(--mint)"/><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"/></svg>
-      <h2>Tout le monde vous pose des questions&#8239;?</h2>
-      <p>C&rsquo;est o&ugrave;&#8239;? C&rsquo;est combien&#8239;? C&rsquo;est pour quand&#8239;? Chaque devis, chaque client, chaque employ&eacute; passe par vous. Vos journ&eacute;es partent en interruptions.</p>
-      <p class="resultat">Les r&eacute;ponses deviennent accessibles sans vous. Vous r&eacute;cup&eacute;rez <strong>des journ&eacute;es enti&egrave;res</strong>.</p>
+      <h2>Tout passe par vous&#8239;?</h2>
+      <p>C&rsquo;est o&ugrave;&#8239;? C&rsquo;est combien&#8239;? C&rsquo;est pour quand&#8239;? Chaque devis, chaque client, chaque employ&eacute; attend votre r&eacute;ponse. Vous ne prenez pas plus de clients parce que vous ne pouvez pas &ecirc;tre partout.</p>
+      <p class="resultat">Les r&eacute;ponses deviennent accessibles sans vous. Vous r&eacute;cup&eacute;rez <strong>des journ&eacute;es enti&egrave;res</strong>, et la capacit&eacute; de dire oui.</p>
       <button class="cta" data-origine="questions">R&eacute;cup&eacute;rer mes journ&eacute;es</button>
     </div>
   </article>
@@ -330,7 +330,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         <div class="champ-groupe">
           <label for="f-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label>
           <input id="f-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required>
-          <span class="erreur-msg">Format attenduUn num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle.#8239;: +41 79 123 45 67 ou 079 123 45 67.</span>
+          <span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span>
         </div>
         <div class="champ-groupe">
           <label for="f-mail">Votre e-mail</label>
@@ -338,11 +338,22 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
           <span class="erreur-msg">Indiquez un e-mail valide.</span>
         </div>
         <div class="champ-groupe">
+          <label for="f-taille">Combien de personnes travaillent dans votre entreprise&#8239;?</label>
+          <select id="f-taille" name="team" required>
+            <option value="">Choisissez</option>
+            <option value="1-4">1 &agrave; 4</option>
+            <option value="5-20">5 &agrave; 20</option>
+            <option value="21-50">21 &agrave; 50</option>
+            <option value="50+">Plus de 50</option>
+          </select>
+          <span class="erreur-msg">Indiquez la taille de votre entreprise.</span>
+        </div>
+        <div class="champ-groupe">
           <label for="f-pain">Qu&rsquo;est-ce qui vous fait perdre le plus de temps&#8239;?</label>
           <select id="f-pain" name="pain">
-            <option value="copier-coller">Les copier-coller entre outils</option>
+            <option value="copier-coller">Mes &eacute;quipes ressaisissent les m&ecirc;mes donn&eacute;es</option>
             <option value="tete">Tout est dans ma t&ecirc;te</option>
-            <option value="questions">Les questions permanentes</option>
+            <option value="questions">Tout passe par moi</option>
             <option value="autre">Autre chose</option>
           </select>
         </div>
@@ -393,7 +404,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     <div class="champ-groupe">
       <label for="p-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label>
       <input id="p-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required>
-      <span class="erreur-msg">Format attenduUn num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle.#8239;: +41 79 123 45 67 ou 079 123 45 67.</span>
+      <span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span>
     </div>
     <div class="champ-groupe">
       <label for="p-mail">Votre e-mail</label>
@@ -401,11 +412,22 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       <span class="erreur-msg">Indiquez un e-mail valide.</span>
     </div>
     <div class="champ-groupe">
+      <label for="p-taille">Combien de personnes travaillent dans votre entreprise&#8239;?</label>
+      <select id="p-taille" name="team" required>
+        <option value="">Choisissez</option>
+        <option value="1-4">1 &agrave; 4</option>
+        <option value="5-20">5 &agrave; 20</option>
+        <option value="21-50">21 &agrave; 50</option>
+        <option value="50+">Plus de 50</option>
+      </select>
+      <span class="erreur-msg">Indiquez la taille de votre entreprise.</span>
+    </div>
+    <div class="champ-groupe">
       <label for="p-pain">Qu&rsquo;est-ce qui vous fait perdre le plus de temps&#8239;?</label>
       <select id="p-pain" name="pain">
-        <option value="copier-coller">Les copier-coller entre outils</option>
+        <option value="copier-coller">Mes &eacute;quipes ressaisissent les m&ecirc;mes donn&eacute;es</option>
         <option value="tete">Tout est dans ma t&ecirc;te</option>
-        <option value="questions">Les questions permanentes</option>
+        <option value="questions">Tout passe par moi</option>
         <option value="autre">Autre chose</option>
       </select>
       <span class="indice-origine" id="indice-origine" hidden>Pr&eacute;s&eacute;lectionn&eacute; selon le bouton cliqu&eacute;</span>
@@ -611,7 +633,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       e.preventDefault();
       var ok = true;
       form.querySelectorAll(".champ-groupe").forEach(function(g){
-        var input = g.querySelector("input[required]");
+        var input = g.querySelector("input[required], select[required]");
         if (!input) return;
         var vide = !input.value.trim();
         var num = input.value.replace(/[\\s.\\-()]/g, "");

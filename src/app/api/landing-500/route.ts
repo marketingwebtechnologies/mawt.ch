@@ -25,6 +25,9 @@ const landingSchema = z.object({
       { message: "Numéro de téléphone invalide." },
     ),
   email: z.string().trim().email().toLowerCase(),
+  // Company size, asked on the landing so the notification says whether the
+  // lead is a small-business owner or an employee of a large company.
+  team: z.enum(["1-4", "5-20", "21-50", "50+"]).optional(),
   pain: z.string().trim().max(100).optional().default(""),
   pain_detail: z.string().trim().max(200).optional().default(""),
   origin: z.string().trim().max(50).optional().default(""),
@@ -65,9 +68,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, phone, email, pain, pain_detail, origin } = validated.data;
+  const { name, phone, email, team, pain, pain_detail, origin } =
+    validated.data;
   const message = [
     `Téléphone : ${phone}`,
+    team ? `Taille de l'entreprise : ${team} personnes` : null,
     pain ? `Douleur choisie : ${pain}` : null,
     pain_detail ? `Précision : ${pain_detail}` : null,
     origin ? `Origine du CTA : ${origin}` : null,
@@ -100,7 +105,7 @@ export async function POST(request: NextRequest) {
     await trackConversion({
       type: "lead",
       email,
-      metadata: { service: "landing-500", origin, pain },
+      metadata: { service: "landing-500", origin, pain, team },
     });
     logger.info("Landing-500 lead captured", { email: redactEmail(email), origin });
 
