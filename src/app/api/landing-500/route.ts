@@ -28,6 +28,11 @@ const landingSchema = z.object({
   // Company size, asked on the landing so the notification says whether the
   // lead is a small-business owner or an employee of a large company.
   team: z.enum(["1-4", "5-20", "21-50", "50+"]).optional(),
+  // Self-declared role. Only "dirigeant" and "direction" are qualified: the
+  // landing fires the pixel Lead event for those two alone.
+  role: z
+    .enum(["dirigeant", "direction", "salarie", "independant", "autre"])
+    .optional(),
   pain: z.string().trim().max(100).optional().default(""),
   pain_detail: z.string().trim().max(200).optional().default(""),
   origin: z.string().trim().max(50).optional().default(""),
@@ -68,16 +73,28 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, phone, email, team, pain, pain_detail, origin } =
+  const { name, phone, email, team, role, pain, pain_detail, origin } =
     validated.data;
+  const ROLE_LABELS: Record<string, string> = {
+    dirigeant: "dirige l'entreprise",
+    direction: "membre de la direction",
+    salarie: "salarié(e)",
+    independant: "indépendant(e) sans équipe",
+    autre: "autre situation",
+  };
+  // Leads sent before the role field existed stay qualified by default.
+  const qualified = !role || role === "dirigeant" || role === "direction";
   const message = [
     `Téléphone : ${phone}`,
+    role ? `Rôle déclaré : ${ROLE_LABELS[role]}` : null,
     team ? `Taille de l'entreprise : ${team} personnes` : null,
     pain ? `Douleur choisie : ${pain}` : null,
     pain_detail ? `Précision : ${pain_detail}` : null,
     origin ? `Origine du CTA : ${origin}` : null,
     "",
-    "Lead landing 500 CHF — à rappeler sous 24 h ouvrées.",
+    qualified
+      ? "Lead landing 500 CHF — à rappeler sous 24 h ouvrées."
+      : "NON QUALIFIÉ d'après le rôle déclaré — aucun rappel promis à cette personne.",
   ]
     .filter((l): l is string => l !== null)
     .join("\n");
@@ -85,7 +102,7 @@ export async function POST(request: NextRequest) {
   const lead = {
     name,
     email,
-    service: "Landing 500 CHF",
+    service: qualified ? "Landing 500 CHF" : "Landing 500 CHF (non qualifié)",
     timeline: origin || "landing",
     message,
   };
@@ -102,11 +119,13 @@ export async function POST(request: NextRequest) {
     }
 
     await sendLeadNotification(lead);
-    await trackConversion({
-      type: "lead",
-      email,
-      metadata: { service: "landing-500", origin, pain, team },
-    });
+    if (qualified) {
+      await trackConversion({
+        type: "lead",
+        email,
+        metadata: { service: "landing-500", origin, pain, team, role },
+      });
+    }
     logger.info("Landing-500 lead captured", { email: redactEmail(email), origin });
 
     return NextResponse.json({ success: true });

@@ -187,6 +187,10 @@ const landingHtml = `<!doctype html>
   .feuille.envoye .succes{display:block}
   .section-form.envoye form{display:none}
   .section-form.envoye .succes{display:block}
+  .refus{display:none;padding:32px 0;text-align:center}
+  .refus p{font-size:17px;line-height:1.5;font-weight:600;margin:0}
+  .feuille.refuse form,.section-form.refuse form{display:none}
+  .feuille.refuse .refus,.section-form.refuse .refus{display:block}
 </style>
 <script>
 (function(){
@@ -338,6 +342,18 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
           <span class="erreur-msg">Indiquez un e-mail valide.</span>
         </div>
         <div class="champ-groupe">
+          <label for="f-role">Laquelle de ces situations vous d&eacute;crit le mieux&#8239;?</label>
+          <select id="f-role" name="role" required>
+            <option value="">Choisissez</option>
+            <option value="dirigeant">Je dirige l&rsquo;entreprise (dirigeant, associ&eacute;, g&eacute;rant)</option>
+            <option value="direction">Je fais partie de la direction (op&eacute;rations, finances, administration)</option>
+            <option value="salarie">Je suis salari&eacute;(e) dans l&rsquo;entreprise</option>
+            <option value="independant">Je suis ind&eacute;pendant(e), sans &eacute;quipe</option>
+            <option value="autre">Autre situation</option>
+          </select>
+          <span class="erreur-msg">Indiquez votre situation.</span>
+        </div>
+        <div class="champ-groupe">
           <label for="f-taille">Combien de personnes travaillent dans votre entreprise&#8239;?</label>
           <select id="f-taille" name="team" required>
             <option value="">Choisissez</option>
@@ -366,7 +382,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         <button type="submit" class="cta">R&eacute;server l&rsquo;appel</button>
         <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
       </form>
-      <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div>
+      <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
     </div>
   </section>
 </main>
@@ -412,6 +428,18 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       <span class="erreur-msg">Indiquez un e-mail valide.</span>
     </div>
     <div class="champ-groupe">
+      <label for="p-role">Laquelle de ces situations vous d&eacute;crit le mieux&#8239;?</label>
+      <select id="p-role" name="role" required>
+        <option value="">Choisissez</option>
+        <option value="dirigeant">Je dirige l&rsquo;entreprise (dirigeant, associ&eacute;, g&eacute;rant)</option>
+        <option value="direction">Je fais partie de la direction (op&eacute;rations, finances, administration)</option>
+        <option value="salarie">Je suis salari&eacute;(e) dans l&rsquo;entreprise</option>
+        <option value="independant">Je suis ind&eacute;pendant(e), sans &eacute;quipe</option>
+        <option value="autre">Autre situation</option>
+      </select>
+      <span class="erreur-msg">Indiquez votre situation.</span>
+    </div>
+    <div class="champ-groupe">
       <label for="p-taille">Combien de personnes travaillent dans votre entreprise&#8239;?</label>
       <select id="p-taille" name="team" required>
         <option value="">Choisissez</option>
@@ -441,7 +469,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     <button type="submit" class="cta">R&eacute;server l&rsquo;appel</button>
     <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
   </form>
-  <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div>
+  <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
 </div>
 
 <script>
@@ -646,18 +674,28 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       if (!ok) return;
       var bouton = form.querySelector('button[type="submit"]');
       var reel = location.hostname.indexOf("mawt.ch") !== -1;
-      if (!reel) { majCal(form, conteneur); conteneur.classList.add("envoye"); return; }
-      bouton.disabled = true;
       var donnees = {};
       new FormData(form).forEach(function(v, k){ donnees[k] = v; });
+      // Only decision makers count as a lead: the others are stored but never
+      // fire the pixel Lead event, so Meta stops optimising toward them.
+      var qualifie = donnees.role === "dirigeant" || donnees.role === "direction";
+      function terminer(){
+        if (qualifie) { majCal(form, conteneur); conteneur.classList.add("envoye"); }
+        else { conteneur.classList.add("refuse"); }
+      }
+      if (!reel) { terminer(); return; }
+      bouton.disabled = true;
       fetch("/api/landing-500", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(donnees)
       }).then(function(r){ return r.json(); }).then(function(rep){
-        if (rep && rep.success) { majCal(form, conteneur); conteneur.classList.add("envoye");
-          suivre("form_submit", { origin: donnees.origin || "", pain: donnees.pain || "" });
-          if (window.fbq) { fbq("track", "Lead", { content_name: donnees.origin || "landing-500" }); }
+        if (rep && rep.success) { terminer();
+          suivre("form_submit", { origin: donnees.origin || "", pain: donnees.pain || "", role: donnees.role || "" });
+          if (window.fbq) {
+            if (qualifie) { fbq("track", "Lead", { content_name: donnees.origin || "landing-500" }); }
+            else { fbq("trackCustom", "LeadNonQualifie", { role: donnees.role || "" }); }
+          }
         }
         else { alertErreur(form, rep && rep.error); bouton.disabled = false; }
       }).catch(function(){ alertErreur(form, null); bouton.disabled = false; });
