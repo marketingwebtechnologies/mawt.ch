@@ -274,7 +274,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
 
 <main>
   <section class="hero conteneur" id="hero">
-    <span class="kicker">Pour les dirigeants de PME de 5 &agrave; 20 personnes</span>
+    <span class="kicker">Pour les dirigeants et responsables des op&eacute;rations</span>
     <h1>Perdu avec l&rsquo;IA&#8239;?</h1>
     <p>Vous perdez&#8239;:</p>
     <div class="chiffre">&minus;&#8239;500&#8239;CHF</div>
