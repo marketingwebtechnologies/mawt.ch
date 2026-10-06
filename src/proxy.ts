@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { i18n } from "./i18n-config";
+import { i18n, type Locale } from "./i18n-config";
 import { toFilesystemPathname } from "@/lib/routing/url-helpers";
 import { verifyAdminSession, SESSION_COOKIE } from "@/lib/session";
 
@@ -36,6 +36,27 @@ function withLocaleHeader(request: NextRequest, locale: string) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(LOCALE_HEADER, locale);
   return requestHeaders;
+}
+
+const LANDING_LANG_COOKIE = "landing-lang";
+
+function isLocale(value: string | null | undefined): value is Locale {
+  return !!value && (i18n.locales as readonly string[]).includes(value);
+}
+
+// Locale the visitor's browser asks for, or undefined when it says nothing
+// (then the URL's own language stays). Unlike getLocale(), no default is
+// applied: a French ad must keep serving French to a browser without preference.
+function landingLocaleFromBrowser(request: NextRequest): Locale | undefined {
+  const header = request.headers.get("accept-language");
+  if (!header) return undefined;
+  const languages = new Negotiator({ headers: { "accept-language": header } }).languages();
+  if (languages.length === 0) return undefined;
+  for (const lang of languages) {
+    const base = lang.toLowerCase().split("-")[0];
+    if (isLocale(base)) return base;
+  }
+  return undefined;
 }
 
 // Next.js 16 renamed `middleware` to `proxy`. Same functionality.
@@ -130,6 +151,36 @@ export async function proxy(request: NextRequest) {
     // with "/", so other paths just get the locale prefix.
     const target = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
     return NextResponse.redirect(new URL(target, request.url));
+  }
+
+  // 3b. Landing 500 CHF: the language follows the visitor's browser or phone, not
+  // the URL the ad linked to. A French ad can reach an English-speaking phone and
+  // vice versa; both copies exist, so we redirect to the one the visitor reads.
+  // `?hl=fr|en` forces a language and is remembered in a cookie (lets a visitor
+  // or a test override the detection). The query string (fbclid, utm) is kept.
+  const landing = pathname.match(/^\/(en|fr)\/500-chf\/?$/);
+  if (landing) {
+    const current = landing[1];
+    const forced = request.nextUrl.searchParams.get("hl");
+    const remembered = request.cookies.get(LANDING_LANG_COOKIE)?.value;
+    const wanted = isLocale(forced)
+      ? forced
+      : isLocale(remembered)
+        ? remembered
+        : landingLocaleFromBrowser(request) ?? current;
+    if (wanted !== current) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${wanted}/500-chf`;
+      url.searchParams.delete("hl");
+      const response = NextResponse.redirect(url, 307);
+      if (isLocale(forced)) response.cookies.set(LANDING_LANG_COOKIE, forced, { path: "/", maxAge: 60 * 60 * 24 * 30 });
+      return response;
+    }
+    if (isLocale(forced) && forced !== remembered) {
+      const response = NextResponse.next({ request: { headers: withLocaleHeader(request, current) } });
+      response.cookies.set(LANDING_LANG_COOKIE, forced, { path: "/", maxAge: 60 * 60 * 24 * 30 });
+      return response;
+    }
   }
 
   // 4. Localized URL → filesystem rewrite.
