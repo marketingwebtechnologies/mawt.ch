@@ -131,9 +131,28 @@ const landingHtml = `<!doctype html>
 })();
 </script>
 <script>
-/* Suivi : GA4 si présent (consentement géré par le site), sinon silence. */
+(function(){
+  try { if (localStorage.getItem("mawt-cookie-consent") === "essential") return; } catch(e) {}
+  if (location.hostname.indexOf("mawt.ch") === -1) return;
+  /* GA4, même propriété et même consentement que la landing 500 ; la file dataLayer existe dès maintenant */
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ dataLayer.push(arguments); };
+  gtag("js", new Date());
+  gtag("config", "G-J3FHJ45Y5L");
+  var chargerGA = function(){
+    var g = document.createElement("script"); g.async = true;
+    g.src = "https://www.googletagmanager.com/gtag/js?id=G-J3FHJ45Y5L";
+    document.head.appendChild(g);
+  };
+  if (window.requestIdleCallback) { requestIdleCallback(chargerGA, { timeout: 3000 }); }
+  else { setTimeout(chargerGA, 1500); }
+  /* Microsoft Clarity : sessions + heatmaps */
+  (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ynxcutb3fv");
+})();
+/* Suivi des étapes : GA4 (événements) et Clarity (étiquettes de session) */
 function suivre(evt, params){
   try { if (window.gtag) { gtag("event", evt, params || {}); } } catch(e) {}
+  try { if (window.clarity) { clarity("event", evt); if (params && params.step) { clarity("set", "etape", params.step); } if (params && params.profil) { clarity("set", "profil", params.profil); } } } catch(e) {}
 }
 </script>
 </head>
