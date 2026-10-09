@@ -6,7 +6,7 @@ const landingHtml = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Session IA · 30 minutes gratuites pour vos questions · M&WT (v5)</title>
+<title>Session IA · 30 minutes gratuites pour vos questions · M&WT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
