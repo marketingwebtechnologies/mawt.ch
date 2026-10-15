@@ -687,6 +687,8 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       var reel = location.hostname.indexOf("mawt.ch") !== -1;
       var donnees = {};
       new FormData(form).forEach(function(v, k){ donnees[k] = v; });
+      // Shared with the server copy sent to the Conversions API, so Meta counts the lead once.
+      donnees.event_id = "l5-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
       donnees.origin = "en:" + (donnees.origin || "");
       // Only decision makers count as a lead: the others are stored but never
       // fire the pixel Lead event, so Meta stops optimising toward them.
@@ -705,8 +707,8 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         if (rep && rep.success) { terminer();
           suivre("form_submit", { origin: donnees.origin || "", pain: donnees.pain || "", role: donnees.role || "" });
           if (window.fbq) {
-            if (qualifie) { fbq("track", "Lead", { content_name: donnees.origin || "landing-500-en" }); }
-            else { fbq("trackCustom", "LeadNonQualifie", { role: donnees.role || "" }); }
+            if (qualifie) { fbq("track", "Lead", { content_name: donnees.origin || "landing-500-en" }, { eventID: donnees.event_id }); }
+            else { fbq("trackCustom", "LeadNonQualifie", { role: donnees.role || "" }, { eventID: donnees.event_id }); }
           }
         }
         else { alertErreur(form, rep && rep.error); bouton.disabled = false; }

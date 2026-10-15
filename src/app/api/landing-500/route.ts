@@ -6,6 +6,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { trackConversion } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
+import { capiContextFromRequest, fbclidFromUtm, sendMetaCapiEvent } from "@/lib/meta-capi";
 
 // Lead endpoint for the "500 CHF" landing page (/fr/500-chf). Mirrors the
 // submitContactForm pipeline (honeypot, rate limit, Sanity, notification,
@@ -37,6 +38,8 @@ const landingSchema = z.object({
   pain_detail: z.string().trim().max(200).optional().default(""),
   origin: z.string().trim().max(50).optional().default(""),
   utm: z.string().trim().max(600).optional().default(""),
+  // Id the page also passes to fbq() so Meta deduplicates browser and server copies.
+  event_id: z.string().trim().max(64).optional().default(""),
 });
 
 const GENERIC_ERROR =
@@ -74,7 +77,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, phone, email, team, role, pain, pain_detail, origin, utm } =
+  const { name, phone, email, team, role, pain, pain_detail, origin, utm, event_id } =
     validated.data;
   const ROLE_LABELS: Record<string, string> = {
     dirigeant: "dirige l'entreprise",
@@ -128,6 +131,18 @@ export async function POST(request: NextRequest) {
         metadata: { service: "landing-500", origin, pain, team, role, utm },
       });
     }
+    // Server copy of the pixel event (same name and event_id as the browser one).
+    await sendMetaCapiEvent({
+      eventName: qualified ? "Lead" : "LeadNonQualifie",
+      eventId: event_id || undefined,
+      email,
+      phone,
+      fbclid: fbclidFromUtm(utm),
+      customData: qualified
+        ? { content_name: origin || "landing-500", utm }
+        : { role: role ?? "", utm },
+      ...capiContextFromRequest(request),
+    });
     logger.info("Landing-500 lead captured", { email: redactEmail(email), origin, utm });
 
     return NextResponse.json({ success: true });

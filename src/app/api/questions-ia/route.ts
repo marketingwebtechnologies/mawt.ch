@@ -6,6 +6,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { trackConversion } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
+import { capiContextFromRequest, fbclidFromUtm, sendMetaCapiEvent } from "@/lib/meta-capi";
 
 // Lead endpoint for the "Session IA" landing (/fr/questions-ia). Same pipeline
 // as /api/landing-500 (honeypot, rate limit, Sanity, notification) with the
@@ -46,6 +47,8 @@ const sessionSchema = z.object({
   engagement: z.enum(["oui", "non"]),
   origin: z.string().trim().max(50).optional().default(""),
   utm: z.string().trim().max(600).optional().default(""),
+  // Id the page also passes to fbq() so Meta deduplicates browser and server copies.
+  event_id: z.string().trim().max(64).optional().default(""),
 });
 
 const GENERIC_ERROR =
@@ -160,6 +163,20 @@ export async function POST(request: NextRequest) {
         metadata: { service: "questions-ia", profil: d.profil, qualification, origin: d.origin, utm: d.utm },
       });
     }
+    // Server copy of the pixel event (same name and event_id as the browser one).
+    const CAPI_EVENT = { entreprise: "Lead", formation: "LeadFormation", non: "LeadNonQualifie" } as const;
+    await sendMetaCapiEvent({
+      eventName: CAPI_EVENT[qualification],
+      eventId: d.event_id || undefined,
+      email: d.email,
+      phone: d.phone,
+      fbclid: fbclidFromUtm(d.utm),
+      customData:
+        qualification === "non"
+          ? { profil: d.profil, utm: d.utm }
+          : { content_name: `session-ia-${qualification}`, utm: d.utm },
+      ...capiContextFromRequest(request),
+    });
     logger.info("Session-IA lead captured", { email: redactEmail(d.email), profil: d.profil, qualification });
 
     return NextResponse.json({ success: true, qualification });

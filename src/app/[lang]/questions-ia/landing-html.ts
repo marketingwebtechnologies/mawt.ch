@@ -609,6 +609,8 @@ function suivre(evt, params){
     d.forEach(function(v, k){ donnees[k] = v; });
     Object.keys(reponses).forEach(function(k){ donnees[k] = Array.isArray(reponses[k]) ? reponses[k].join(",") : reponses[k]; });
     donnees.qualification = qualification();
+    // Shared with the server copy sent to the Conversions API, so Meta counts the lead once.
+    donnees.event_id = "l5-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
     var dest = destination();
     var reel = location.hostname.indexOf("mawt.ch") !== -1;
     function fini(){
@@ -617,14 +619,14 @@ function suivre(evt, params){
       pile = []; montrer(ecranParId(dest));
       suivre("form_submit", { profil: donnees.profil, qualification: donnees.qualification });
       if (window.fbq) {
-        if (donnees.qualification === "entreprise") { fbq("track", "Lead", { content_name: "session-ia-entreprise" }); }
-        else if (donnees.qualification === "formation") { fbq("trackCustom", "LeadFormation", { content_name: "session-ia-formation" }); }
-        else { fbq("trackCustom", "LeadNonQualifie", { profil: donnees.profil || "" }); }
+        if (donnees.qualification === "entreprise") { fbq("track", "Lead", { content_name: "session-ia-entreprise" }, { eventID: donnees.event_id }); }
+        else if (donnees.qualification === "formation") { fbq("trackCustom", "LeadFormation", { content_name: "session-ia-formation" }, { eventID: donnees.event_id }); }
+        else { fbq("trackCustom", "LeadNonQualifie", { profil: donnees.profil || "" }, { eventID: donnees.event_id }); }
       }
     }
     if (!reel) { fini(); return; }
     courant.querySelectorAll(".option").forEach(function(o){ o.disabled = true; });
-    fetch("/api/session-ia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(donnees) })
+    fetch("/api/questions-ia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(donnees) })
       .then(function(r){ return r.json(); })
       .then(function(rep){ if (rep && rep.success) fini(); else { erreurEnvoi(rep && rep.error); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); } })
       .catch(function(){ erreurEnvoi(null); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); });
