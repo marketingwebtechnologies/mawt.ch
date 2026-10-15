@@ -9,12 +9,19 @@ import landingHtmlEn from "./landing-html-en";
 // other locale falls back to the French original.
 export const dynamic = "force-static";
 
+// The browser-side fallback posts to this Apps Script web app when the site
+// API fails; the placeholder is filled at build time from the environment.
+const BACKUP_URL = process.env.NEXT_PUBLIC_LEADS_BACKUP_URL ?? "";
+function withBackupUrl(html: string): string {
+  return html.split("__LEADS_BACKUP_URL__").join(BACKUP_URL);
+}
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ lang: string }> },
 ) {
   const { lang } = await params;
-  return new Response(lang === "en" ? landingHtmlEn : landingHtml, {
+  return new Response(withBackupUrl(lang === "en" ? landingHtmlEn : landingHtml), {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "X-Robots-Tag": "noindex, nofollow",

@@ -7,6 +7,7 @@ import { trackConversion } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
 import { capiContextFromRequest, fbclidFromUtm, sendMetaCapiEvent } from "@/lib/meta-capi";
+import { backupLead } from "@/lib/lead-backup";
 
 // Lead endpoint for the "500 CHF" landing page (/fr/500-chf). Mirrors the
 // submitContactForm pipeline (honeypot, rate limit, Sanity, notification,
@@ -111,6 +112,19 @@ export async function POST(request: NextRequest) {
     timeline: origin || "landing",
     message,
   };
+
+  // Independent copy first: whatever fails below, the person is on the sheet.
+  await backupLead({
+    page: "500-chf",
+    qualification: qualified ? "qualifie" : "non-qualifie",
+    name,
+    email,
+    phone,
+    details: message,
+    utm,
+    origin,
+    event_id,
+  });
 
   try {
     const client = getSanityWriteClient();

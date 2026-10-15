@@ -597,6 +597,19 @@ function suivre(evt, params){
     Cal("modal", { calLink: "rdv-mawt/appel", config: { name: a.dataset.nom || "", email: a.dataset.mail || "", notes: a.dataset.notes || "" } });
   });
 
+  /* Envoi de secours : si l'API du site ne répond pas, la réponse part directement
+     vers la feuille Google (Apps Script), hors Vercel. Retourne true si le navigateur
+     a accepté l'envoi. */
+  var URL_SECOURS = "__LEADS_BACKUP_URL__";
+  function envoiSecours(donnees, page, erreur){
+    if (!URL_SECOURS || URL_SECOURS.indexOf("http") !== 0) return false;
+    var corps = JSON.stringify(Object.assign({ source: "navigateur-secours", page: page, erreur: String(erreur || ""), horodatage: new Date().toISOString(), url: location.href }, donnees));
+    try {
+      if (navigator.sendBeacon && navigator.sendBeacon(URL_SECOURS, new Blob([corps], { type: "text/plain;charset=utf-8" }))) return true;
+      fetch(URL_SECOURS, { method: "POST", mode: "no-cors", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: corps });
+      return true;
+    } catch (e) { return false; }
+  }
   function erreurEnvoi(msg){
     var e = courant.querySelector(".erreur-envoi");
     if (!e) { e = document.createElement("p"); e.className = "erreur-envoi"; courant.appendChild(e); }
@@ -628,8 +641,15 @@ function suivre(evt, params){
     courant.querySelectorAll(".option").forEach(function(o){ o.disabled = true; });
     fetch("/api/questions-ia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(donnees) })
       .then(function(r){ return r.json(); })
-      .then(function(rep){ if (rep && rep.success) fini(); else { erreurEnvoi(rep && rep.error); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); } })
-      .catch(function(){ erreurEnvoi(null); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); });
+      .then(function(rep){
+        if (rep && rep.success) fini();
+        else if (envoiSecours(donnees, "questions-ia", rep && rep.error)) fini();
+        else { erreurEnvoi(rep && rep.error); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); }
+      })
+      .catch(function(err){
+        if (envoiSecours(donnees, "questions-ia", err)) fini();
+        else { erreurEnvoi(null); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); }
+      });
   }
 
   /* Ouverture et fermeture */

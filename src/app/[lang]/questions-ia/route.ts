@@ -7,8 +7,15 @@ import landingHtml from "./landing-html";
 // serves the same page. Kept out of search indexes: paid-traffic page only.
 export const dynamic = "force-static";
 
+// The browser-side fallback posts to this Apps Script web app when the site
+// API fails; the placeholder is filled at build time from the environment.
+const BACKUP_URL = process.env.NEXT_PUBLIC_LEADS_BACKUP_URL ?? "";
+function withBackupUrl(html: string): string {
+  return html.split("__LEADS_BACKUP_URL__").join(BACKUP_URL);
+}
+
 export async function GET() {
-  return new Response(landingHtml, {
+  return new Response(withBackupUrl(landingHtml), {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "X-Robots-Tag": "noindex, nofollow",

@@ -7,6 +7,7 @@ import { trackConversion } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
 import { capiContextFromRequest, fbclidFromUtm, sendMetaCapiEvent } from "@/lib/meta-capi";
+import { backupLead } from "@/lib/lead-backup";
 
 // Lead endpoint for the "Session IA" landing (/fr/questions-ia). Same pipeline
 // as /api/landing-500 (honeypot, rate limit, Sanity, notification) with the
@@ -143,6 +144,19 @@ export async function POST(request: NextRequest) {
     timeline: d.profil === "entreprise" ? d.delai ?? "questions-ia" : "formation",
     message,
   };
+
+  // Independent copy first: whatever fails below, the person is on the sheet.
+  await backupLead({
+    page: "questions-ia",
+    qualification,
+    name: d.name,
+    email: d.email,
+    phone: d.phone,
+    details: message,
+    utm: d.utm,
+    origin: d.origin,
+    event_id: d.event_id,
+  });
 
   try {
     const client = getSanityWriteClient();

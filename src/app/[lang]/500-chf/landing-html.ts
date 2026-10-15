@@ -658,6 +658,19 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     suivre("cal_open", {});
     Cal("modal", { calLink: "rdv-mawt/appel", config: { name: a.dataset.nom || "", email: a.dataset.mail || "" } });
   });
+  /* Envoi de secours : si l'API du site ne répond pas, la réponse part directement
+     vers la feuille Google (Apps Script), hors Vercel. Retourne true si le navigateur
+     a accepté l'envoi. */
+  var URL_SECOURS = "__LEADS_BACKUP_URL__";
+  function envoiSecours(donnees, page, erreur){
+    if (!URL_SECOURS || URL_SECOURS.indexOf("http") !== 0) return false;
+    var corps = JSON.stringify(Object.assign({ source: "navigateur-secours", page: page, erreur: String(erreur || ""), horodatage: new Date().toISOString(), url: location.href }, donnees));
+    try {
+      if (navigator.sendBeacon && navigator.sendBeacon(URL_SECOURS, new Blob([corps], { type: "text/plain;charset=utf-8" }))) return true;
+      fetch(URL_SECOURS, { method: "POST", mode: "no-cors", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: corps });
+      return true;
+    } catch (e) { return false; }
+  }
   function alertErreur(form, msg){
     var e = form.querySelector(".erreur-envoi");
     if (!e) {
@@ -710,8 +723,12 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
             else { fbq("trackCustom", "LeadNonQualifie", { role: donnees.role || "" }, { eventID: donnees.event_id }); }
           }
         }
+        else if (envoiSecours(donnees, "500-chf", rep && rep.error)) { terminer(); }
         else { alertErreur(form, rep && rep.error); bouton.disabled = false; }
-      }).catch(function(){ alertErreur(form, null); bouton.disabled = false; });
+      }).catch(function(err){
+        if (envoiSecours(donnees, "500-chf", err)) { terminer(); }
+        else { alertErreur(form, null); bouton.disabled = false; }
+      });
     });
   }
   brancher(document.getElementById("form-popup"), feuille);
