@@ -11,7 +11,14 @@ export const dynamic = "force-static";
 
 // The browser-side fallback posts to this Apps Script web app when the site
 // API fails; the placeholder is filled at build time from the environment.
-const BACKUP_URL = process.env.NEXT_PUBLIC_LEADS_BACKUP_URL ?? "";
+// Only a Google Apps Script web app URL is accepted, and only characters that
+// are safe inside a double-quoted JS string, so a bad value cannot break or
+// inject into the page.
+const BACKUP_URL = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(
+  process.env.NEXT_PUBLIC_LEADS_BACKUP_URL ?? "",
+)
+  ? (process.env.NEXT_PUBLIC_LEADS_BACKUP_URL as string)
+  : "";
 function withBackupUrl(html: string): string {
   return html.split("__LEADS_BACKUP_URL__").join(BACKUP_URL);
 }
