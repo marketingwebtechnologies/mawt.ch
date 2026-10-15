@@ -297,7 +297,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     <p class="accroche" id="accroche-texte">Vous voulez enfin profiter de vos proches et arr&ecirc;ter de travailler le soir ou le week-end&#8239;?</p>
     <p class="promesse">Posez-nous vos questions. 30&#8239;minutes au t&eacute;l&eacute;phone, gratuites.</p>
     <button class="cta" data-origine="hero">Poser mes questions</button>
-    <span class="micro">On vous rappelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
+    <span class="micro">On vous rappelle sous 24&#8239;h ouvr&eacute;es.</span>
   </section>
 
   <section class="rassure" id="rassure">
@@ -371,9 +371,9 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         <input type="hidden" name="utm" value="">
         <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
         <button type="submit" class="cta">R&eacute;server l&rsquo;appel</button>
-        <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
+        <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es.</span>
       </form>
-      <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
+      <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
     </div>
   </section>
 </main>
@@ -459,9 +459,9 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     <input type="hidden" name="utm" value="">
     <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
     <button type="submit" class="cta">R&eacute;server l&rsquo;appel</button>
-    <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
+    <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es.</span>
   </form>
-  <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
+  <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
 </div>
 
 <script>
