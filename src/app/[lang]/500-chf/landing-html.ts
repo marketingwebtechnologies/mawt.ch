@@ -6,7 +6,7 @@ const landingHtml = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Perdu avec l'IA ? − 500 CHF par employé, chaque semaine · M&WT</title>
+<title>Perdu avec l'IA ? Posez-nous vos questions · M&WT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
@@ -64,6 +64,20 @@ const landingHtml = `<!doctype html>
   }
   .cta:active{background:var(--mint-fonce);color:var(--fond);transform:translateY(0)}
   .cta:focus-visible{outline:3px solid var(--encre);outline-offset:2px}
+
+  /* Accroche et réassurance (page courte) */
+  .accroche{margin:20px 0 0;font-size:20px;line-height:1.4;font-weight:600;color:var(--encre)}
+  .rassure{padding:28px 0 8px;border-top:1px solid var(--filet)}
+  .rassure ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+  .rassure li{position:relative;padding-left:30px;font-size:16px;line-height:1.5;color:var(--corps)}
+  .rassure li::before{content:"";position:absolute;left:0;top:7px;width:16px;height:16px;border-radius:50%;background:var(--mint)}
+  .rassure li strong{color:var(--encre)}
+  @media (min-width:700px){
+    .accroche{font-size:26px;max-width:720px}
+    .rassure{padding:48px 0 16px}
+    .rassure ul{grid-template-columns:repeat(3,1fr);gap:28px}
+    .rassure li{font-size:17px}
+  }
 
   /* Sections douleur */
   .douleur{padding:64px 0;border-top:1px solid var(--filet)}
@@ -279,52 +293,28 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
 <main>
   <section class="hero conteneur" id="hero">
     <span class="kicker">Pour les dirigeants et responsables des op&eacute;rations</span>
-    <h1>Perdu avec l&rsquo;IA&#8239;?</h1>
-    <p>Vous perdez&#8239;:</p>
-    <div class="chiffre">&minus;&#8239;500&#8239;CHF</div>
-    <p>par employ&eacute;, chaque semaine, sans&nbsp;le&nbsp;voir.</p>
-    <p class="promesse">R&eacute;cup&eacute;rez-les, sans embaucher.</p>
-    <button class="cta" data-origine="hero">R&eacute;server l&rsquo;appel, c&rsquo;est gratuit</button>
-    <span class="micro">Appel de 30 minutes. On vous rappelle sous 24&#8239;h ouvr&eacute;es.</span>
+    <h1 id="accroche-titre">Perdu avec l&rsquo;IA&#8239;?</h1>
+    <p class="accroche" id="accroche-texte">Vous voulez enfin profiter de vos proches et arr&ecirc;ter de travailler le soir ou le week-end&#8239;?</p>
+    <p class="promesse">Posez-nous vos questions. 30&#8239;minutes au t&eacute;l&eacute;phone, gratuites.</p>
+    <button class="cta" data-origine="hero">Poser mes questions</button>
+    <span class="micro">On vous rappelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
   </section>
 
-  <div class="defile" id="douleurs"><div class="defile-espace"><div class="defile-ecran">
-  <article class="douleur diapo" id="copier-coller">
+  <section class="rassure" id="rassure">
     <div class="conteneur">
-      <svg width="40" height="40" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,40V168H168V88H88V40Z" fill="var(--mint)"/><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"/></svg>
-      <h2>Vous payez vos &eacute;quipes &agrave; ressaisir&#8239;?</h2>
-      <p>Vos collaborateurs recopient les m&ecirc;mes commandes d&rsquo;un outil &agrave; l&rsquo;autre, deux heures par jour, six jours sur sept. Ces heures-l&agrave;, vous les payez plein tarif. Chez un client r&eacute;el, &ccedil;a faisait 14 heures par semaine.</p>
-      <p class="resultat">Aujourd&rsquo;hui elles se traitent toutes seules. <strong>14 heures rendues &agrave; son &eacute;quipe</strong>, chaque semaine, sans un franc de salaire en plus.</p>
-      <button class="cta" data-origine="copier-coller">Arr&ecirc;ter de payer la ressaisie</button>
+      <ul>
+        <li><strong>Un vrai &eacute;change</strong> avec quelqu&rsquo;un qui l&rsquo;a d&eacute;j&agrave; fait pour des entreprises romandes.</li>
+        <li><strong>Des r&eacute;ponses pour votre cas</strong>, pas un argumentaire&#8239;: ce qui marche, ce qui ne sert &agrave; rien, par o&ugrave; commencer.</li>
+        <li><strong>Rien &agrave; pr&eacute;parer</strong>, rien &agrave; installer, aucun engagement.</li>
+      </ul>
     </div>
-  </article>
+  </section>
 
-  <article class="douleur diapo" id="tete">
-    <div class="conteneur">
-      <svg width="40" height="40" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,124a48,48,0,0,1-32,45.27h0V176a40,40,0,0,1-80,0,40,40,0,0,1-80,0v-6.73h0a48,48,0,0,1,0-90.54V72a40,40,0,0,1,80,0,40,40,0,0,1,80,0v6.73A48,48,0,0,1,240,124Z" fill="var(--mint)"/><path d="M248,124a56.11,56.11,0,0,0-32-50.61V72a48,48,0,0,0-88-26.49A48,48,0,0,0,40,72v1.39a56,56,0,0,0,0,101.2V176a48,48,0,0,0,88,26.49A48,48,0,0,0,216,176v-1.41A56.09,56.09,0,0,0,248,124ZM88,208a32,32,0,0,1-31.81-28.56A55.87,55.87,0,0,0,64,180h8a8,8,0,0,0,0-16H64A40,40,0,0,1,50.67,86.27,8,8,0,0,0,56,78.73V72a32,32,0,0,1,64,0v68.26A47.8,47.8,0,0,0,88,128a8,8,0,0,0,0,16,32,32,0,0,1,0,64Zm104-44h-8a8,8,0,0,0,0,16h8a55.87,55.87,0,0,0,7.81-.56A32,32,0,1,1,168,144a8,8,0,0,0,0-16,47.8,47.8,0,0,0-32,12.26V72a32,32,0,0,1,64,0v6.73a8,8,0,0,0,5.33,7.54A40,40,0,0,1,192,164Zm16-52a8,8,0,0,1-8,8h-4a36,36,0,0,1-36-36V80a8,8,0,0,1,16,0v4a20,20,0,0,0,20,20h4A8,8,0,0,1,208,112ZM60,120H56a8,8,0,0,1,0-16h4A20,20,0,0,0,80,84V80a8,8,0,0,1,16,0v4A36,36,0,0,1,60,120Z"/></svg>
-      <h2>Votre entreprise s&rsquo;arr&ecirc;te quand vous partez&#8239;?</h2>
-      <p>Les prix, l&rsquo;&eacute;tat des chantiers, ce qui a &eacute;t&eacute; promis &agrave; qui&#8239;: tout est dans votre t&ecirc;te. Une semaine d&rsquo;absence co&ucirc;te une semaine de retard, et vos vacances se passent au t&eacute;l&eacute;phone.</p>
-      <p class="resultat">On sort ces informations de votre t&ecirc;te et de vos carnets. L&rsquo;&eacute;quipe avance <strong>sans vous interrompre</strong>, m&ecirc;me quand vous n&rsquo;&ecirc;tes pas l&agrave;.</p>
-      <button class="cta" data-origine="tete">Sortir &ccedil;a de ma t&ecirc;te</button>
-    </div>
-  </article>
-
-  <article class="douleur diapo" id="questions">
-    <div class="conteneur">
-      <svg width="40" height="40" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M231.66,213.73a8,8,0,0,1-9.93,9.93L194,215.5A72.05,72.05,0,0,1,92.06,175.89h0c1.31.07,2.62.11,3.94.11a72,72,0,0,0,67.93-95.88h0A72,72,0,0,1,223.5,186Z" fill="var(--mint)"/><path d="M232.07,186.76a80,80,0,0,0-62.5-114.17A80,80,0,1,0,23.93,138.76l-7.27,24.71a16,16,0,0,0,19.87,19.87l24.71-7.27a80.39,80.39,0,0,0,25.18,7.35,80,80,0,0,0,108.34,40.65l24.71,7.27a16,16,0,0,0,19.87-19.86ZM62,159.5a8.28,8.28,0,0,0-2.26.32L32,168l8.17-27.76a8,8,0,0,0-.63-6,64,64,0,1,1,26.26,26.26A8,8,0,0,0,62,159.5Zm153.79,28.73L224,216l-27.76-8.17a8,8,0,0,0-6,.63,64.05,64.05,0,0,1-85.87-24.88A79.93,79.93,0,0,0,174.7,89.71a64,64,0,0,1,41.75,92.48A8,8,0,0,0,215.82,188.23Z"/></svg>
-      <h2>Tout passe par vous&#8239;?</h2>
-      <p>C&rsquo;est o&ugrave;&#8239;? C&rsquo;est combien&#8239;? C&rsquo;est pour quand&#8239;? Chaque devis, chaque client, chaque employ&eacute; attend votre r&eacute;ponse. Vous ne prenez pas plus de clients parce que vous ne pouvez pas &ecirc;tre partout.</p>
-      <p class="resultat">Les r&eacute;ponses deviennent accessibles sans vous. Vous r&eacute;cup&eacute;rez <strong>des journ&eacute;es enti&egrave;res</strong>, et la capacit&eacute; de dire oui.</p>
-      <button class="cta" data-origine="questions">R&eacute;cup&eacute;rer mes journ&eacute;es</button>
-    </div>
-  </article>
-  <div class="points" aria-hidden="true"><span class="point"></span><span class="point"></span><span class="point"></span></div>
-</div></div></div>
 
   <section class="section-form revele" id="contact">
     <div class="conteneur">
-      <h2>Premier pas&#8239;: un appel de 30 minutes.</h2>
-      <p style="margin:16px 0 0;font-size:16px;line-height:1.55;color:var(--corps)">Vous repartez avec une vue claire de ce qui vous fait perdre du temps, et de ce que &ccedil;a rapporterait de le r&eacute;cup&eacute;rer.</p>
+      <h2>Posez-nous vos questions.</h2>
+      <p style="margin:16px 0 0;font-size:16px;line-height:1.55;color:var(--corps)">Laissez votre num&eacute;ro, on vous rappelle pour un &eacute;change de 30&#8239;minutes. Vous repartez avec des r&eacute;ponses concr&egrave;tes pour votre entreprise.</p>
       <form id="form-final" novalidate>
         <div class="champ-groupe">
           <label for="f-nom">Votre nom</label>
@@ -400,8 +390,8 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
 
 <div class="barre" id="barre" aria-hidden="true">
   <div class="conteneur">
-    <span>&minus;&#8239;500&#8239;CHF / employ&eacute; / semaine, sans le voir</span>
-    <button data-origine="barre">R&eacute;server l&rsquo;appel</button>
+    <span>30&#8239;minutes au t&eacute;l&eacute;phone, gratuites</span>
+    <button data-origine="barre">Poser mes questions</button>
   </div>
 </div>
 
@@ -555,6 +545,12 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
   /* Popup */
   var voile = document.getElementById("voile");
   var feuille = document.getElementById("feuille");
+  /* Même accroche pour tout le monde (décision 15.10 : « reste sur Perdu avec l'IA »).
+     Seul le menu « ce qui vous prend du temps » est présélectionné pour la pub ressaisie (v6). */
+  (function(){
+    var c = (new URLSearchParams(location.search).get("utm_content") || "").toLowerCase();
+    if (c.slice(0, 2) === "v6") { document.querySelectorAll("select[name=pain]").forEach(function(sel){ sel.value = "copier-coller"; sel.dispatchEvent(new Event("change")); }); }
+  })();
   /* UTM et identifiant de pub, pour relier chaque lead à la pub qui l'a produite (comme questions-ia) */
   (function(){
     var p = new URLSearchParams(location.search), out = [];
