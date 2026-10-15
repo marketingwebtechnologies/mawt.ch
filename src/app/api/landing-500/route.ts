@@ -36,6 +36,7 @@ const landingSchema = z.object({
   pain: z.string().trim().max(100).optional().default(""),
   pain_detail: z.string().trim().max(200).optional().default(""),
   origin: z.string().trim().max(50).optional().default(""),
+  utm: z.string().trim().max(600).optional().default(""),
 });
 
 const GENERIC_ERROR =
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, phone, email, team, role, pain, pain_detail, origin } =
+  const { name, phone, email, team, role, pain, pain_detail, origin, utm } =
     validated.data;
   const ROLE_LABELS: Record<string, string> = {
     dirigeant: "dirige l'entreprise",
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest) {
     pain ? `Douleur choisie : ${pain}` : null,
     pain_detail ? `Précision : ${pain_detail}` : null,
     origin ? `Origine du CTA : ${origin}` : null,
+    utm ? `Pub : ${utm}` : null,
     "",
     qualified
       ? "Lead landing 500 CHF — à rappeler sous 24 h ouvrées."
@@ -123,10 +125,10 @@ export async function POST(request: NextRequest) {
       await trackConversion({
         type: "lead",
         email,
-        metadata: { service: "landing-500", origin, pain, team, role },
+        metadata: { service: "landing-500", origin, pain, team, role, utm },
       });
     }
-    logger.info("Landing-500 lead captured", { email: redactEmail(email), origin });
+    logger.info("Landing-500 lead captured", { email: redactEmail(email), origin, utm });
 
     return NextResponse.json({ success: true });
   } catch (err) {

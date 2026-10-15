@@ -378,6 +378,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
           <input id="f-autre" name="pain_detail" type="text" maxlength="200">
         </div>
         <input type="hidden" name="origin" value="footer-form">
+        <input type="hidden" name="utm" value="">
         <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
         <button type="submit" class="cta">R&eacute;server l&rsquo;appel</button>
         <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
@@ -465,6 +466,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       <input id="p-autre" name="pain_detail" type="text" maxlength="200">
     </div>
     <input type="hidden" name="origin" id="p-origine" value="">
+    <input type="hidden" name="utm" value="">
     <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
     <button type="submit" class="cta">R&eacute;server l&rsquo;appel</button>
     <span class="micro">On vous appelle sous 24&#8239;h ouvr&eacute;es, depuis un num&eacute;ro suisse.</span>
@@ -553,6 +555,15 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
   /* Popup */
   var voile = document.getElementById("voile");
   var feuille = document.getElementById("feuille");
+  /* UTM et identifiant de pub, pour relier chaque lead à la pub qui l'a produite (comme questions-ia) */
+  (function(){
+    var p = new URLSearchParams(location.search), out = [];
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","fbclid","ad_id","adset_id","campaign_id"].forEach(function(k){
+      var v = p.get(k); if (v) out.push(k + "=" + v.slice(0, 80));
+    });
+    var val = out.join("&");
+    document.querySelectorAll("input[name=utm]").forEach(function(i){ i.value = val; });
+  })();
   var champOrigine = document.getElementById("p-origine");
   function majAutre(form){
     var sel = form.querySelector('select[name="pain"]');
