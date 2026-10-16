@@ -64,9 +64,11 @@ function qualify(d: z.infer<typeof sessionSchema>): Qualification {
     // never counts as a qualified lead: the landing refuses it client-side.
     return FREE_MAIL.test(d.email) ? "non" : "entreprise";
   }
+  // Budget is no longer asked on the page (2026-10-16, shorter form); when an
+  // old client still sends it, "<500" disqualifies.
   const wants = d.investir === "oui" || d.investir === "oui-questions";
-  const budget = d.budget !== "" && d.budget !== "<500";
-  return wants && budget ? "formation" : "non";
+  const budgetOk = d.budget === "" || d.budget !== "<500";
+  return wants && budgetOk ? "formation" : "non";
 }
 
 export async function POST(request: NextRequest) {

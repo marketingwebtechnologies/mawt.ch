@@ -165,8 +165,8 @@ function suivre(evt, params){
       <span class="kicker">Session IA &middot; 30 minutes &middot; totalement gratuit</span>
       <h1>Vos questions sur l&rsquo;IA. On prend 30&nbsp;minutes pour vous.</h1>
       <p>Pas un webinaire, pas un argumentaire. Vous posez vos questions, on prend le temps d&rsquo;y r&eacute;pondre, pour votre situation &agrave; vous.</p>
-      <button class="cta" id="ouvrir" data-origine="hero">R&eacute;server mes 30 minutes</button>
-      <span class="micro">Totalement gratuit, sans engagement. Deux minutes de questions pour pr&eacute;parer l&rsquo;appel.</span>
+      <button class="cta" id="ouvrir" data-origine="hero">Poser mes questions</button>
+      <span class="micro">Totalement gratuit, sans engagement. Trois r&eacute;ponses et votre num&eacute;ro, on vous rappelle.</span>
     </div>
   </section>
 </main>
@@ -189,9 +189,9 @@ function suivre(evt, params){
 
     <!-- 0 accueil -->
     <section class="ecran" data-id="accueil">
-      <h2>Afin de pr&eacute;parer notre appel, nous aurions quelques questions.</h2>
-      <p class="pourquoi">Deux minutes. Chaque r&eacute;ponse sert &agrave; construire la session autour de vous, pas autour d&rsquo;un expos&eacute; g&eacute;n&eacute;ral.</p>
-      <div class="suite"><button type="button" class="cta" data-suivant>Commencer</button><small>Entr&eacute;e &#8629;</small></div>
+      <h2>Trois r&eacute;ponses, votre num&eacute;ro, on vous rappelle.</h2>
+      <p class="pourquoi">Moins d&rsquo;une minute. Vos questions, on les prend de vive voix.</p>
+      <div class="suite"><button type="button" class="cta" data-suivant>C&rsquo;est parti</button><small>Entr&eacute;e &#8629;</small></div>
     </section>
 
     <!-- 1 profil -->
@@ -216,96 +216,9 @@ function suivre(evt, params){
       </div>
     </section>
 
-    <section class="ecran" data-id="secteur" data-branche="entreprise" data-champ="secteur" data-type="unique">
-      <span class="num">3</span>
-      <h2>Votre secteur</h2>
-            <div class="options">
-        <button type="button" class="option" data-valeur="services"><b>A</b>Services, conseil, fiduciaire</button>
-        <button type="button" class="option" data-valeur="construction"><b>B</b>Construction, artisanat, technique</button>
-        <button type="button" class="option" data-valeur="commerce"><b>C</b>Commerce, n&eacute;goce, logistique</button>
-        <button type="button" class="option" data-valeur="placement"><b>D</b>Placement, ressources humaines</button>
-        <button type="button" class="option" data-valeur="autre"><b>E</b>Autre</button>
-      </div>
-    </section>
-
-
-    <section class="ecran" data-id="blocages-e" data-branche="entreprise" data-champ="blocages" data-type="multiple">
-      <span class="num">4</span>
-      <h2>Ce qui vous a retenu jusqu&rsquo;ici</h2>
-      <p class="pourquoi">Plusieurs r&eacute;ponses possibles. Il n&rsquo;y a pas de bonne r&eacute;ponse.</p>
-      <div class="options">
-        <button type="button" class="option" data-valeur="par-ou-commencer"><b>A</b>Je ne sais pas par o&ugrave; commencer</button>
-        <button type="button" class="option" data-valeur="casser"><b>B</b>Peur de casser ce qui marche</button>
-        <button type="button" class="option" data-valeur="temps"><b>C</b>Personne chez moi n&rsquo;a le temps</button>
-        <button type="button" class="option" data-valeur="deja-essaye"><b>D</b>J&rsquo;ai d&eacute;j&agrave; essay&eacute; un outil, abandonn&eacute;</button>
-        <button type="button" class="option" data-valeur="cout"><b>E</b>Le co&ucirc;t</button>
-        <button type="button" class="option" data-valeur="confiance"><b>F</b>Je ne fais pas confiance aux r&eacute;sultats</button>
-      </div>
-      <div class="suite"><button type="button" class="cta" data-suivant disabled>Continuer</button></div>
-    </section>
-
-
-    <section class="ecran" data-id="delai" data-branche="entreprise" data-champ="delai" data-type="unique">
-      <span class="num">5</span>
-      <h2>Si la session montre un gain net, vous voudriez agir&#8239;:</h2>
-      <div class="options">
-        <button type="button" class="option" data-valeur="ce-mois"><b>A</b>Ce mois-ci</button>
-        <button type="button" class="option" data-valeur="3-mois"><b>B</b>Dans les 3 mois</button>
-        <button type="button" class="option" data-valeur="renseigne"><b>C</b>Je me renseigne pour l&rsquo;instant</button>
-      </div>
-    </section>
-
-    <!-- FORMATION -->
-    <section class="ecran" data-id="situation" data-branche="formation" data-champ="situation" data-type="unique">
+<!-- FORMATION -->
+<section class="ecran" data-id="investir" data-branche="formation" data-champ="investir" data-type="unique">
       <span class="num">2</span>
-      <h2>Votre situation aujourd&rsquo;hui</h2>
-      <div class="options">
-        <button type="button" class="option" data-valeur="dirigeant"><b>A</b>Dirigeant(e) ou chef d&rsquo;&eacute;quipe, je veux me former moi-m&ecirc;me</button>
-        <button type="button" class="option" data-valeur="employe"><b>B</b>Employ&eacute;(e), je veux utiliser l&rsquo;IA dans mon travail</button>
-        <button type="button" class="option" data-valeur="independant"><b>C</b>Ind&eacute;pendant(e)</button>
-        <button type="button" class="option" data-valeur="projet"><b>D</b>En projet de lancement</button>
-        <button type="button" class="option" data-valeur="reconversion"><b>E</b>&Eacute;tudiant(e), en reconversion, sans activit&eacute;</button>
-      </div>
-    </section>
-
-    <section class="ecran" data-id="stade" data-branche="formation" data-champ="stade" data-type="unique">
-      <span class="num">3</span>
-      <h2>O&ugrave; en &ecirc;tes-vous avec l&rsquo;IA&#8239;?</h2>
-      <div class="options">
-        <button type="button" class="option" data-valeur="entend-parler"><b>A</b>J&rsquo;en entends beaucoup parler, mais je ne sais pas par o&ugrave; commencer</button>
-        <button type="button" class="option" data-valeur="usage-simple"><b>B</b>L&rsquo;IA r&eacute;pond &agrave; mes questions ou corrige mes e-mails, pas plus</button>
-        <button type="button" class="option" data-valeur="essaye-sans-suite"><b>C</b>J&rsquo;ai essay&eacute; d&rsquo;aller plus loin, &ccedil;a n&rsquo;a pas pris</button>
-        <button type="button" class="option" data-valeur="quotidien"><b>D</b>Je l&rsquo;utilise tous les jours, je veux passer un cap</button>
-      </div>
-    </section>
-
-    <section class="ecran" data-id="objectif" data-branche="formation" data-champ="objectif" data-type="unique">
-      <span class="num">4</span>
-      <h2>Ce que vous voulez en faire</h2>
-      <div class="options">
-        <button type="button" class="option" data-valeur="efficace"><b>A</b>&Ecirc;tre plus efficace dans mon travail</button>
-        <button type="button" class="option" data-valeur="activite"><b>B</b>Monter une activit&eacute; ou un projet</button>
-        <button type="button" class="option" data-valeur="culture"><b>C</b>Me former, sans projet pr&eacute;cis pour l&rsquo;instant</button>
-      </div>
-    </section>
-
-    <section class="ecran" data-id="blocages-f" data-branche="formation" data-champ="blocages" data-type="multiple">
-      <span class="num">5</span>
-      <h2>Vos principaux blocages aujourd&rsquo;hui</h2>
-      <p class="pourquoi">Plusieurs r&eacute;ponses possibles.</p>
-      <div class="options">
-        <button type="button" class="option" data-valeur="par-ou-commencer"><b>A</b>Je ne sais pas par o&ugrave; commencer</button>
-        <button type="button" class="option" data-valeur="technique"><b>B</b>La partie technique m&rsquo;intimide</button>
-        <button type="button" class="option" data-valeur="pour-moi"><b>C</b>Je ne sais pas si c&rsquo;est fait pour moi</button>
-        <button type="button" class="option" data-valeur="temps"><b>D</b>Le temps</button>
-        <button type="button" class="option" data-valeur="outils"><b>E</b>Trop d&rsquo;outils, je ne sais pas lesquels</button>
-      </div>
-      <div class="suite"><button type="button" class="cta" data-suivant disabled>Continuer</button></div>
-    </section>
-
-
-    <section class="ecran" data-id="investir" data-branche="formation" data-champ="investir" data-type="unique">
-      <span class="num">6</span>
       <h2>Si la session vous donne un plan clair, seriez-vous pr&ecirc;t(e) &agrave; investir dans une formation&#8239;?</h2>
       <div class="options">
         <button type="button" class="option" data-valeur="oui"><b>A</b>Oui, si &ccedil;a correspond &agrave; mon besoin</button>
@@ -315,22 +228,9 @@ function suivre(evt, params){
       </div>
     </section>
 
-    <section class="ecran" data-id="budget" data-branche="formation" data-champ="budget" data-type="unique">
-      <span class="num">7</span>
-      <h2>Le budget que vous pourriez mobiliser</h2>
-      <p class="pourquoi">Il n&rsquo;y a pas de bonne r&eacute;ponse. &Ccedil;a nous aide &agrave; vous conseiller les bonnes options pendant la session.</p>
-      <div class="options">
-        <button type="button" class="option" data-valeur="<500"><b>A</b>Moins de 500 CHF</button>
-        <button type="button" class="option" data-valeur="500-1500"><b>B</b>Entre 500 et 1&#8239;500 CHF</button>
-        <button type="button" class="option" data-valeur="1500-3000"><b>C</b>Entre 1&#8239;500 et 3&#8239;000 CHF</button>
-        <button type="button" class="option" data-valeur=">3000"><b>D</b>Plus de 3&#8239;000 CHF</button>
-        <button type="button" class="option" data-valeur="inconnu"><b>E</b>Je ne sais pas encore</button>
-      </div>
-    </section>
-
-    <!-- COMMUN -->
+<!-- COMMUN -->
     <section class="ecran" data-id="coordonnees" data-type="coordonnees">
-      <span class="num" data-num-e="6" data-num-f="8">6</span>
+      <span class="num" data-num-e="3" data-num-f="3">3</span>
       <h2>O&ugrave; vous joindre pour la session</h2>
       <div class="champ-groupe"><label for="c-nom">Votre nom</label><input id="c-nom" name="name" type="text" autocomplete="name" required><span class="erreur-msg">Indiquez votre nom.</span></div>
       <div class="champ-groupe"><label for="c-mail">Votre e-mail <span class="mail-pro-indice" hidden>professionnel</span></label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email" required><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide.</span></div>
@@ -339,7 +239,7 @@ function suivre(evt, params){
     </section>
 
     <section class="ecran engagement" data-id="engagement" data-champ="engagement" data-type="unique">
-      <span class="num" data-num-e="7" data-num-f="9">7</span>
+      <span class="num" data-num-e="4" data-num-f="4">4</span>
       <h2>Derni&egrave;re chose, et c&rsquo;est important.</h2>
       <p>La session est un vrai cr&eacute;neau, tenu par l&rsquo;un de nous, pas un appel de masse. Elle est <strong>nominative, unique, et ne peut pas &ecirc;tre reprogramm&eacute;e</strong>.</p>
       <p>Une absence non pr&eacute;venue&#8239;: <strong>plus aucun appel possible avec nous, d&eacute;finitivement</strong>.</p>
@@ -550,8 +450,7 @@ function suivre(evt, params){
     if (reponses.engagement === "non") return "fin-non";
     if (reponses.profil === "entreprise") return "fin-creneau";
     var veut = reponses.investir === "oui" || reponses.investir === "oui-questions";
-    var budget = reponses.budget && reponses.budget !== "<500";
-    return (veut && budget) ? "fin-creneau" : "fin-ressource";
+    return veut ? "fin-creneau" : "fin-ressource";
   }
   function qualification(){
     var d = destination();
@@ -562,11 +461,9 @@ function suivre(evt, params){
   function recap(){
     var r = document.getElementById("recap");
     var lignes = [];
-    var SECTEURS = { "services": "services, conseil, fiduciaire", "construction": "construction, artisanat, technique", "commerce": "commerce, négoce, logistique", "placement": "placement, ressources humaines" };
     if (reponses.profil === "entreprise") {
       var TAILLES = { "1-4": "1 à 4", "5-20": "5 à 20", "21-50": "21 à 50", "50+": "plus de 50" };
-      lignes.push("Une entreprise de " + (TAILLES[reponses.taille] || reponses.taille) + " personnes" + (SECTEURS[reponses.secteur] ? ", " + SECTEURS[reponses.secteur] : "") + ".");
-      lignes.push(reponses.delai === "renseigne" ? "Vous vous renseignez, on ne vous vendra rien pendant la session." : "Vous voulez agir " + (reponses.delai === "ce-mois" ? "ce mois-ci" : "dans les 3 mois") + ", la session partira de là.");
+      lignes.push("Une entreprise de " + (TAILLES[reponses.taille] || reponses.taille) + " personnes. On part de vos questions, pas d’un exposé général.");
     } else {
       lignes.push("Vous voulez vous former à l’IA. On vous dira quoi apprendre en premier, et dans quel ordre.");
     }
