@@ -163,11 +163,18 @@ export async function proxy(request: NextRequest) {
     const current = landing[1];
     const forced = request.nextUrl.searchParams.get("hl");
     const remembered = request.cookies.get(LANDING_LANG_COOKIE)?.value;
+    // A visitor sent by an ad (utm_source present) gets the language of the ad,
+    // whatever the phone's language: a French ad means a French reader. Browser
+    // detection only applies to direct visits. (2026-10-16: French-ad visitors
+    // with English phones were landing on /en and bouncing.)
+    const fromAd = request.nextUrl.searchParams.has("utm_source") || request.nextUrl.searchParams.has("fbclid");
     const wanted = isLocale(forced)
       ? forced
-      : isLocale(remembered)
-        ? remembered
-        : landingLocaleFromBrowser(request) ?? current;
+      : fromAd
+        ? current
+        : isLocale(remembered)
+          ? remembered
+          : landingLocaleFromBrowser(request) ?? current;
     if (wanted !== current) {
       const url = request.nextUrl.clone();
       url.pathname = `/${wanted}/500-chf`;
