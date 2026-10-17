@@ -671,6 +671,15 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       return true;
     } catch (e) { return false; }
   }
+  /* Coordonnées refusées par la validation : on les garde quand même (sheet « Leads site »,
+     source navigateur-bloque, e-mail d'alerte), la personne a cliqué pour les envoyer. Une fois par contenu. */
+  var dejaSignale = {};
+  function signalerBlocage(champs, page){
+    var cle = JSON.stringify(champs);
+    if (dejaSignale[cle] || !(champs.email || champs.phone)) return;
+    dejaSignale[cle] = true;
+    envoiSecours(Object.assign({ source: "navigateur-bloque" }, champs), page, "validation refusee");
+  }
   function alertErreur(form, msg){
     var e = form.querySelector(".erreur-envoi");
     if (!e) {
@@ -695,7 +704,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         g.classList.toggle("invalide", invalide);
         if (invalide) ok = false;
       });
-      if (!ok) return;
+      if (!ok) { var b = {}; new FormData(form).forEach(function(v, k){ if (k !== "mawt_hp") b[k] = String(v).trim(); }); signalerBlocage(b, "500-chf-en"); return; }
       var bouton = form.querySelector('button[type="submit"]');
       var reel = location.hostname.indexOf("mawt.ch") !== -1;
       var donnees = {};

@@ -418,7 +418,7 @@ function suivre(evt, params){
       if (vide) { ta.focus(); return; }
       reponses[ecran.getAttribute("data-champ")] = ta.value.trim();
     }
-    if (type === "coordonnees" && !validerCoordonnees(ecran)) return;
+    if (type === "coordonnees" && !validerCoordonnees(ecran)) { signalerBlocage({ name: document.getElementById("c-nom").value.trim(), email: document.getElementById("c-mail").value.trim(), phone: document.getElementById("c-tel").value.trim(), profil: reponses.profil || "", taille: reponses.taille || "", utm: (document.getElementById("utm") || {}).value || "" }, "questions-ia"); return; }
     suivant();
   });
 
@@ -434,7 +434,7 @@ function suivre(evt, params){
   avancer.addEventListener("click", function(){
     if (avancer.disabled) return;
     var type = courant.getAttribute("data-type");
-    if (type === "coordonnees" && !validerCoordonnees(courant)) return;
+    if (type === "coordonnees" && !validerCoordonnees(courant)) { signalerBlocage({ name: document.getElementById("c-nom").value.trim(), email: document.getElementById("c-mail").value.trim(), phone: document.getElementById("c-tel").value.trim(), profil: reponses.profil || "", taille: reponses.taille || "", utm: (document.getElementById("utm") || {}).value || "" }, "questions-ia"); return; }
     suivant();
   });
   /* les coordonnées : le bouton s'active au fil de la saisie */
@@ -493,6 +493,15 @@ function suivre(evt, params){
      vers la feuille Google (Apps Script), hors Vercel. Retourne true si le navigateur
      a accepté l'envoi. */
   var URL_SECOURS = "__LEADS_BACKUP_URL__";
+  /* Coordonnées refusées par la validation : on les garde quand même (sheet « Leads site »,
+     source navigateur-bloque, e-mail d'alerte), la personne a cliqué pour les envoyer. Une fois par contenu. */
+  var dejaSignale = {};
+  function signalerBlocage(champs, page){
+    var cle = JSON.stringify(champs);
+    if (dejaSignale[cle] || !(champs.email || champs.phone)) return;
+    dejaSignale[cle] = true;
+    envoiSecours(Object.assign({ source: "navigateur-bloque" }, champs), page, "validation refusee");
+  }
   function envoiSecours(donnees, page, erreur){
     if (!URL_SECOURS || URL_SECOURS.indexOf("http") !== 0) return false;
     var corps = JSON.stringify(Object.assign({ source: "navigateur-secours", page: page, erreur: String(erreur || ""), horodatage: new Date().toISOString(), url: location.href }, donnees));
