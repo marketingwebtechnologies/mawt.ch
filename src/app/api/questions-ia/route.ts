@@ -23,16 +23,9 @@ const sessionSchema = z.object({
   name: z.string().trim().min(2).max(100),
   // Never blocking (2026-10-17): any text, even empty; the phone is what matters.
   email: z.string().trim().toLowerCase().max(200).optional().default(""),
-  phone: z
-    .string()
-    .trim()
-    .refine(
-      (v) => {
-        const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\+410/, "+41");
-        return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n) || /^\+[1-9]\d{7,14}$/.test(n);
-      },
-      { message: "Numéro de téléphone invalide." },
-    ),
+  // Anything the visitor typed is accepted (owner decision 2026-10-17); an
+  // unrecognised format is flagged in the lead, never refused.
+  phone: z.string().trim().min(1).max(40),
   profil: z.enum(["entreprise", "formation"]),
   // entreprise branch
   taille: z.enum(["1-4", "5-20", "21-50", "50+"]).optional(),
@@ -52,6 +45,12 @@ const sessionSchema = z.object({
   // Id the page also passes to fbq() so Meta deduplicates browser and server copies.
   event_id: z.string().trim().max(64).optional().default(""),
 });
+
+// Recognised phone formats (Swiss and international); used only to flag a lead.
+function phoneLooksValid(v: string): boolean {
+  const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\+410/, "+41");
+  return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n) || /^\+[1-9]\d{7,14}$/.test(n);
+}
 
 const GENERIC_ERROR =
   "L'envoi a échoué. Réessayez, ou écrivez-nous directement.";
@@ -125,6 +124,7 @@ export async function POST(request: NextRequest) {
         ];
   const message = [
     `Téléphone : ${d.phone}`,
+    phoneLooksValid(d.phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
     `Profil : ${d.profil}`,
     ...lines,
     `Blocages : ${d.blocages || "-"}`,

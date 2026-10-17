@@ -398,7 +398,7 @@ function suivre(evt, params){
       if (!input) { g.classList.remove("invalide"); return; } /* champ facultatif (e-mail) : jamais bloquant */
       var msg = g.querySelector(".erreur-msg");
       var v = input.value.trim(), invalide = !v;
-      if (input.type === "tel") { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41"); invalide = !(/^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n) || /^\\+[1-9]\\d{7,14}$/.test(n)); }
+      if (input.type === "tel") { invalide = !v; /* tout est accepté, seul le vide bloque (17.10) */ }
       if (input.type === "email") {
         invalide = false; /* e-mail jamais bloquant (17.10) : vide ou mal formé, on envoie quand même */
         /* toute adresse acceptée (16.10) : l’adresse perso est signalée côté serveur, jamais bloquée */

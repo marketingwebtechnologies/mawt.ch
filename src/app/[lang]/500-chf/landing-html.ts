@@ -710,7 +710,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         if (!input) return;
         var vide = !input.value.trim();
         var num = input.value.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41");
-        var telInvalide = input.type === "tel" && !(/^\\+41[1-9]\\d{8}$/.test(num) || /^0[1-9]\\d{8}$/.test(num) || /^\\+[1-9]\\d{7,14}$/.test(num));
+        var telInvalide = false; /* téléphone : tout est accepté, seul le vide bloque (17.10) */
         var mailInvalide = false; /* e-mail jamais bloquant (17.10) */
         var invalide = vide || telInvalide || mailInvalide;
         g.classList.toggle("invalide", invalide);

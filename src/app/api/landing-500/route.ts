@@ -15,17 +15,9 @@ import { backupLead } from "@/lib/lead-backup";
 // of the page, and pain/origin carry the CTA attribution to the sales call.
 const landingSchema = z.object({
   name: z.string().trim().min(2).max(100),
-  phone: z
-    .string()
-    .trim()
-    .refine(
-      (v) => {
-        // Swiss formats only: +41 79 123 45 67 or 079 123 45 67 (any spacing).
-        const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\+410/, "+41");
-        return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n) || /^\+[1-9]\d{7,14}$/.test(n);
-      },
-      { message: "Numéro de téléphone invalide." },
-    ),
+  // Anything the visitor typed is accepted (owner decision 2026-10-17); an
+  // unrecognised format is flagged in the lead, never refused.
+  phone: z.string().trim().min(1).max(40),
   // Never blocking (2026-10-17): any text, even empty; the phone is what matters.
   email: z.string().trim().toLowerCase().max(200).optional().default(""),
   // Company size, asked on the landing so the notification says whether the
@@ -45,6 +37,12 @@ const landingSchema = z.object({
   // Id the page also passes to fbq() so Meta deduplicates browser and server copies.
   event_id: z.string().trim().max(64).optional().default(""),
 });
+
+// Recognised phone formats (Swiss and international); used only to flag a lead.
+function phoneLooksValid(v: string): boolean {
+  const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\+410/, "+41");
+  return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n) || /^\+[1-9]\d{7,14}$/.test(n);
+}
 
 const GENERIC_ERROR =
   "L'envoi a échoué. Réessayez, ou appelez-nous directement.";
@@ -94,6 +92,7 @@ export async function POST(request: NextRequest) {
   const qualified = !role || role === "dirigeant" || role === "direction";
   const message = [
     `Téléphone : ${phone}`,
+    phoneLooksValid(phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
     role ? `Rôle déclaré : ${ROLE_LABELS[role]}` : null,
     team ? `Taille de l'entreprise : ${team} personnes` : null,
     pain ? `Douleur choisie : ${pain}` : null,
