@@ -300,6 +300,7 @@ function suivre(evt, params){
   })();
 
   function parcours(){
+    window.__profilQuiz = reponses.profil || "";
     /* La liste des écrans de la branche choisie, dans l'ordre du DOM */
     var b = reponses.profil;
     return ecrans.filter(function(e){
@@ -493,6 +494,22 @@ function suivre(evt, params){
      vers la feuille Google (Apps Script), hors Vercel. Retourne true si le navigateur
      a accepté l'envoi. */
   var URL_SECOURS = "__LEADS_BACKUP_URL__";
+  /* Signal d'analyse sur les champs e-mail et téléphone (16.10, demande utilisateur) :
+     à la sortie du champ, la valeur saisie (décision utilisateur 17.10), une fois par valeur. */
+  (function(){ if (window.__saisieBranchee) return; window.__saisieBranchee = true;
+    var vus = {};
+    function utmVal(){ var u = document.querySelector("input[name=utm]"); return u ? u.value : ""; }
+    function envoyer(champ, input, page){
+      var v = (input.value || "").trim(); if (!v) return;
+      var cle = champ + "|" + v; if (vus[cle]) return; vus[cle] = true;
+      var corps = { page: page, champ: champ, valeur: v.slice(0, 200), format_ok: false, utm: utmVal(), profil: (window.__profilQuiz || "") };
+      if (champ === "email") { var m = /@([A-Za-z0-9.-]+\.[A-Za-z]{2,})$/.exec(v); corps.domaine = m ? m[1].toLowerCase() : ""; corps.format_ok = !!m; }
+      else { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41"); corps.format_ok = /^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n); }
+      try { fetch("/api/saisie", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corps) }); } catch (e) {}
+    }
+    document.querySelectorAll("input[type=email]").forEach(function(i){ i.addEventListener("blur", function(){ envoyer("email", i, "questions-ia"); }); });
+    document.querySelectorAll("input[type=tel]").forEach(function(i){ i.addEventListener("blur", function(){ envoyer("phone", i, "questions-ia"); }); });
+  })();
   /* Coordonnées refusées par la validation : on les garde quand même (sheet « Leads site »,
      source navigateur-bloque, e-mail d'alerte), la personne a cliqué pour les envoyer. Une fois par contenu. */
   var dejaSignale = {};
