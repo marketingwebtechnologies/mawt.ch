@@ -27,7 +27,7 @@ const sessionSchema = z.object({
     .trim()
     .refine(
       (v) => {
-        const n = v.replace(/[\s.\-()]/g, "");
+        const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^\+410/, "+41");
         return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n);
       },
       { message: "Numéro de téléphone invalide." },
@@ -60,9 +60,9 @@ type Qualification = "entreprise" | "formation" | "non";
 function qualify(d: z.infer<typeof sessionSchema>): Qualification {
   if (d.engagement === "non") return "non";
   if (d.profil === "entreprise") {
-    // A personal mailbox on the company branch is accepted by the schema but
-    // never counts as a qualified lead: the landing refuses it client-side.
-    return FREE_MAIL.test(d.email) ? "non" : "entreprise";
+    // Any mailbox is accepted (2026-10-16): small-business owners often use
+    // bluewin or gmail. A personal address is flagged in the lead, never blocked.
+    return "entreprise";
   }
   // Budget is no longer asked on the page (2026-10-16, shorter form); when an
   // old client still sends it, "<500" disqualifies.
@@ -128,6 +128,7 @@ export async function POST(request: NextRequest) {
     ...lines,
     `Blocages : ${d.blocages || "-"}`,
     "",
+    FREE_MAIL.test(d.email) ? "E-mail : adresse personnelle (pas un domaine d'entreprise)" : null,
     `Engagement de présence : ${d.engagement}`,
     d.origin ? `Origine : ${d.origin}` : null,
     d.utm ? `Pub : ${d.utm}` : null,

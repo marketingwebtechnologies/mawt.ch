@@ -233,7 +233,7 @@ function suivre(evt, params){
       <span class="num" data-num-e="3" data-num-f="3">3</span>
       <h2>O&ugrave; vous joindre pour la session</h2>
       <div class="champ-groupe"><label for="c-nom">Votre nom</label><input id="c-nom" name="name" type="text" autocomplete="name" required><span class="erreur-msg">Indiquez votre nom.</span></div>
-      <div class="champ-groupe"><label for="c-mail">Votre e-mail <span class="mail-pro-indice" hidden>professionnel</span></label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email" required><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide.</span></div>
+      <div class="champ-groupe"><label for="c-mail">Votre e-mail</label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email" required><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide.</span></div>
       <div class="champ-groupe"><label for="c-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label><input id="c-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required><span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span></div>
       <div class="suite"><button type="button" class="cta" data-suivant>OK</button></div>
     </section>
@@ -318,9 +318,6 @@ function suivre(evt, params){
     /* numérotation selon la branche */
     var num = ecran.querySelector(".num[data-num-e]");
     if (num) { num.textContent = reponses.profil === "formation" ? num.getAttribute("data-num-f") : num.getAttribute("data-num-e"); }
-    /* e-mail pro exigé seulement côté entreprise */
-    var indice = ecran.querySelector(".mail-pro-indice");
-    if (indice) { indice.hidden = reponses.profil !== "entreprise"; }
     var champ = ecran.getAttribute("data-champ");
     if (champ && reponses[champ] !== undefined) {
       var vals = [].concat(reponses[champ]);
@@ -399,12 +396,10 @@ function suivre(evt, params){
       var input = g.querySelector("input[required]");
       var msg = g.querySelector(".erreur-msg");
       var v = input.value.trim(), invalide = !v;
-      if (input.type === "tel") { var n = v.replace(/[\\s.\\-()]/g, ""); invalide = !(/^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n)); }
+      if (input.type === "tel") { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41"); invalide = !(/^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n)); }
       if (input.type === "email") {
         invalide = v.indexOf("@") === -1 || v.indexOf(".") === -1;
-        var perso = !invalide && reponses.profil === "entreprise" && GRATUITS.test(v);
-        if (msg) { msg.textContent = perso ? msg.getAttribute("data-msg-pro").replace("&rsquo;", "’").replace("&eacute;", "é") : msg.getAttribute("data-msg-generique"); }
-        invalide = invalide || perso;
+        /* toute adresse acceptée (16.10) : l’adresse perso est signalée côté serveur, jamais bloquée */
       }
       g.classList.toggle("invalide", invalide);
       if (invalide) ok = false;

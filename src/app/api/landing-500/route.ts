@@ -21,7 +21,7 @@ const landingSchema = z.object({
     .refine(
       (v) => {
         // Swiss formats only: +41 79 123 45 67 or 079 123 45 67 (any spacing).
-        const n = v.replace(/[\s.\-()]/g, "");
+        const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^\+410/, "+41");
         return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n);
       },
       { message: "Numéro de téléphone invalide." },

@@ -684,7 +684,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         var input = g.querySelector("input[required], select[required]");
         if (!input) return;
         var vide = !input.value.trim();
-        var num = input.value.replace(/[\\s.\\-()]/g, "");
+        var num = input.value.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41");
         var telInvalide = input.type === "tel" && !(/^\\+41[1-9]\\d{8}$/.test(num) || /^0[1-9]\\d{8}$/.test(num));
         var mailInvalide = input.type === "email" && input.value.indexOf("@") === -1;
         var invalide = vide || telInvalide || mailInvalide;
