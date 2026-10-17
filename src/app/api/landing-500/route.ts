@@ -21,8 +21,8 @@ const landingSchema = z.object({
     .refine(
       (v) => {
         // Swiss formats only: +41 79 123 45 67 or 079 123 45 67 (any spacing).
-        const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^\+410/, "+41");
-        return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n);
+        const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\+410/, "+41");
+        return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n) || /^\+[1-9]\d{7,14}$/.test(n);
       },
       { message: "Numéro de téléphone invalide." },
     ),
@@ -30,12 +30,14 @@ const landingSchema = z.object({
   email: z.string().trim().toLowerCase().max(200).optional().default(""),
   // Company size, asked on the landing so the notification says whether the
   // lead is a small-business owner or an employee of a large company.
-  team: z.enum(["1-4", "5-20", "21-50", "50+"]).optional(),
+  // Optional since 2026-10-17: an unanswered select arrives as "".
+  team: z.preprocess((v) => (v === "" ? undefined : v), z.enum(["1-4", "5-20", "21-50", "50+"]).optional()),
   // Self-declared role. Only "dirigeant" and "direction" are qualified: the
   // landing fires the pixel Lead event for those two alone.
-  role: z
-    .enum(["dirigeant", "direction", "salarie", "independant", "autre"])
-    .optional(),
+  role: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.enum(["dirigeant", "direction", "salarie", "independant", "autre"]).optional(),
+  ),
   pain: z.string().trim().max(100).optional().default(""),
   pain_detail: z.string().trim().max(200).optional().default(""),
   origin: z.string().trim().max(50).optional().default(""),

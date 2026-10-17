@@ -398,7 +398,7 @@ function suivre(evt, params){
       if (!input) { g.classList.remove("invalide"); return; } /* champ facultatif (e-mail) : jamais bloquant */
       var msg = g.querySelector(".erreur-msg");
       var v = input.value.trim(), invalide = !v;
-      if (input.type === "tel") { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41"); invalide = !(/^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n)); }
+      if (input.type === "tel") { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41"); invalide = !(/^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n) || /^\\+[1-9]\\d{7,14}$/.test(n)); }
       if (input.type === "email") {
         invalide = false; /* e-mail jamais bloquant (17.10) : vide ou mal formé, on envoie quand même */
         /* toute adresse acceptée (16.10) : l’adresse perso est signalée côté serveur, jamais bloquée */
@@ -505,7 +505,7 @@ function suivre(evt, params){
       var cle = champ + "|" + v; if (vus[cle]) return; vus[cle] = true;
       var corps = { page: page, champ: champ, valeur: v.slice(0, 200), format_ok: false, utm: utmVal(), profil: (window.__profilQuiz || "") };
       if (champ === "email") { var m = /@([A-Za-z0-9.-]+\.[A-Za-z]{2,})$/.exec(v); corps.domaine = m ? m[1].toLowerCase() : ""; corps.format_ok = !!m; }
-      else { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41"); corps.format_ok = /^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n); }
+      else { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41"); corps.format_ok = /^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n) || /^\\+[1-9]\\d{7,14}$/.test(n); }
       try { fetch("/api/saisie", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corps) }); } catch (e) {}
     }
     document.querySelectorAll("input[type=email]").forEach(function(i){ i.addEventListener("blur", function(){ envoyer("email", i, "questions-ia"); }); });

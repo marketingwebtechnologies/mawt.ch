@@ -333,7 +333,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         </div>
         <div class="champ-groupe">
           <label for="f-role">Laquelle de ces situations vous d&eacute;crit le mieux&#8239;?</label>
-          <select id="f-role" name="role" required>
+          <select id="f-role" name="role">
             <option value="">Choisissez</option>
             <option value="dirigeant">Je dirige l&rsquo;entreprise (dirigeant, associ&eacute;, g&eacute;rant)</option>
             <option value="direction">Je fais partie de la direction (op&eacute;rations, finances, administration)</option>
@@ -345,7 +345,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         </div>
         <div class="champ-groupe">
           <label for="f-taille">Combien de personnes travaillent dans votre entreprise&#8239;?</label>
-          <select id="f-taille" name="team" required>
+          <select id="f-taille" name="team">
             <option value="">Choisissez</option>
             <option value="1-4">1 &agrave; 4</option>
             <option value="5-20">5 &agrave; 20</option>
@@ -420,7 +420,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     </div>
     <div class="champ-groupe">
       <label for="p-role">Laquelle de ces situations vous d&eacute;crit le mieux&#8239;?</label>
-      <select id="p-role" name="role" required>
+      <select id="p-role" name="role">
         <option value="">Choisissez</option>
         <option value="dirigeant">Je dirige l&rsquo;entreprise (dirigeant, associ&eacute;, g&eacute;rant)</option>
         <option value="direction">Je fais partie de la direction (op&eacute;rations, finances, administration)</option>
@@ -432,7 +432,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     </div>
     <div class="champ-groupe">
       <label for="p-taille">Combien de personnes travaillent dans votre entreprise&#8239;?</label>
-      <select id="p-taille" name="team" required>
+      <select id="p-taille" name="team">
         <option value="">Choisissez</option>
         <option value="1-4">1 &agrave; 4</option>
         <option value="5-20">5 &agrave; 20</option>
@@ -677,7 +677,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       var cle = champ + "|" + v; if (vus[cle]) return; vus[cle] = true;
       var corps = { page: page, champ: champ, valeur: v.slice(0, 200), format_ok: false, utm: utmVal(), profil: (window.__profilQuiz || "") };
       if (champ === "email") { var m = /@([A-Za-z0-9.-]+\.[A-Za-z]{2,})$/.exec(v); corps.domaine = m ? m[1].toLowerCase() : ""; corps.format_ok = !!m; }
-      else { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41"); corps.format_ok = /^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n); }
+      else { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41"); corps.format_ok = /^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n) || /^\\+[1-9]\\d{7,14}$/.test(n); }
       try { fetch("/api/saisie", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corps) }); } catch (e) {}
     }
     document.querySelectorAll("input[type=email]").forEach(function(i){ i.addEventListener("blur", function(){ envoyer("email", i, "500-chf"); }); });
@@ -709,8 +709,8 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         var input = g.querySelector("input[required], select[required]");
         if (!input) return;
         var vide = !input.value.trim();
-        var num = input.value.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41");
-        var telInvalide = input.type === "tel" && !(/^\\+41[1-9]\\d{8}$/.test(num) || /^0[1-9]\\d{8}$/.test(num));
+        var num = input.value.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41");
+        var telInvalide = input.type === "tel" && !(/^\\+41[1-9]\\d{8}$/.test(num) || /^0[1-9]\\d{8}$/.test(num) || /^\\+[1-9]\\d{7,14}$/.test(num));
         var mailInvalide = false; /* e-mail jamais bloquant (17.10) */
         var invalide = vide || telInvalide || mailInvalide;
         g.classList.toggle("invalide", invalide);
@@ -725,7 +725,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
       donnees.event_id = "l5-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
       // Only decision makers count as a lead: the others are stored but never
       // fire the pixel Lead event, so Meta stops optimising toward them.
-      var qualifie = donnees.role === "dirigeant" || donnees.role === "direction";
+      var qualifie = !donnees.role || donnees.role === "dirigeant" || donnees.role === "direction"; /* rôle facultatif depuis le 17.10 : sans réponse, on rappelle */
       function terminer(){
         if (qualifie) { majCal(form, conteneur); conteneur.classList.add("envoye"); }
         else { conteneur.classList.add("refuse"); }

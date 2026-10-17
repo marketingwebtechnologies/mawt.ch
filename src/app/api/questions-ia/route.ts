@@ -28,8 +28,8 @@ const sessionSchema = z.object({
     .trim()
     .refine(
       (v) => {
-        const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^\+410/, "+41");
-        return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n);
+        const n = v.replace(/[\s.\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\+410/, "+41");
+        return /^\+41[1-9]\d{8}$/.test(n) || /^0[1-9]\d{8}$/.test(n) || /^\+[1-9]\d{7,14}$/.test(n);
       },
       { message: "Numéro de téléphone invalide." },
     ),
