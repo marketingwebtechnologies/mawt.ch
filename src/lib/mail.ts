@@ -95,7 +95,8 @@ export async function sendLeadNotification(lead: Lead) {
   try {
     await deliver({
       to,
-      replyTo: lead.email,
+      // Only a real address can be a reply-to; the e-mail field no longer blocks the form.
+      ...(lead.email.includes("@") ? { replyTo: lead.email } : {}),
       // User-controlled values interpolated into a header MUST be sanitized:
       // a name containing \r\n could inject extra headers (Bcc, etc.).
       subject: sanitizeHeaderValue(

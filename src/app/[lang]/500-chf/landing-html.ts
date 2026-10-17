@@ -328,7 +328,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         </div>
         <div class="champ-groupe">
           <label for="f-mail">Votre e-mail</label>
-          <input id="f-mail" name="email" type="email" autocomplete="email" required>
+          <input id="f-mail" name="email" type="email" autocomplete="email">
           <span class="erreur-msg">Indiquez un e-mail valide.</span>
         </div>
         <div class="champ-groupe">
@@ -415,7 +415,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     </div>
     <div class="champ-groupe">
       <label for="p-mail">Votre e-mail</label>
-      <input id="p-mail" name="email" type="email" autocomplete="email" required>
+      <input id="p-mail" name="email" type="email" autocomplete="email">
       <span class="erreur-msg">Indiquez un e-mail valide.</span>
     </div>
     <div class="champ-groupe">
@@ -711,7 +711,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         var vide = !input.value.trim();
         var num = input.value.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41");
         var telInvalide = input.type === "tel" && !(/^\\+41[1-9]\\d{8}$/.test(num) || /^0[1-9]\\d{8}$/.test(num));
-        var mailInvalide = input.type === "email" && input.value.indexOf("@") === -1;
+        var mailInvalide = false; /* e-mail jamais bloquant (17.10) */
         var invalide = vide || telInvalide || mailInvalide;
         g.classList.toggle("invalide", invalide);
         if (invalide) ok = false;

@@ -71,9 +71,8 @@ export async function sendMetaCapiEvent(input: MetaCapiInput): Promise<boolean> 
   }
 
   const now = Math.floor(Date.now() / 1000);
-  const userData: Record<string, unknown> = {
-    em: [hashEmail(input.email)],
-  };
+  const userData: Record<string, unknown> = {};
+  if (input.email.includes("@")) userData.em = [hashEmail(input.email)];
   const ph = hashPhone(input.phone);
   if (ph) userData.ph = [ph];
   if (input.ip && input.ip !== "unknown") userData.client_ip_address = input.ip;

@@ -26,7 +26,8 @@ const landingSchema = z.object({
       },
       { message: "Numéro de téléphone invalide." },
     ),
-  email: z.string().trim().email().toLowerCase(),
+  // Never blocking (2026-10-17): any text, even empty; the phone is what matters.
+  email: z.string().trim().toLowerCase().max(200).optional().default(""),
   // Company size, asked on the landing so the notification says whether the
   // lead is a small-business owner or an employee of a large company.
   team: z.enum(["1-4", "5-20", "21-50", "50+"]).optional(),

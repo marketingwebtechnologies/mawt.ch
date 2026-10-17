@@ -21,7 +21,8 @@ const FREE_MAIL =
 
 const sessionSchema = z.object({
   name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().toLowerCase(),
+  // Never blocking (2026-10-17): any text, even empty; the phone is what matters.
+  email: z.string().trim().toLowerCase().max(200).optional().default(""),
   phone: z
     .string()
     .trim()

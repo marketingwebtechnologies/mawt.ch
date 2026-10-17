@@ -233,7 +233,7 @@ function suivre(evt, params){
       <span class="num" data-num-e="3" data-num-f="3">3</span>
       <h2>O&ugrave; vous joindre pour la session</h2>
       <div class="champ-groupe"><label for="c-nom">Votre nom</label><input id="c-nom" name="name" type="text" autocomplete="name" required><span class="erreur-msg">Indiquez votre nom.</span></div>
-      <div class="champ-groupe"><label for="c-mail">Votre e-mail</label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email" required><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide.</span></div>
+      <div class="champ-groupe"><label for="c-mail">Votre e-mail</label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email"><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide.</span></div>
       <div class="champ-groupe"><label for="c-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label><input id="c-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required><span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span></div>
       <div class="suite"><button type="button" class="cta" data-suivant>OK</button></div>
     </section>
@@ -346,7 +346,7 @@ function suivre(evt, params){
     if (!type) return !ecran.classList.contains("fin");
     if (type === "unique") return !!reponses[champ];
     if (type === "multiple") return !!(reponses[champ] && reponses[champ].length);
-    if (type === "coordonnees") return !!(document.getElementById("c-nom").value.trim() && document.getElementById("c-mail").value.trim() && document.getElementById("c-tel").value.trim());
+    if (type === "coordonnees") return !!(document.getElementById("c-nom").value.trim() && document.getElementById("c-tel").value.trim());
     return false;
   }
   function majAvancer(){
@@ -395,11 +395,12 @@ function suivre(evt, params){
     var ok = true;
     ecran.querySelectorAll(".champ-groupe").forEach(function(g){
       var input = g.querySelector("input[required]");
+      if (!input) { g.classList.remove("invalide"); return; } /* champ facultatif (e-mail) : jamais bloquant */
       var msg = g.querySelector(".erreur-msg");
       var v = input.value.trim(), invalide = !v;
       if (input.type === "tel") { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^\\+410/, "+41"); invalide = !(/^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n)); }
       if (input.type === "email") {
-        invalide = v.indexOf("@") === -1 || v.indexOf(".") === -1;
+        invalide = false; /* e-mail jamais bloquant (17.10) : vide ou mal formé, on envoie quand même */
         /* toute adresse acceptée (16.10) : l’adresse perso est signalée côté serveur, jamais bloquée */
       }
       g.classList.toggle("invalide", invalide);
