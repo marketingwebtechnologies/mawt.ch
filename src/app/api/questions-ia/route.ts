@@ -108,26 +108,29 @@ export async function POST(request: NextRequest) {
     formation: "Session IA (formation)",
     non: "Session IA (non qualifié)",
   };
+  // Only the questions the page still asks (taille, investir) always appear;
+  // fields removed from the form on 2026-10-16 show only when an old client sends them.
+  const optional = (label: string, v: string | undefined) => (v ? `${label} : ${v}` : null);
   const lines =
     d.profil === "entreprise"
       ? [
           `Taille : ${d.taille ?? "?"}`,
-          `Secteur : ${d.secteur || "?"}`,
-          `Délai d'action : ${d.delai ?? "?"}`,
+          optional("Secteur", d.secteur),
+          optional("Délai d'action", d.delai),
         ]
       : [
-          `Situation : ${d.situation || "?"}`,
-          `Stade : ${d.stade || "?"}`,
-          `Objectif : ${d.objectif || "?"}`,
           `Prêt à investir : ${d.investir ?? "?"}`,
-          `Budget : ${d.budget || "?"}`,
+          optional("Situation", d.situation),
+          optional("Stade", d.stade),
+          optional("Objectif", d.objectif),
+          optional("Budget", d.budget),
         ];
   const message = [
     `Téléphone : ${d.phone}`,
     phoneLooksValid(d.phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
     `Profil : ${d.profil}`,
     ...lines,
-    `Blocages : ${d.blocages || "-"}`,
+    optional("Blocages", d.blocages),
     "",
     FREE_MAIL.test(d.email) ? "E-mail : adresse personnelle (pas un domaine d'entreprise)" : null,
     `Engagement de présence : ${d.engagement}`,
