@@ -11,7 +11,7 @@ import { backupLead } from "@/lib/lead-backup";
 // still recorded, to measure visits that come from a forwarded link.
 const schema = z.object({
   jeton: z.string().trim().regex(/^([a-z0-9]{4,16})?$/),
-  metier: z.enum(["btp", "fid", "rh"]).optional().default("btp"),
+  metier: z.enum(["btp", "fid", "rh"]).optional(),
   variante: z.enum(["a", "b", "c"]),
   evenement: z.enum([
     "visite",
@@ -23,6 +23,7 @@ const schema = z.object({
     "cal-creneau",
     "rdv",
     "depart",
+    "desinscription",
   ]),
   detail: z.string().trim().max(200).optional().default(""),
 });
@@ -42,7 +43,8 @@ export async function POST(request: NextRequest) {
 
   const d = parsed.data;
   await backupLead({
-    page: `outreach-${d.metier}`,
+    // The opt-out page (/stop) sends no trade: the token alone identifies the contact.
+    page: d.metier ? `outreach-${d.metier}` : "outreach",
     qualification: d.evenement,
     name: "",
     email: "",
