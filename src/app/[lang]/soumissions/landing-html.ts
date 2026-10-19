@@ -1,5 +1,5 @@
-// Generated from mawt-microtest/creas/landing/soumissions-btp.html - do not edit by hand.
-// Regenerate with `python scripts/make_soumissions_btp.py` in the microtest project.
+// Generated from mawt-microtest/creas/landing/outreach-video.html - do not edit by hand.
+// Regenerate with `python scripts/make_outreach_pages.py` in the microtest project.
 const landingHtml = `<!doctype html>
 <html lang="fr">
 <head>
@@ -82,13 +82,13 @@ const landingHtml = `<!doctype html>
 <script>
 (function(){
   var q = new URLSearchParams(location.search);
-  // Jeton propre à chaque e-mail envoyé (CRM) et variante de la vidéo (a, b, c).
+  // Jeton propre à chaque e-mail envoyé (CRM) ; métier et vidéo fixés par la page.
   var jeton = /^[a-z0-9]{4,16}$/.test(q.get("c") || "") ? q.get("c") : "";
-  var variante = /^[abc]$/.test(q.get("v") || "") ? q.get("v") : "a";
+  var metier = "btp", variante = "c";
   var debut = Date.now();
 
   function suivre(evenement, detail){
-    var corps = JSON.stringify({ jeton: jeton, variante: variante, evenement: evenement, detail: detail || "" });
+    var corps = JSON.stringify({ jeton: jeton, metier: metier, variante: variante, evenement: evenement, detail: detail || "" });
     try {
       if (navigator.sendBeacon && navigator.sendBeacon("/api/outreach", new Blob([corps], { type: "text/plain" }))) return;
     } catch(e) {}
@@ -105,8 +105,8 @@ const landingHtml = `<!doctype html>
 
   // Vidéo : démarre sans le son (règle des navigateurs), le bouton relance au début avec le son.
   var film = document.getElementById("film"), son = document.getElementById("son");
-  film.src = "/videos/btp-" + variante + ".mp4";
-  film.poster = "/videos/btp-" + variante + ".jpg";
+  film.src = "/videos/" + metier + "-" + variante + ".mp4";
+  film.poster = "/videos/" + metier + "-" + variante + ".jpg";
   var paliers = { "video-25": .25, "video-50": .5, "video-fin": .97 }, atteints = {};
   film.addEventListener("timeupdate", function(){
     if (film.muted || !film.duration) return;
@@ -123,10 +123,10 @@ const landingHtml = `<!doctype html>
 
   // Calendrier Cal intégré, le jeton suit la réservation (métadonnée) pour relier le rendez-vous à l'e-mail.
   var lien = "rdv-mawt/appel";
-  document.getElementById("cal-secours").href = "https://cal.com/" + lien + (jeton ? "?metadata[jeton]=" + jeton + "&metadata[variante]=" + variante : "");
+  document.getElementById("cal-secours").href = "https://cal.com/" + lien + (jeton ? "?metadata[jeton]=" + jeton + "&metadata[metier]=" + metier : "");
   (function (C, A, L) { var p = function (a, ar) { a.q.push(ar); }; var d = C.document; C.Cal = C.Cal || function () { var cal = C.Cal; var ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { var api = function () { p(api, arguments); }; var namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
   Cal("init", "appel", { origin: "https://app.cal.com" });
-  Cal.ns.appel("inline", { elementOrSelector: "#cal", calLink: lien, config: { layout: "month_view", theme: "light", lng: "fr","metadata[jeton]": jeton, "metadata[variante]": variante } });
+  Cal.ns.appel("inline", { elementOrSelector: "#cal", calLink: lien, config: { layout: "month_view", theme: "light", lng: "fr","metadata[jeton]": jeton, "metadata[metier]": metier } });
   Cal.ns.appel("ui", { theme: "light", cssVarsPerTheme: { light: { "cal-brand": "#1E9E72" } }, hideEventTypeDetails: false, layout: "month_view" });
   var creneau = false;
   Cal.ns.appel("on", { action: "*", callback: function(e){

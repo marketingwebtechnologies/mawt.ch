@@ -3,13 +3,15 @@ import { z } from "zod";
 import { rateLimit } from "@/lib/rate-limit";
 import { backupLead } from "@/lib/lead-backup";
 
-// Browser-side events of the outreach video page (/soumissions): a real visit,
+// Browser-side events of the outreach video pages (/soumissions, /saisie,
+// /recrutement, see outreach-page.ts): a real visit,
 // video progress, sound turned on, a slot picked and a booking made. Each one
 // is stored in the "Leads site" sheet with the e-mail token, so the CRM knows
 // who clicked, watched and booked. An empty token (page opened without one) is
 // still recorded, to measure visits that come from a forwarded link.
 const schema = z.object({
   jeton: z.string().trim().regex(/^([a-z0-9]{4,16})?$/),
+  metier: z.enum(["btp", "fid", "rh"]).optional().default("btp"),
   variante: z.enum(["a", "b", "c"]),
   evenement: z.enum([
     "visite",
@@ -40,7 +42,7 @@ export async function POST(request: NextRequest) {
 
   const d = parsed.data;
   await backupLead({
-    page: "outreach-btp",
+    page: `outreach-${d.metier}`,
     qualification: d.evenement,
     name: "",
     email: "",
