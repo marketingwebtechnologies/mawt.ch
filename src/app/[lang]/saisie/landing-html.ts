@@ -133,7 +133,8 @@ const landingHtml = `<!doctype html>
     var a = e && e.detail && e.detail.type;
     if (!a) return;
     if (a === "bookingSuccessful" || a === "bookingSuccessfulV2") suivre("rdv");
-    else if (!creneau && /date|slot/i.test(a)) { creneau = true; suivre("cal-creneau", a); }
+    // Seule une sélection faite par le visiteur compte : « slotsFetched » et consorts partent tout seuls au chargement.
+    else if (!creneau && /select|click/i.test(a) && !/fetch|load|ready|view/i.test(a)) { creneau = true; suivre("cal-creneau", a); }
   }});
 })();
 </script>
