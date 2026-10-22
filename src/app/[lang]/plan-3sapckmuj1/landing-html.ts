@@ -103,8 +103,9 @@ const landingHtml = `<!doctype html>
   <button class="cal-bouton" type="button" data-cal-namespace="rdvPop" data-cal-config='{"layout":"month_view","theme":"dark"}'>Choisir un créneau pour qu'on s'appelle</button>
 
   <script>
-    // Suivi de lecture (voir /api/diagora-plan) : rien n'est envoyé quand la page est ouverte avec ?moi=1.
-    var SUIVI = new URLSearchParams(location.search).get("moi") === null;
+    // Suivi de lecture (voir /api/diagora-plan) : rien n'est envoyé quand la page est ouverte avec ?moi=1,
+    // ni depuis un navigateur qui l'a déjà été une fois (cookie « moi » posé par le serveur).
+    var SUIVI = new URLSearchParams(location.search).get("moi") === null && !/(?:^|;\s*)moi=1(?:;|$)/.test(document.cookie);
     var debut = Date.now();
     function suivre(evenement, detail) {
       if (!SUIVI) return;

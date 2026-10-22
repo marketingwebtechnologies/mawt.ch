@@ -9,11 +9,13 @@ import landingHtml from "./landing-html";
 // Every opening of the link is logged server-side (including the automatic ones
 // made by mail security scanners); the page itself reports a real visit, the
 // video progress and the calendar from the browser (see /api/diagora-plan).
-// Opening the page with ?moi=1 (the owner checking it) logs nothing.
+// Opening the page with ?moi=1 (the owner checking it) logs nothing and sets a
+// one-year cookie, so that browser is never counted again, even without the parameter.
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  if (request.nextUrl.searchParams.get("moi") === null) {
+  const moi = request.nextUrl.searchParams.get("moi") !== null || request.cookies.get("moi")?.value === "1";
+  if (!moi) {
     const userAgent = (request.headers.get("user-agent") ?? "").slice(0, 160);
     after(() =>
       backupLead({
@@ -27,11 +29,11 @@ export async function GET(request: NextRequest) {
       }),
     );
   }
-  return new Response(landingHtml, {
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      "X-Robots-Tag": "noindex, nofollow, noarchive",
-      "Cache-Control": "private, no-store",
-    },
+  const headers = new Headers({
+    "Content-Type": "text/html; charset=utf-8",
+    "X-Robots-Tag": "noindex, nofollow, noarchive",
+    "Cache-Control": "private, no-store",
   });
+  if (moi) headers.set("Set-Cookie", "moi=1; Path=/; Max-Age=31536000; SameSite=Lax; Secure");
+  return new Response(landingHtml, { headers });
 }
