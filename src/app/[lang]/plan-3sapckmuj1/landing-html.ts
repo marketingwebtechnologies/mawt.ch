@@ -94,7 +94,7 @@ const landingHtml = `<!doctype html>
   <h1>Vidéo explicative &amp; estimation</h1>
 
   <div class="video">
-    <video controls playsinline preload="metadata" poster="/plan-3sapckmuj1/poster.jpg">
+    <video id="film" controls playsinline preload="metadata" poster="/plan-3sapckmuj1/poster.jpg">
       <source src="/plan-3sapckmuj1/diagora-plan.mp4" type="video/mp4">
     </video>
   </div>
@@ -103,6 +103,37 @@ const landingHtml = `<!doctype html>
   <button class="cal-bouton" type="button" data-cal-namespace="rdvPop" data-cal-config='{"layout":"month_view","theme":"dark"}'>Choisir un créneau pour qu'on s'appelle</button>
 
   <script>
+    // Suivi de lecture (voir /api/diagora-plan) : rien n'est envoyé quand la page est ouverte avec ?moi=1.
+    var SUIVI = new URLSearchParams(location.search).get("moi") === null;
+    var debut = Date.now();
+    function suivre(evenement, detail) {
+      if (!SUIVI) return;
+      var corps = JSON.stringify({ evenement: evenement, detail: detail || "" });
+      try { if (navigator.sendBeacon && navigator.sendBeacon("/api/diagora-plan", new Blob([corps], { type: "text/plain" }))) return; } catch (e) {}
+      try { fetch("/api/diagora-plan", { method: "POST", body: corps, keepalive: true, headers: { "Content-Type": "text/plain" } }); } catch (e) {}
+    }
+    // Une visite ne compte que si la page est vraiment affichée une seconde dans un navigateur :
+    // les antivirus de messagerie qui ouvrent les liens ne déclenchent pas ce signal.
+    var vu = false;
+    function visite() { if (vu || document.visibilityState !== "visible") return; vu = true; suivre("visite", navigator.userAgent.slice(0, 120)); }
+    setTimeout(visite, 1000);
+    document.addEventListener("visibilitychange", function () { if (!vu) setTimeout(visite, 1000); });
+    window.addEventListener("pagehide", function () { if (vu) suivre("depart", Math.round((Date.now() - debut) / 1000) + " s sur la page"); });
+    var film = document.getElementById("film");
+    var paliers = { "video-25": 0.25, "video-50": 0.5, "video-fin": 0.97 }, atteints = {};
+    film.addEventListener("timeupdate", function () {
+      if (!film.duration) return;
+      for (var k in paliers) if (!atteints[k] && film.currentTime / film.duration >= paliers[k]) { atteints[k] = 1; suivre(k); }
+    });
+    var creneau = false;
+    function surCal(e) {
+      var a = e && e.detail && e.detail.type;
+      if (!a) return;
+      if (a === "bookingSuccessful" || a === "bookingSuccessfulV2") suivre("rdv");
+      // Seule une sélection faite par le visiteur compte : « slotsFetched » et consorts partent tout seuls au chargement.
+      else if (!creneau && /select|click/i.test(a) && !/fetch|load|ready|view/i.test(a)) { creneau = true; suivre("cal-creneau", a); }
+    }
+
     // Lien Cal.com de l'événement dédié. Vide = pas de calendrier sur la page.
     var CAL_LINK = "rdv-mawt/diagora";
 
@@ -114,10 +145,12 @@ const landingHtml = `<!doctype html>
         Cal("init", "rdv", { origin: "https://app.cal.com" });
         Cal.ns.rdv("inline", { elementOrSelector: "#cal-rdv", calLink: CAL_LINK, config: { layout: "month_view", theme: "dark" } });
         Cal.ns.rdv("ui", ui);
+        Cal.ns.rdv("on", { action: "*", callback: surCal });
       } else {
         document.querySelector(".cal-bouton").setAttribute("data-cal-link", CAL_LINK);
         Cal("init", "rdvPop", { origin: "https://app.cal.com" });
         Cal.ns.rdvPop("ui", ui);
+        Cal.ns.rdvPop("on", { action: "*", callback: surCal });
       }
     }
   </script>
