@@ -199,6 +199,10 @@ const landingHtml = `<!doctype html>
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init','959258244767672');
   fbq('track','PageView');
+  /* OpenAI Ads (ChatGPT) : même consentement et même garde-fou de domaine que le pixel Meta. */
+  !function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f)}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");
+  oaiq("init",{pixelId:"3H5JQLTccQPvtMvFYpXQvv"});
+  oaiq("measure","page_viewed",{type:"contents"});
 })();
 </script>
 <script>
@@ -640,6 +644,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
     Cal("init", { origin: "https://app.cal.com" });
     Cal("ui", { theme: "light", cssVarsPerTheme: { light: { "cal-brand": "#1E9E72" } }, hideEventTypeDetails: false });
+    Cal("on", { action: "bookingSuccessful", callback: function(){ if (window.oaiq) { oaiq("measure", "appointment_scheduled", { type: "customer_action" }); } } });
   }
   function majCal(form, conteneur){
     var lien = conteneur.querySelector(".cal-lien");
@@ -748,6 +753,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
             if (qualifie) { fbq("track", "Lead", { content_name: donnees.origin || "landing-500-en" }, { eventID: donnees.event_id }); }
             else { fbq("trackCustom", "LeadNonQualifie", { role: donnees.role || "" }, { eventID: donnees.event_id }); }
           }
+          if (window.oaiq && qualifie) { oaiq("measure", "lead_created", { type: "customer_action" }, { event_id: donnees.event_id }); }
         }
         else if (envoiSecours(donnees, "500-chf-en", rep && rep.error)) { terminer(); }
         else { alertErreur(form, rep && rep.error); bouton.disabled = false; }
