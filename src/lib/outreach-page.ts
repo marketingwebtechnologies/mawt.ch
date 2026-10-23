@@ -12,7 +12,7 @@ import { backupLead } from "@/lib/lead-backup";
 
 const TOKEN = /^[a-z0-9]{4,16}$/;
 
-export type OutreachTrade = "btp" | "fid" | "rh";
+export type OutreachTrade = "btp" | "fid" | "rh" | "agc";
 
 export function outreachPage(html: string, trade: OutreachTrade) {
   return async function GET(request: NextRequest) {

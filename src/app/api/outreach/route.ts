@@ -11,7 +11,7 @@ import { backupLead } from "@/lib/lead-backup";
 // still recorded, to measure visits that come from a forwarded link.
 const schema = z.object({
   jeton: z.string().trim().regex(/^([a-z0-9]{4,16})?$/),
-  metier: z.enum(["btp", "fid", "rh"]).optional(),
+  metier: z.enum(["btp", "fid", "rh", "agc"]).optional(),
   variante: z.enum(["a", "b", "c"]),
   evenement: z.enum([
     "visite",
