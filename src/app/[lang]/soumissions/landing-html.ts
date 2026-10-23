@@ -52,6 +52,16 @@ const landingHtml = `<!doctype html>
   footer a{color:var(--gris)}
   @media(max-width:640px){.hero{padding-top:28px}.video{border-radius:10px}.son{right:10px;top:10px;padding:8px 13px;font-size:13px;gap:7px}.son svg{width:15px;height:15px}#cal{border-radius:10px}}
 </style>
+<script>
+/* OpenAI Ads (ChatGPT) : seulement sur mawt.ch, refus de cookies respecté. */
+(function(){
+  try { if (localStorage.getItem("mawt-cookie-consent") === "essential") return; } catch(e) {}
+  if (location.hostname.indexOf("mawt.ch") === -1) return;
+  !function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f)}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");
+  oaiq("init",{pixelId:"3H5JQLTccQPvtMvFYpXQvv"});
+  oaiq("measure","page_viewed",{type:"contents"});
+})();
+</script>
 </head>
 <body>
 <header><div class="conteneur"><img class="logo" src="/500-chf-assets/mawt-logo-blanc.svg" alt="M&WT"></div></header>
@@ -132,7 +142,7 @@ const landingHtml = `<!doctype html>
   Cal.ns.appel("on", { action: "*", callback: function(e){
     var a = e && e.detail && e.detail.type;
     if (!a) return;
-    if (a === "bookingSuccessful" || a === "bookingSuccessfulV2") suivre("rdv");
+    if (a === "bookingSuccessful" || a === "bookingSuccessfulV2") { suivre("rdv"); if (window.oaiq) { var eid = "rdv-" + Date.now().toString(36); oaiq("measure", "lead_created", { type: "customer_action" }, { event_id: eid }); oaiq("measure", "appointment_scheduled", { type: "customer_action" }, { event_id: eid + "-a" }); } }
     // Seule une sélection faite par le visiteur compte : « slotsFetched » et consorts partent tout seuls au chargement.
     else if (!creneau && /select|click/i.test(a) && !/fetch|load|ready|view/i.test(a)) { creneau = true; suivre("cal-creneau", a); }
   }});
