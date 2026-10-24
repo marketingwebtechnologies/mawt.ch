@@ -1,6 +1,6 @@
-// Return page for the Meta (Facebook Login) authorization of MAWT's internal tools, set as
-// Valid OAuth Redirect URI of the "Claude MCP" app. Facebook puts the access token in the URL
-// fragment, which never reaches this server: the page only reads it in the browser and hands it
+// Return page for the Meta authorization of MAWT's internal tools (Facebook Login of the "Claude MCP"
+// app, Instagram business login of the "Messagerie MAWT" app). Facebook puts the access token in the URL
+// fragment and Instagram a one-time code in the query; the page only reads them in the browser and hands it
 // to the MAWT tool running on the operator's own computer (http://localhost:<port>), never shown
 // on screen. The tool is chosen by the OAuth `state` ("local-<port>-<nonce>"); any other state is
 // refused, so the page cannot be used to forward a token to a third-party site.
@@ -32,12 +32,15 @@ const PAGE = `<!doctype html>
     return fin("Connexion annulée", "Aucune autorisation n'a été donnée. Vous pouvez fermer cette page.");
   }
   var outil = /^local-(\\d{4,5})-[A-Za-z0-9_-]{8,64}$/.exec(etat);
-  if (!outil || !p.get("access_token")) {
+  // Facebook Login renvoie un jeton dans le fragment ; Instagram Login renvoie un code à usage unique dans la requête.
+  var code = q.get("code");
+  if (!outil || (!p.get("access_token") && !code)) {
     return fin("Connexion Meta", "Cette page sert aux outils internes de MAWT. Vous pouvez la fermer.");
   }
   history.replaceState(null, "", location.pathname);
   fin("Connexion réussie", "Retour vers l'outil MAWT…");
-  location.replace("http://localhost:" + outil[1] + "/oauth/retour#" + p.toString());
+  var transmis = code ? new URLSearchParams({ code: code, state: etat }) : p;
+  location.replace("http://localhost:" + outil[1] + "/oauth/retour#" + transmis.toString());
 })();
 </script>
 </body>
