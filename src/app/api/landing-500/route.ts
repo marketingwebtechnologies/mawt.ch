@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSanityWriteClient } from "@/lib/sanity.write-client";
 import { sendLeadNotification } from "@/lib/mail";
-import { rateLimit } from "@/lib/rate-limit";
+import { claimOnce, rateLimit } from "@/lib/rate-limit";
 import { trackConversion } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
@@ -81,6 +81,11 @@ export async function POST(request: NextRequest) {
 
   const { name, phone, email, team, role, pain, pain_detail, origin, utm, event_id } =
     validated.data;
+  // Same event_id within the hour = the same form sent again: one lead, one pixel event.
+  if (event_id && !(await claimOnce(`lead:landing-500:${event_id}`, 60 * 60))) {
+    logger.warn("Landing-500 duplicate submission ignored", { event_id });
+    return NextResponse.json({ success: true });
+  }
   const ROLE_LABELS: Record<string, string> = {
     dirigeant: "dirige l'entreprise",
     direction: "membre de la direction",

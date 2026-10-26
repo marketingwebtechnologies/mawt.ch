@@ -49,6 +49,23 @@ async function upstashPost(pipeline: string[][]): Promise<unknown[]> {
   return data.map((d: { result: unknown }) => d.result);
 }
 
+/**
+ * Claim a key once. Returns true the first time the key is seen within
+ * `ttlSeconds`, false on every later call (SET NX EX). Used to drop duplicate
+ * form submissions that carry the same event_id (a double tap, a retry).
+ * Without a store the claim always succeeds: the page-side guard still applies.
+ */
+export async function claimOnce(key: string, ttlSeconds: number): Promise<boolean> {
+  if (!UPSTASH_URL || !UPSTASH_TOKEN) return true;
+  try {
+    const [result] = await upstashPost([["SET", key, "1", "NX", "EX", String(ttlSeconds)]]);
+    return result === "OK";
+  } catch (err) {
+    console.error("[claimOnce] store unavailable, accepting", err);
+    return true;
+  }
+}
+
 async function upstashRateLimit(
   key: string,
   limit: number,

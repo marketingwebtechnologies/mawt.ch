@@ -291,7 +291,7 @@ function suivre(evt, params){
   var reponses = {};
   var pile = [];          /* historique des écrans visités, pour « Retour » */
   var courant = null;
-  var envoye = false;
+  var envoye = false, envoiEnCours = false, eventId = "";
   var GRATUITS = /@(gmail|googlemail|hotmail|outlook|live|msn|yahoo|icloud|me|mac|bluewin|gmx|protonmail|proton|sunrise|hispeed|aol|free|orange|wanadoo|laposte)\\./i;
 
   /* UTM et identifiant de pub, pour relier chaque réponse à la pub qui l'a produite */
@@ -354,7 +354,7 @@ function suivre(evt, params){
     return false;
   }
   function majAvancer(){
-    avancer.disabled = !courant || courant.classList.contains("fin") || !repondu(courant);
+    avancer.disabled = envoiEnCours || !courant || courant.classList.contains("fin") || !repondu(courant);
   }
   function suivant(){
     var liste = parcours(), i = liste.indexOf(courant);
@@ -541,17 +541,19 @@ function suivre(evt, params){
   }
 
   function terminer(){
-    if (envoye) return;
+    if (envoye || envoiEnCours) return;
     var d = new FormData(form), donnees = {};
     d.forEach(function(v, k){ donnees[k] = v; });
     Object.keys(reponses).forEach(function(k){ donnees[k] = Array.isArray(reponses[k]) ? reponses[k].join(",") : reponses[k]; });
     donnees.qualification = qualification();
     // Shared with the server copy sent to the Conversions API, so Meta counts the lead once.
-    donnees.event_id = "l5-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+    // Generated once per visit: a retry after an error keeps the same id, so the pixels never count it twice.
+    if (!eventId) eventId = "l5-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+    donnees.event_id = eventId;
     var dest = destination();
     var reel = location.hostname.indexOf("mawt.ch") !== -1;
     function fini(){
-      envoye = true;
+      envoye = true; envoiEnCours = false;
       if (dest === "fin-creneau") { recap(); majCal(); }
       pile = []; montrer(ecranParId(dest));
       suivre("form_submit", { profil: donnees.profil, qualification: donnees.qualification });
@@ -563,17 +565,21 @@ function suivre(evt, params){
       if (window.oaiq && donnees.qualification === "entreprise") { oaiq("measure", "lead_created", { type: "customer_action" }, { event_id: donnees.event_id }); }
     }
     if (!reel) { fini(); return; }
+    /* Un seul envoi à la fois : les taps sur l'option, la flèche ou Entrée pendant la réponse du serveur sont ignorés
+       (26.10.2026 : un lead est parti trois fois en deux secondes et a été compté trois fois par les pixels). */
+    envoiEnCours = true; majAvancer();
+    function reessayable(msg){ envoiEnCours = false; majAvancer(); erreurEnvoi(msg); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); }
     courant.querySelectorAll(".option").forEach(function(o){ o.disabled = true; });
     fetch("/api/questions-ia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(donnees) })
       .then(function(r){ return r.json(); })
       .then(function(rep){
         if (rep && rep.success) fini();
         else if (envoiSecours(donnees, "questions-ia", rep && rep.error)) fini();
-        else { erreurEnvoi(rep && rep.error); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); }
+        else reessayable(rep && rep.error);
       })
       .catch(function(err){
         if (envoiSecours(donnees, "questions-ia", err)) fini();
-        else { erreurEnvoi(null); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); }
+        else reessayable(null);
       });
   }
 

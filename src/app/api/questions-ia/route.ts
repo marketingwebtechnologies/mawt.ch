@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSanityWriteClient } from "@/lib/sanity.write-client";
 import { sendLeadNotification } from "@/lib/mail";
-import { rateLimit } from "@/lib/rate-limit";
+import { claimOnce, rateLimit } from "@/lib/rate-limit";
 import { trackConversion } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
@@ -102,6 +102,12 @@ export async function POST(request: NextRequest) {
   }
 
   const d = validated.data;
+  // Same event_id within the hour = the same form sent again (double tap, retry after
+  // a timeout): one lead, one e-mail, one pixel event. The client sees a success.
+  if (d.event_id && !(await claimOnce(`lead:questions-ia:${d.event_id}`, 60 * 60))) {
+    logger.warn("Session-IA duplicate submission ignored", { event_id: d.event_id });
+    return NextResponse.json({ success: true });
+  }
   const qualification = qualify(d);
   const SERVICE: Record<Qualification, string> = {
     entreprise: "Session IA (entreprise)",
