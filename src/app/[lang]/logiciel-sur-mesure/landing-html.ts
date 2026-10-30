@@ -331,8 +331,17 @@ const landingHtml = `<!doctype html>
   else { setTimeout(chargerGA, 1500); }
   /* Microsoft Clarity : sessions + heatmaps */
   (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ynxcutb3fv");
+  try {
+    var pq = new URLSearchParams(location.search);
+    clarity("set", "landing", "logiciel-sur-mesure");
+    ["utm_source","utm_campaign","utm_content","utm_term"].forEach(function(k){ var v = pq.get(k); if (v) clarity("set", k, v.slice(0, 80)); });
+    if (pq.get("gclid")) clarity("set", "gclid", "oui");
+  } catch (e) {}
 })();
-function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}); } }
+function suivre(nom, params){
+  if (window.gtag) { gtag("event", nom, params || {}); }
+  try { if (window.clarity) { clarity("event", nom); if (params && params.step) { clarity("set", "etape_max", String(params.step)); clarity("event", nom + "_" + params.step); } } } catch (e) {}
+}
 </script>
 <script>
 /* Moniteur d'erreurs client : remonte vers /api/js-error, GA4 et Clarity.
