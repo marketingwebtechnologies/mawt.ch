@@ -321,6 +321,7 @@ const landingHtml = `<!doctype html>
   window.gtag = function(){ dataLayer.push(arguments); };
   gtag("js", new Date());
   gtag("config", "G-J3FHJ45Y5L");
+  gtag("config", "AW-10856110431");
   var chargerGA = function(){
     var g = document.createElement("script"); g.async = true;
     g.src = "https://www.googletagmanager.com/gtag/js?id=G-J3FHJ45Y5L";
@@ -913,7 +914,8 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
           suivre("form_submit", { origin: donnees.origin || "", pain: donnees.pain || "", role: donnees.role || "" });
           /* Pas de Lead Meta ici : ce trafic vient de Google et ne doit pas entraîner la campagne Meta. */
           if (window.fbq) { fbq("trackCustom", "LeadGoogle", { page: "formation-ia", qualifie: qualifie }, { eventID: donnees.event_id }); }
-          /* Conversion Google Ads : branchée quand l'action de conversion existe (étape 2). */
+          /* Conversion Google Ads « Lead landing Google » (7883047115), décideurs seulement, dédoublonnée par event_id. */
+          if (window.gtag && qualifie) { gtag("event", "conversion", { send_to: "AW-10856110431/iSlVCMuB964dEN-yzLgo", transaction_id: donnees.event_id }); }
         }
         else if (envoiSecours(donnees, "formation-ia", rep && rep.error)) { terminer(); }
         else { alertErreur(form, rep && rep.error); bouton.disabled = false; }
