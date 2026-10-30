@@ -8,11 +8,11 @@ import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
 import { backupLead } from "@/lib/lead-backup";
 
-// Lead endpoint for the Google Ads landings (/fr/agence-ia, /fr/logiciel-sur-mesure, /fr/formation-ia).
+// Lead endpoint for the Google Ads landings (/fr/agence-ia, /fr/logiciel-sur-mesure, /fr/formation-ia, /fr/qa-tests-logiciels).
 // Same pipeline as /api/landing-500 (honeypot, rate limit, backup sheet, Sanity,
 // notification) but no Meta Conversions API event: this traffic comes from
 // Google search and must not train the Meta campaign.
-const PAGES = ["agence-ia", "logiciel-sur-mesure", "formation-ia"] as const;
+const PAGES = ["agence-ia", "logiciel-sur-mesure", "formation-ia", "qa-tests-logiciels"] as const;
 
 const landingSchema = z.object({
   page: z.enum(PAGES),
@@ -41,6 +41,7 @@ const PAGE_LABELS: Record<(typeof PAGES)[number], string> = {
   "agence-ia": "Google Ads agence IA",
   "logiciel-sur-mesure": "Google Ads logiciel sur mesure",
   "formation-ia": "Google Ads formation IA",
+  "qa-tests-logiciels": "Google Ads QA externalisée",
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -62,6 +63,9 @@ const NEED_LABELS: Record<string, string> = {
   integrer: "Intégrer l'IA dans nos processus",
   former: "Former mes équipes à l'IA",
   comprendre: "Comprendre ce que l'IA peut faire pour nous",
+  recette: "Tester avant chaque mise en production",
+  "tests-auto": "Mettre en place des tests automatisés",
+  externaliser: "Externaliser toute notre QA",
   autre: "Autre chose",
 };
 
