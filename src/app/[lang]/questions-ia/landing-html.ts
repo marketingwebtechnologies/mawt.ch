@@ -167,12 +167,29 @@ function suivre(evt, params){
   <section class="hero" id="hero">
     <div class="conteneur">
       <span class="kicker">Session IA &middot; 30 minutes &middot; totalement gratuit</span>
-      <h1>Vos questions sur l&rsquo;IA. On prend 30&nbsp;minutes pour vous.</h1>
-      <p>Pas un webinaire, pas un argumentaire. Vous posez vos questions, on prend le temps d&rsquo;y r&eacute;pondre, pour votre situation &agrave; vous.</p>
+      <h1 id="hero-titre">Vos questions sur l&rsquo;IA. On prend 30&nbsp;minutes pour vous.</h1>
+      <p id="hero-texte">Pas un webinaire, pas un argumentaire. Vous posez vos questions, on prend le temps d&rsquo;y r&eacute;pondre, pour votre situation &agrave; vous.</p>
       <button class="cta" id="ouvrir" data-origine="hero">Poser mes questions</button>
       <span class="micro">Totalement gratuit, sans engagement. Trois r&eacute;ponses et votre num&eacute;ro, on vous rappelle.</span>
     </div>
   </section>
+  <script>
+  /* Miroir de la pub (31.10) : le haut de page reprend les mots de la pub d'origine (utm_content),
+     sans changer le lien de la pub, donc sans réapprentissage côté Meta. Les autres visites gardent le texte par défaut. */
+  (function(){
+    var c = (new URLSearchParams(location.search).get("utm_content") || "").toLowerCase();
+    var t = document.getElementById("hero-titre"), p = document.getElementById("hero-texte");
+    if (c.slice(0, 2) === "v3") {
+      t.innerHTML = "Perdu avec l&rsquo;IA&#8239;?";
+      p.innerHTML = "On regarde comment vous travaillez et on vous dit o&ugrave; elle vous aide vraiment. Pas un webinaire, pas un argumentaire&#8239;: 30&#8239;minutes pour vos questions, gratuitement.";
+      document.documentElement.setAttribute("data-miroir", "v3");
+    } else if (c.slice(0, 2) === "v4") {
+      t.innerHTML = "Renonc&eacute; au logiciel sur mesure &agrave; cause du prix&#8239;?";
+      p.innerHTML = "Avec l&rsquo;IA, ce n&rsquo;est plus la m&ecirc;me histoire. Dites-nous ce que vous voudriez automatiser&#8239;: 30&#8239;minutes, gratuitement.";
+      document.documentElement.setAttribute("data-miroir", "v4");
+    }
+  })();
+  </script>
 </main>
 
 <footer>

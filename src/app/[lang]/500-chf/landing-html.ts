@@ -303,6 +303,19 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     <button class="cta" data-origine="hero">Poser mes questions</button>
     <span class="micro">On vous rappelle sous 24&#8239;h ouvr&eacute;es.</span>
   </section>
+  <script>
+  /* Miroir de la pub (31.10) : le haut de page reprend les mots de la pub d'origine (utm_content),
+     sans changer le lien de la pub, donc sans réapprentissage côté Meta. Les autres visites gardent le texte par défaut. */
+  (function(){
+    var c = (new URLSearchParams(location.search).get("utm_content") || "").toLowerCase();
+    if (c.slice(0, 2) === "f8") {
+      document.getElementById("accroche-titre").innerHTML = "O&ugrave; perdez-vous une journ&eacute;e par semaine&#8239;?";
+      document.getElementById("accroche-texte").innerHTML = "Vous qui faites des soumissions&#8239;: combien d&rsquo;heures par semaine &agrave; ressaisir positions, prix et quantit&eacute;s&#8239;?";
+      document.querySelector("#hero .promesse").innerHTML = "L&rsquo;IA lit la demande, g&eacute;n&egrave;re la soumission et envoie l&rsquo;e-mail. Vous validez. On vous explique comment, pour votre m&eacute;tier&#8239;: 30&#8239;minutes, gratuitement.";
+      document.documentElement.setAttribute("data-miroir", "f8");
+    }
+  })();
+  </script>
 
   <section class="rassure" id="rassure">
     <div class="conteneur">
@@ -553,7 +566,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
      Seul le menu « ce qui vous prend du temps » est présélectionné pour la pub ressaisie (v6). */
   (function(){
     var c = (new URLSearchParams(location.search).get("utm_content") || "").toLowerCase();
-    if (c.slice(0, 2) === "v6") { document.querySelectorAll("select[name=pain]").forEach(function(sel){ sel.value = "copier-coller"; sel.dispatchEvent(new Event("change")); }); }
+    if (c.slice(0, 2) === "v6" || c.slice(0, 2) === "f8") { document.querySelectorAll("select[name=pain]").forEach(function(sel){ sel.value = "copier-coller"; sel.dispatchEvent(new Event("change")); }); }
   })();
   /* UTM et identifiant de pub, pour relier chaque lead à la pub qui l'a produite (comme questions-ia) */
   (function(){
