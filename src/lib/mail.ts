@@ -120,6 +120,42 @@ export async function sendLeadNotification(lead: Lead) {
   }
 }
 
+/** Sends the requested PDF guide (as a link) to the person who asked for it. */
+export async function sendGuideEmail(to: { firstName: string; email: string }, guide: { title: string; url: string }) {
+  try {
+    await deliver({
+      to: to.email,
+      replyTo: "aa@mawt.ch",
+      subject: sanitizeHeaderValue(`Votre guide : ${guide.title}`),
+      text: [
+        `Bonjour ${to.firstName},`,
+        "",
+        "Voici votre guide, comme promis :",
+        guide.url,
+        "",
+        "Il se lit en 10 minutes. Cherchez la fiche de votre métier, ou celle qui y ressemble le plus.",
+        "",
+        "Si un exemple vous parle, on regarde votre cas ensemble : 30 minutes, gratuitement, en visio ou par téléphone.",
+        "Choisissez votre créneau ici : https://cal.com/rdv-mawt/appel",
+        "",
+        "Une question avant ? Répondez simplement à cet e-mail.",
+        "",
+        "Andrew Awad",
+        "Fondateur, MAWT",
+        "Automatisation et IA pour les PME romandes",
+        "+41 76 636 33 33 · mawt.ch",
+        "Rue de la Fontenette 23, 1227 Carouge",
+        "",
+        "Vous ne souhaitez plus recevoir nos e-mails ? Répondez « stop » à ce message.",
+      ].join("\n"),
+    });
+    return true;
+  } catch (err) {
+    logger.error("Guide email failed", err);
+    return false;
+  }
+}
+
 /** Confirmation ("thank you") email to the person who submitted the form. */
 export async function sendLeadThankYou(lead: Lead, lang: "en" | "fr") {
   const firstName = lead.name.trim().split(/\s+/)[0] || lead.name;
