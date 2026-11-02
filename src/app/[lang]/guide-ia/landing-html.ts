@@ -60,6 +60,19 @@ footer{border-top:1px solid var(--filet);padding:20px 24px;font-size:14px;color:
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init','959258244767672');
   fbq('track','PageView');
+  /* GA4 (ajouté le 02.11.2026 : la page n'en avait pas, l'entonnoir par pub restait vide). Même propriété,
+     même consentement et même chargement différé que questions-ia ; la file dataLayer existe dès maintenant. */
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ dataLayer.push(arguments); };
+  gtag("js", new Date());
+  gtag("config", "G-J3FHJ45Y5L");
+  var chargerGA = function(){
+    var g = document.createElement("script"); g.async = true;
+    g.src = "https://www.googletagmanager.com/gtag/js?id=G-J3FHJ45Y5L";
+    document.head.appendChild(g);
+  };
+  if (window.requestIdleCallback) { requestIdleCallback(chargerGA, { timeout: 3000 }); }
+  else { setTimeout(chargerGA, 1500); }
   (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ynxcutb3fv");
   try {
     var pq = new URLSearchParams(location.search);
@@ -67,7 +80,11 @@ footer{border-top:1px solid var(--filet);padding:20px 24px;font-size:14px;color:
     ["utm_source","utm_campaign","utm_content","v"].forEach(function(k){ var v = pq.get(k); if (v) clarity("set", k, v.slice(0, 80)); });
   } catch (e) {}
 })();
-function suivre(nom){ try { if (window.clarity) { clarity("event", nom); } } catch (e) {} }
+/* Suivi des étapes : GA4 (événements, lisibles par pub via utm_content) et Clarity (étiquettes de session) */
+function suivre(nom){
+  try { if (window.gtag) { gtag("event", nom, {}); } } catch (e) {}
+  try { if (window.clarity) { clarity("event", nom); } } catch (e) {}
+}
 </script>
 </head>
 <body>
