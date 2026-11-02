@@ -141,6 +141,9 @@ function suivre(nom){ try { if (window.clarity) { clarity("event", nom); } } cat
     var bouton = document.getElementById("envoyer");
     bouton.disabled = true; bouton.textContent = "Envoi…";
     var finir = function () {
+      /* 02.11 : l'e-mail (et le prénom s'il n'y a pas déjà un nom) restent dans ce navigateur,
+         clé commune « mawt-contact » : /questions-ia les reprend, la personne ne les retape pas. */
+      try { var c = JSON.parse(localStorage.getItem("mawt-contact") || "{}") || {}; if (!c.name && prenom) c.name = prenom; c.email = email; c.ts = Date.now(); localStorage.setItem("mawt-contact", JSON.stringify(c)); } catch (e) {}
       document.getElementById("nom").textContent = prenom;
       form.style.display = "none";
       document.getElementById("merci").style.display = "block";

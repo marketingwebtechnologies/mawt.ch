@@ -218,6 +218,7 @@ function suivre(evt, params){
     <section class="ecran" data-id="accueil">
       <h2>Trois r&eacute;ponses, vos coordonn&eacute;es, on s&rsquo;occupe du reste.</h2>
       <p class="pourquoi">Moins d&rsquo;une minute. Vos questions, on les prend de vive voix.</p>
+      <p class="pourquoi" id="reprise" hidden>Vos r&eacute;ponses pr&eacute;c&eacute;dentes sont gard&eacute;es, vous pouvez les modifier.</p>
       <div class="suite"><button type="button" class="cta" data-suivant>C&rsquo;est parti</button><small>Entr&eacute;e &#8629;</small></div>
     </section>
 
@@ -335,6 +336,33 @@ function suivre(evt, params){
     document.getElementById("utm").value = out.join("&");
   })();
 
+  /* 02.11 : une seule saisie. Les réponses et les coordonnées restent dans le navigateur (30 jours)
+     et sont remises en place si la personne revient ; l'e-mail donné pour le guide (clé commune
+     « mawt-contact », écrite aussi par /guide-ia) est repris. Rien ne part ailleurs que dans ce navigateur. */
+  var STOCK_JOURS = 30 * 86400000;
+  function lireStock(cle){ try { var o = JSON.parse(localStorage.getItem(cle) || "null"); return (o && o.ts && Date.now() - o.ts < STOCK_JOURS) ? o : null; } catch (e) { return null; } }
+  function ecrireStock(cle, o){ try { o.ts = Date.now(); localStorage.setItem(cle, JSON.stringify(o)); } catch (e) {} }
+  function sauver(){ ecrireStock("mawt-questions-ia", { reponses: reponses }); }
+  function sauverContact(){
+    var c = lireStock("mawt-contact") || {};
+    var nom = document.getElementById("c-nom").value.trim(), mail = document.getElementById("c-mail").value.trim(), tel = document.getElementById("c-tel").value.trim();
+    if (nom) c.name = nom; if (mail) c.email = mail; if (tel) c.phone = tel;
+    if (nom || mail || tel) ecrireStock("mawt-contact", c);
+  }
+  (function(){
+    var repris = false, q = lireStock("mawt-questions-ia");
+    if (q && q.reponses && typeof q.reponses === "object" && q.reponses.profil) {
+      reponses = q.reponses; delete reponses.engagement; repris = true;
+      ecrans.forEach(function(e){ if (e.getAttribute("data-type") === "texte") { var ta = e.querySelector("textarea"), ch = e.getAttribute("data-champ"); if (ta && ch && typeof reponses[ch] === "string") ta.value = reponses[ch]; } });
+    }
+    var c = lireStock("mawt-contact");
+    if (c) {
+      [["c-nom", c.name], ["c-mail", c.email], ["c-tel", c.phone]].forEach(function(p){ var i = document.getElementById(p[0]); if (p[1] && !i.value) { i.value = p[1]; repris = true; } });
+    }
+    if (repris) { var r = document.getElementById("reprise"); if (r) r.hidden = false; }
+    ["c-nom", "c-mail", "c-tel"].forEach(function(id){ document.getElementById(id).addEventListener("change", sauverContact); });
+  })();
+
   function parcours(){
     window.__profilQuiz = reponses.profil || "";
     /* La liste des écrans de la branche choisie, dans l'ordre du DOM */
@@ -438,6 +466,7 @@ function suivre(evt, params){
         ecrans.forEach(function(e){ if (e.getAttribute("data-branche")) { e.querySelectorAll(".option").forEach(function(o){ o.classList.remove("choisi"); }); e.querySelectorAll("textarea").forEach(function(t){ t.value = ""; }); } });
       }
       reponses[champ] = v;
+      sauver();
       setTimeout(suivant, 220);
     } else {
       var val = opt.getAttribute("data-valeur");
@@ -446,6 +475,7 @@ function suivre(evt, params){
       opt.classList.toggle("choisi");
       var choisis = Array.prototype.slice.call(ecran.querySelectorAll(".option.choisi")).map(function(o){ return o.getAttribute("data-valeur"); });
       reponses[champ] = choisis;
+      sauver();
       ecran.querySelector("[data-suivant]").disabled = choisis.length === 0;
     }
     majAvancer();
@@ -481,6 +511,7 @@ function suivre(evt, params){
       grp.classList.toggle("invalide", vide);
       if (vide) { ta.focus(); return; }
       reponses[ecran.getAttribute("data-champ")] = ta.value.trim();
+      sauver();
     }
     if (type === "coordonnees" && !validerCoordonnees(ecran)) { signalerBlocage({ name: document.getElementById("c-nom").value.trim(), email: document.getElementById("c-mail").value.trim(), phone: document.getElementById("c-tel").value.trim(), profil: reponses.profil || "", taille: reponses.taille || "", utm: (document.getElementById("utm") || {}).value || "" }, "questions-ia"); return; }
     suivant();
@@ -609,6 +640,7 @@ function suivre(evt, params){
 
   function terminer(){
     if (envoye || envoiEnCours) return;
+    sauverContact();
     var d = new FormData(form), donnees = {};
     d.forEach(function(v, k){ donnees[k] = v; });
     Object.keys(reponses).forEach(function(k){ donnees[k] = Array.isArray(reponses[k]) ? reponses[k].join(",") : reponses[k]; });
