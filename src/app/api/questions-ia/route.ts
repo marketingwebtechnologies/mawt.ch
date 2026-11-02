@@ -24,8 +24,11 @@ const sessionSchema = z.object({
   // Never blocking (2026-10-17): any text, even empty; the phone is what matters.
   email: z.string().trim().toLowerCase().max(200).optional().default(""),
   // Anything the visitor typed is accepted (owner decision 2026-10-17); an
-  // unrecognised format is flagged in the lead, never refused.
-  phone: z.string().trim().min(1).max(40),
+  // unrecognised format is flagged in the lead, never refused. Optional since
+  // 2026-11-02: a visitor who picks the video call only needs to give an e-mail.
+  phone: z.string().trim().max(40).optional().default(""),
+  // How the session happens (2026-11-02). Missing = legacy client = phone.
+  mode: z.enum(["visio", "telephone"]).optional(),
   profil: z.enum(["entreprise", "formation"]),
   // entreprise branch
   taille: z.enum(["1-4", "5-20", "21-50", "50+"]).optional(),
@@ -39,7 +42,9 @@ const sessionSchema = z.object({
   budget: z.string().trim().max(20).optional().default(""),
   // common
   blocages: z.string().trim().max(200).optional().default(""),
-  engagement: z.enum(["oui", "non"]),
+  // Since 2026-11-02 the lead is sent as soon as the contact details are entered; the
+  // attendance screen comes after and no longer gates the submission.
+  engagement: z.enum(["oui", "non"]).optional(),
   origin: z.string().trim().max(50).optional().default(""),
   utm: z.string().trim().max(600).optional().default(""),
   // Id the page also passes to fbq() so Meta deduplicates browser and server copies.
@@ -102,6 +107,11 @@ export async function POST(request: NextRequest) {
   }
 
   const d = validated.data;
+  // One usable contact channel is required: the phone for a call, the e-mail for a video link.
+  const canReach = d.mode === "visio" ? d.email.includes("@") : d.phone !== "";
+  if (!canReach) {
+    return NextResponse.json({ error: "Vérifiez les champs du formulaire." }, { status: 400 });
+  }
   // Same event_id within the hour = the same form sent again (double tap, retry after
   // a timeout): one lead, one e-mail, one pixel event. The client sees a success.
   if (d.event_id && !(await claimOnce(`lead:questions-ia:${d.event_id}`, 60 * 60))) {
@@ -132,14 +142,15 @@ export async function POST(request: NextRequest) {
           optional("Budget", d.budget),
         ];
   const message = [
-    `Téléphone : ${d.phone}`,
-    phoneLooksValid(d.phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
+    `Session souhaitée : ${d.mode === "visio" ? "en visio (lien par e-mail)" : "par téléphone"}`,
+    d.phone ? `Téléphone : ${d.phone}` : "Téléphone : non donné (visio choisie)",
+    !d.phone || phoneLooksValid(d.phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
     `Profil : ${d.profil}`,
     ...lines,
     optional("Blocages", d.blocages),
     "",
     FREE_MAIL.test(d.email) ? "E-mail : adresse personnelle (pas un domaine d'entreprise)" : null,
-    `Engagement de présence : ${d.engagement}`,
+    `Engagement de présence : ${d.engagement ?? "demandé après l'envoi (écran suivant)"}`,
     d.origin ? `Origine : ${d.origin}` : null,
     d.utm ? `Pub : ${d.utm}` : null,
     "",

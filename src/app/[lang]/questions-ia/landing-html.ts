@@ -152,6 +152,12 @@ const landingHtml = `<!doctype html>
   else { setTimeout(chargerGA, 1500); }
   /* Microsoft Clarity : sessions + heatmaps */
   (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ynxcutb3fv");
+  /* Étiquettes de session (02.11) : la page et la pub d'origine, pour filtrer Clarity sans passer par l'URL */
+  try {
+    clarity("set", "landing", "questions-ia");
+    var pq = new URLSearchParams(location.search);
+    ["utm_source","utm_campaign","utm_content"].forEach(function(k){ var v = pq.get(k); if (v) clarity("set", k, v.slice(0, 80)); });
+  } catch (e) {}
 })();
 /* Suivi des étapes : GA4 (événements) et Clarity (étiquettes de session) */
 function suivre(evt, params){
@@ -170,7 +176,7 @@ function suivre(evt, params){
       <h1 id="hero-titre">Vos questions sur l&rsquo;IA. On prend 30&nbsp;minutes pour vous.</h1>
       <p id="hero-texte">Pas un webinaire, pas un argumentaire. Vous posez vos questions, on prend le temps d&rsquo;y r&eacute;pondre, pour votre situation &agrave; vous.</p>
       <button class="cta" id="ouvrir" data-origine="hero">Poser mes questions</button>
-      <span class="micro">Totalement gratuit, sans engagement. Trois r&eacute;ponses et votre num&eacute;ro, on vous rappelle.</span>
+      <span class="micro">Totalement gratuit, sans engagement. Trois r&eacute;ponses, puis visio ou t&eacute;l&eacute;phone, &agrave; votre choix.</span>
     </div>
   </section>
   <script>
@@ -210,7 +216,7 @@ function suivre(evt, params){
 
     <!-- 0 accueil -->
     <section class="ecran" data-id="accueil">
-      <h2>Trois r&eacute;ponses, votre num&eacute;ro, on vous rappelle.</h2>
+      <h2>Trois r&eacute;ponses, vos coordonn&eacute;es, on s&rsquo;occupe du reste.</h2>
       <p class="pourquoi">Moins d&rsquo;une minute. Vos questions, on les prend de vive voix.</p>
       <div class="suite"><button type="button" class="cta" data-suivant>C&rsquo;est parti</button><small>Entr&eacute;e &#8629;</small></div>
     </section>
@@ -250,33 +256,42 @@ function suivre(evt, params){
     </section>
 
 <!-- COMMUN -->
-    <section class="ecran" data-id="coordonnees" data-type="coordonnees">
+    <!-- 02.11 : visio ou téléphone, au choix ; en visio le numéro n'est plus demandé -->
+    <section class="ecran" data-id="mode" data-champ="mode" data-type="unique">
       <span class="num" data-num-e="3" data-num-f="3">3</span>
-      <h2>O&ugrave; vous joindre pour la session</h2>
+      <h2>Comment pr&eacute;f&eacute;rez-vous faire la session&#8239;?</h2>
+      <div class="options">
+        <button type="button" class="option" data-valeur="visio"><b>A</b>En visio, le lien arrive par e-mail</button>
+        <button type="button" class="option" data-valeur="telephone"><b>B</b>Par t&eacute;l&eacute;phone, on vous appelle</button>
+      </div>
+    </section>
+
+    <section class="ecran" data-id="coordonnees" data-type="coordonnees">
+      <span class="num" data-num-e="4" data-num-f="4">4</span>
+      <h2 id="coord-titre">O&ugrave; vous joindre pour la session</h2>
       <div class="champ-groupe"><label for="c-nom">Votre nom</label><input id="c-nom" name="name" type="text" autocomplete="name" required><span class="erreur-msg">Indiquez votre nom.</span></div>
-      <div class="champ-groupe"><label for="c-mail">Votre e-mail</label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email"><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide.</span></div>
-      <div class="champ-groupe"><label for="c-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label><input id="c-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required><span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span></div>
-      <div class="suite"><button type="button" class="cta" data-suivant>OK</button></div>
+      <div class="champ-groupe"><label for="c-mail">Votre e-mail <span id="c-mail-opt" class="opt"></span></label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email"><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide, c&rsquo;est l&agrave; qu&rsquo;arrive le lien.</span></div>
+      <div class="champ-groupe"><label for="c-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone <span id="c-tel-opt" class="opt"></span></label><input id="c-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required><span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span></div>
+      <p class="pourquoi" id="coord-aide">On vous appelle &agrave; ce num&eacute;ro pour la session, jamais de d&eacute;marchage.</p>
+      <div class="suite"><button type="button" class="cta" data-suivant id="coord-bouton">Recevoir mon appel</button></div>
     </section>
 
     <section class="ecran engagement" data-id="engagement" data-champ="engagement" data-type="unique">
-      <span class="num" data-num-e="4" data-num-f="4">4</span>
-      <h2>Derni&egrave;re chose, et c&rsquo;est important.</h2>
-      <p>La session est un vrai cr&eacute;neau, tenu par l&rsquo;un de nous, pas un appel de masse. Elle est <strong>nominative, unique, et ne peut pas &ecirc;tre reprogramm&eacute;e</strong>.</p>
-      <p>Une absence non pr&eacute;venue&#8239;: <strong>plus aucun appel possible avec nous, d&eacute;finitivement</strong>.</p>
-      <p>Vous confirmez que vous serez pr&eacute;sent(e) au cr&eacute;neau que vous allez r&eacute;server&#8239;?</p>
+      <span class="num" data-num-e="5" data-num-f="5">5</span>
+      <h2>Merci, c&rsquo;est not&eacute;. Un vrai cr&eacute;neau, rien qu&rsquo;&agrave; vous.</h2>
+      <p>La session est un rendez-vous personnel de 30&nbsp;minutes, tenu par l&rsquo;un de nous, pas un appel de masse. Si vous ne pouvez plus venir, <strong>pr&eacute;venez-nous la veille</strong> et on d&eacute;place.</p>
       <div class="options">
-        <button type="button" class="option" data-valeur="oui"><b>A</b>Oui, je m&rsquo;engage &agrave; &ecirc;tre pr&eacute;sent(e)</button>
-        <button type="button" class="option" data-valeur="non"><b>B</b>Non, ce n&rsquo;est pas le bon moment pour moi</button>
+        <button type="button" class="option" data-valeur="oui"><b>A</b>Je serai pr&eacute;sent(e), je choisis mon cr&eacute;neau</button>
+        <button type="button" class="option" data-valeur="non"><b>B</b>Pas maintenant, appelez-moi plut&ocirc;t pour convenir d&rsquo;un moment</button>
       </div>
     </section>
 
     <!-- FINS -->
     <section class="ecran fin" data-id="fin-creneau">
-      <h2>Merci. Voici ce qu&rsquo;on a retenu&#8239;:</h2>
-      <div class="recap" id="recap"></div>
-      <p class="succes-ou">Choisissez votre cr&eacute;neau maintenant, pendant que c&rsquo;est frais. Vous recevrez un rappel la veille.</p>
-      <a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau</a>
+      <h2>Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</h2>
+      <p class="succes-ou">Cliquez sur un jour, puis sur une heure. Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies. Rappel la veille par e-mail.</p>
+      <div id="cal-inline" style="min-height:520px;margin:12px 0"></div>
+      <p class="pourquoi">Si l&rsquo;agenda ne s&rsquo;affiche pas&#8239;: <a class="cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">ouvrir l&rsquo;agenda dans un nouvel onglet</a>.</p>
     </section>
 
     <section class="ecran fin" data-id="fin-ressource">
@@ -285,8 +300,8 @@ function suivre(evt, params){
     </section>
 
     <section class="ecran fin" data-id="fin-non">
-      <h2>Pas de souci.</h2>
-      <p class="succes-ou">La session demande d&rsquo;&ecirc;tre l&agrave;, et vous &ecirc;tes la seule personne &agrave; pouvoir dire si c&rsquo;est le moment. Revenez quand ce sera le cas, cette page ne bouge pas.</p>
+      <h2>Pas de souci, on vous contacte.</h2>
+      <p class="succes-ou">On revient vers vous, par t&eacute;l&eacute;phone ou par e-mail selon ce que vous avez indiqu&eacute;, pour convenir d&rsquo;un moment qui vous arrange. Pas de relance insistante&#8239;: un message, et vous d&eacute;cidez.</p>
     </section>
 
     <input type="hidden" name="origin" id="origine" value="hero">
@@ -346,6 +361,7 @@ function suivre(evt, params){
       ecran.querySelectorAll(".option").forEach(function(o){ o.classList.toggle("choisi", vals.indexOf(o.getAttribute("data-valeur")) !== -1); });
       var btn = ecran.querySelector("[data-suivant]"); if (btn) btn.disabled = vals.length === 0;
     }
+    if (ecran.getAttribute("data-id") === "coordonnees") { adapterCoordonnees(); }
     /* progression */
     var liste = parcours(), i = liste.indexOf(ecran);
     var total = liste.length;
@@ -367,15 +383,38 @@ function suivre(evt, params){
     if (!type) return !ecran.classList.contains("fin");
     if (type === "unique") return !!reponses[champ];
     if (type === "multiple") return !!(reponses[champ] && reponses[champ].length);
-    if (type === "coordonnees") return !!(document.getElementById("c-nom").value.trim() && document.getElementById("c-tel").value.trim());
+    if (type === "coordonnees") {
+      var nom = document.getElementById("c-nom").value.trim(), mail = document.getElementById("c-mail").value.trim();
+      var tel = document.getElementById("c-tel").value.trim();
+      return !!(nom && mail && (reponses.mode === "visio" || tel));
+    }
     return false;
+  }
+  /* L'e-mail est toujours demandé (Cal l'exige pour la confirmation et le rappel, toute adresse acceptée) ;
+     le téléphone seulement si la session est par téléphone. */
+  function adapterCoordonnees(){
+    var visio = reponses.mode === "visio";
+    document.getElementById("c-mail").required = true;
+    document.getElementById("c-tel").required = !visio;
+    document.getElementById("c-mail-opt").textContent = "";
+    document.getElementById("c-tel-opt").textContent = visio ? "(facultatif)" : "";
+    document.getElementById("coord-aide").textContent = visio ? "Le lien de la visio et le rappel arrivent à cette adresse. Jamais de démarchage." : "On vous appelle à ce numéro pour la session, jamais de démarchage.";
+    document.getElementById("coord-bouton").textContent = visio ? "Recevoir mon lien" : "Recevoir mon appel";
   }
   function majAvancer(){
     avancer.disabled = envoiEnCours || !courant || courant.classList.contains("fin") || !repondu(courant);
   }
   function suivant(){
-    var liste = parcours(), i = liste.indexOf(courant);
-    if (courant.getAttribute("data-id") === "engagement") { return terminer(); }
+    var liste = parcours(), i = liste.indexOf(courant), id = courant.getAttribute("data-id");
+    /* 02.11 : le lead part dès les coordonnées (avant, il partait après l'écran d'engagement,
+       où six personnes sur dix abandonnaient après avoir tapé leur numéro). */
+    if (id === "coordonnees") { return terminer(); }
+    if (id === "engagement") {
+      pile = [];
+      if (reponses.engagement === "non") { suivre("engagement_non", { profil: reponses.profil || "" }); montrer(ecranParId("fin-non")); }
+      else { suivre("engagement_oui", { profil: reponses.profil || "" }); montrer(ecranParId("fin-creneau")); majCal(); }
+      return;
+    }
     pile.push(courant);
     if (i + 1 < liste.length) { montrer(liste[i + 1]); }
   }
@@ -421,8 +460,10 @@ function suivre(evt, params){
       var v = input.value.trim(), invalide = !v;
       if (input.type === "tel") { invalide = !v; /* tout est accepté, seul le vide bloque (17.10) */ }
       if (input.type === "email") {
-        invalide = false; /* e-mail jamais bloquant (17.10) : vide ou mal formé, on envoie quand même */
-        /* toute adresse acceptée (16.10) : l’adresse perso est signalée côté serveur, jamais bloquée */
+        /* Obligatoire seulement en visio (02.11) : le lien part par e-mail, il faut une adresse plausible.
+           Toute adresse acceptée (16.10) : l’adresse perso est signalée côté serveur, jamais bloquée. */
+        var at = v.indexOf("@");
+        invalide = !(at > 0 && v.indexOf(".", at) > at + 1);
       }
       g.classList.toggle("invalide", invalide);
       if (invalide) ok = false;
@@ -476,25 +517,14 @@ function suivre(evt, params){
     return reponses.profil === "entreprise" ? "entreprise" : "formation";
   }
 
-  function recap(){
-    var r = document.getElementById("recap");
-    var lignes = [];
-    if (reponses.profil === "entreprise") {
-      var TAILLES = { "1-4": "1 à 4", "5-20": "5 à 20", "21-50": "21 à 50", "50+": "plus de 50" };
-      lignes.push("Une entreprise de " + (TAILLES[reponses.taille] || reponses.taille) + " personnes. On part de vos questions, pas d’un exposé général.");
-    } else {
-      lignes.push("Vous voulez vous former à l’IA. On vous dira quoi apprendre en premier, et dans quel ordre.");
-    }
-    r.innerHTML = lignes.map(function(l){ return "<p style=\\"margin:0 0 8px\\">" + l + "</p>"; }).join("");
-  }
-
   /* Cal.com : modal intégré, nom et e-mail préremplis, la question dans les notes */
   var calPret = false;
   function chargerCal(){
     if (calPret) return; calPret = true;
     (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
     Cal("init", { origin: "https://app.cal.com" });
-    Cal("ui", { theme: "light", cssVarsPerTheme: { light: { "cal-brand": "#1E9E72" } }, hideEventTypeDetails: false });
+    /* 02.11 : sans l'en-tête de l'événement, le calendrier est la première chose visible */
+    Cal("ui", { theme: "light", cssVarsPerTheme: { light: { "cal-brand": "#1E9E72" } }, hideEventTypeDetails: true });
     Cal("on", { action: "bookingSuccessful", callback: function(){ if (window.oaiq) { oaiq("measure", "appointment_scheduled", { type: "customer_action" }); } } });
   }
   function majCal(){
@@ -502,15 +532,35 @@ function suivre(evt, params){
     var d = new FormData(form);
     lien.dataset.nom = d.get("name") || ""; lien.dataset.mail = d.get("email") || "";
     lien.dataset.notes = "[Session IA " + reponses.profil + "]";
-    lien.href = "https://cal.com/rdv-mawt/appel?name=" + encodeURIComponent(lien.dataset.nom) + "&email=" + encodeURIComponent(lien.dataset.mail) + "&notes=" + encodeURIComponent(lien.dataset.notes);
+    /* 02.11 : le numéro déjà saisi est transmis à Cal (lieu « téléphone du participant »), il n'est plus redemandé.
+       Même normalisation que le serveur : 079… devient +4179…, 0041 devient +41. */
+    var tel = (d.get("phone") || "").replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41");
+    if (/^0[1-9]\\d{8}$/.test(tel)) { tel = "+41" + tel.slice(1); }
+    lien.dataset.tel = tel;
+    /* Visio : lieu Cal Video (« integrations:daily ») ; téléphone : le numéro déjà saisi. */
+    var lieu = reponses.mode === "visio" ? JSON.stringify({ value: "integrations:daily", optionValue: "" }) : JSON.stringify({ value: "phone", optionValue: tel });
+    if (reponses.mode === "visio") { tel = ""; }
+    lien.dataset.lieu = lieu;
+    lien.href = "https://cal.com/rdv-mawt/appel?name=" + encodeURIComponent(lien.dataset.nom) + "&email=" + encodeURIComponent(lien.dataset.mail) + "&notes=" + encodeURIComponent(lien.dataset.notes) + "&location=" + encodeURIComponent(lieu) + (tel ? "&attendeePhoneNumber=" + encodeURIComponent(tel) : "");
     chargerCal();
+    /* 02.11 : agenda intégré dans l'écran de merci, au lieu d'un nouvel onglet (perte non mesurée). */
+    var zone = document.getElementById("cal-inline");
+    if (zone && !zone.dataset.pret) {
+      zone.dataset.pret = "1";
+      var config = { name: lien.dataset.nom, email: lien.dataset.mail, notes: lien.dataset.notes, theme: "light", location: lieu };
+      if (tel) { config.attendeePhoneNumber = tel; }
+      try { Cal("inline", { elementOrSelector: "#cal-inline", calLink: "rdv-mawt/appel", layout: "month_view", config: config }); } catch (e) {}
+    }
   }
   form.addEventListener("click", function(e){
     var a = e.target.closest(".cal-lien");
     if (!a || !window.Cal) return;
     e.preventDefault();
     suivre("cal_open", { profil: reponses.profil || "" });
-    Cal("modal", { calLink: "rdv-mawt/appel", config: { name: a.dataset.nom || "", email: a.dataset.mail || "", notes: a.dataset.notes || "" } });
+    var cfg = { name: a.dataset.nom || "", email: a.dataset.mail || "", notes: a.dataset.notes || "", theme: "light" };
+    if (a.dataset.lieu) { cfg.location = a.dataset.lieu; }
+    if (a.dataset.tel) { cfg.attendeePhoneNumber = a.dataset.tel; }
+    Cal("modal", { calLink: "rdv-mawt/appel", config: cfg });
   });
 
   /* Envoi de secours : si l'API du site ne répond pas, la réponse part directement
@@ -571,8 +621,8 @@ function suivre(evt, params){
     var reel = location.hostname.indexOf("mawt.ch") !== -1;
     function fini(){
       envoye = true; envoiEnCours = false;
-      if (dest === "fin-creneau") { recap(); majCal(); }
-      pile = []; montrer(ecranParId(dest));
+      /* Lead enregistré : l'écran d'engagement vient après, et ne conditionne plus l'envoi */
+      pile = []; montrer(ecranParId(dest === "fin-creneau" ? "engagement" : dest));
       suivre("form_submit", { profil: donnees.profil, qualification: donnees.qualification });
       if (window.fbq) {
         if (donnees.qualification === "entreprise") { fbq("track", "Lead", { content_name: "session-ia-entreprise" }, { eventID: donnees.event_id }); }
@@ -585,8 +635,8 @@ function suivre(evt, params){
     /* Un seul envoi à la fois : les taps sur l'option, la flèche ou Entrée pendant la réponse du serveur sont ignorés
        (26.10.2026 : un lead est parti trois fois en deux secondes et a été compté trois fois par les pixels). */
     envoiEnCours = true; majAvancer();
-    function reessayable(msg){ envoiEnCours = false; majAvancer(); erreurEnvoi(msg); courant.querySelectorAll(".option").forEach(function(o){ o.disabled = false; }); }
-    courant.querySelectorAll(".option").forEach(function(o){ o.disabled = true; });
+    function reessayable(msg){ envoiEnCours = false; majAvancer(); erreurEnvoi(msg); courant.querySelectorAll(".option, [data-suivant]").forEach(function(o){ o.disabled = false; }); }
+    courant.querySelectorAll(".option, [data-suivant]").forEach(function(o){ o.disabled = true; });
     fetch("/api/questions-ia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(donnees) })
       .then(function(r){ return r.json(); })
       .then(function(rep){
