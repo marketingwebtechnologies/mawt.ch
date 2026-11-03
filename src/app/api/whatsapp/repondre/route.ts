@@ -12,6 +12,9 @@ import { genererReponse } from "@/lib/whatsapp/double";
 // was scheduled, or if the double already reached its message cap. Otherwise it drafts a reply:
 // mode "suggestion" e-mails it to Andrew, mode "auto" shows "typing" and sends it.
 
+// Alerts and journal of the double go to Andrew (WHATSAPP_ALERT_TO, default aa@mawt.ch), not to the team mailbox.
+const ALERTE_A = process.env.WHATSAPP_ALERT_TO || "aa@mawt.ch";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -45,20 +48,18 @@ export async function POST(req: NextRequest) {
   if (!dernier || dernier.de !== "contact") return NextResponse.json({ ok: true, ignore: "dernier message pas du contact" });
   if (andrewALaMain(conv.dernierAndrew, maintenant)) return NextResponse.json({ ok: true, ignore: "Andrew a la main" });
   if (conv.reponsesDouble >= PLAFOND_REPONSES) {
-    void sendInternalMail(`[WhatsApp] Plafond atteint ${masquerNumero(numero)}`, `Le double a envoyé ${PLAFOND_REPONSES} messages sans réponse humaine. Il se tait. Numéro : +${numero}`);
+    void sendInternalMail(`[WhatsApp] Plafond atteint ${masquerNumero(numero)}`, `Le double a envoyé ${PLAFOND_REPONSES} messages sans réponse humaine. Il se tait. Numéro : +${numero}`, ALERTE_A);
     return NextResponse.json({ ok: true, ignore: "plafond" });
   }
 
   const proposition = await genererReponse(conv.messages, job.nom || "");
   if (proposition.passerLaMain) {
-    void sendInternalMail(`[WhatsApp] À reprendre : ${job.nom || masquerNumero(numero)}`,
-      [`Numéro : +${numero}`, `Raison : ${proposition.raison}`, "", "Derniers messages :", ...conv.messages.slice(-6).map((m) => `${m.de} : ${m.texte}`)].join("\n"));
+    void sendInternalMail(`[WhatsApp] À reprendre : ${job.nom || masquerNumero(numero)}`, [`Numéro : +${numero}`, `Raison : ${proposition.raison}`, "", "Derniers messages :", ...conv.messages.slice(-6).map((m) => `${m.de} : ${m.texte}`)].join("\n"), ALERTE_A);
     return NextResponse.json({ ok: true, ignore: "main passée" });
   }
 
   if (mode === "suggestion") {
-    void sendInternalMail(`[WhatsApp] Proposition pour ${job.nom || masquerNumero(numero)}`,
-      [`Numéro : +${numero}`, "", "Conversation :", ...conv.messages.slice(-8).map((m) => `${m.de} : ${m.texte}`), "", "Réponse proposée (à envoyer depuis ton appli) :", proposition.texte].join("\n"));
+    void sendInternalMail(`[WhatsApp] Proposition pour ${job.nom || masquerNumero(numero)}`, [`Numéro : +${numero}`, "", "Conversation :", ...conv.messages.slice(-8).map((m) => `${m.de} : ${m.texte}`), "", "Réponse proposée (à envoyer depuis ton appli) :", proposition.texte].join("\n"), ALERTE_A);
     return NextResponse.json({ ok: true, mode: "suggestion" });
   }
 
@@ -70,7 +71,7 @@ export async function POST(req: NextRequest) {
   const id = await envoyerTexte(numero, proposition.texte);
   await ajouterMessage(numero, { de: "double", texte: proposition.texte, ts: Date.now(), id });
   if (proposition.rendezVousPropose) {
-    void sendInternalMail(`[WhatsApp] Créneau proposé à ${job.nom || masquerNumero(numero)}`, [`Numéro : +${numero}`, "", ...conv.messages.slice(-6).map((m) => `${m.de} : ${m.texte}`), `double : ${proposition.texte}`].join("\n"));
+    void sendInternalMail(`[WhatsApp] Créneau proposé à ${job.nom || masquerNumero(numero)}`, [`Numéro : +${numero}`, "", ...conv.messages.slice(-6).map((m) => `${m.de} : ${m.texte}`), `double : ${proposition.texte}`].join("\n"), ALERTE_A);
   }
   return NextResponse.json({ ok: true, mode: "auto" });
 }

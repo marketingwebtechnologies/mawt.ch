@@ -13,6 +13,9 @@ import { planifier, qstashDisponible } from "@/lib/whatsapp/qstash";
 // through QStash so the double answers after the courtesy delay unless Andrew answered first.
 // Always answers 200 quickly: Meta retries and then disables webhooks that fail.
 
+// Alerts and journal of the double go to Andrew (WHATSAPP_ALERT_TO, default aa@mawt.ch), not to the team mailbox.
+const ALERTE_A = process.env.WHATSAPP_ALERT_TO || "aa@mawt.ch";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -63,11 +66,8 @@ export async function POST(req: NextRequest) {
       logger.info("WhatsApp: message entrant enregistré", { de: masquerNumero(ev.de), premier: premierMessage });
 
       if (premierMessage) {
-        void sendInternalMail(
-          `[WhatsApp] Nouveau contact ${ev.nom || masquerNumero(ev.de)}`,
-          [`Numéro : +${ev.de}`, `Nom WhatsApp : ${ev.nom || "(inconnu)"}`, "", "Premier message :", ev.texte, "",
-           `Mode du double : ${process.env.WHATSAPP_DOUBLE_MODE || "off"}`].join("\n"),
-        );
+        void sendInternalMail(`[WhatsApp] Nouveau contact ${ev.nom || masquerNumero(ev.de)}`, [`Numéro : +${ev.de}`, `Nom WhatsApp : ${ev.nom || "(inconnu)"}`, "", "Premier message :", ev.texte, "",
+           `Mode du double : ${process.env.WHATSAPP_DOUBLE_MODE || "off"}`].join("\n"), ALERTE_A);
       }
 
       const mode = process.env.WHATSAPP_DOUBLE_MODE || "off";
