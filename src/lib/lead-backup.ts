@@ -20,6 +20,8 @@ export type LeadBackupRecord = {
   utm?: string;
   origin?: string;
   event_id?: string;
+  /** Per-visit id matching the Clarity custom tag "trace" (lands in the sheet's "brut" column). */
+  trace?: string;
 };
 
 export async function backupLead(record: LeadBackupRecord): Promise<boolean> {

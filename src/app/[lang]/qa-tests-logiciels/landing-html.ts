@@ -342,6 +342,9 @@ const landingHtml = `<!doctype html>
   try {
     var pq = new URLSearchParams(location.search);
     clarity("set", "landing", "qa-tests-logiciels");
+    /* 03.11 : identifiant de visite, pour retrouver l\'enregistrement Clarity depuis la feuille et l\'e-mail d\'alerte */
+    window.__trace = window.__trace || ("t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+    clarity("set", "trace", window.__trace);
     ["utm_source","utm_campaign","utm_content","utm_term"].forEach(function(k){ var v = pq.get(k); if (v) clarity("set", k, v.slice(0, 80)); });
     if (pq.get("gclid")) clarity("set", "gclid", "oui");
   } catch (e) {}
@@ -898,7 +901,7 @@ function suivre(nom, params){
     function envoyer(champ, input, page){
       var v = (input.value || "").trim(); if (!v) return;
       var cle = champ + "|" + v; if (vus[cle]) return; vus[cle] = true;
-      var corps = { page: page, champ: champ, valeur: v.slice(0, 200), format_ok: false, utm: utmVal(), profil: (window.__profilQuiz || "") };
+      var corps = { page: page, trace: (window.__trace || ""), champ: champ, valeur: v.slice(0, 200), format_ok: false, utm: utmVal(), profil: (window.__profilQuiz || "") };
       if (champ === "email") { var m = /@([A-Za-z0-9.-]+\.[A-Za-z]{2,})$/.exec(v); corps.domaine = m ? m[1].toLowerCase() : ""; corps.format_ok = !!m; }
       else { var n = v.replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41"); corps.format_ok = /^\\+41[1-9]\\d{8}$/.test(n) || /^0[1-9]\\d{8}$/.test(n) || /^\\+[1-9]\\d{7,14}$/.test(n); }
       try { fetch("/api/saisie", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corps) }); } catch (e) {}
@@ -915,7 +918,7 @@ function suivre(nom, params){
     /* 03.11 : les parcours de test remplissent le pot de miel ; leurs blocages ne vont pas dans la feuille */
     if (Array.prototype.some.call(document.querySelectorAll('input[name=mawt_hp]'), function(i){ return i.value; })) return;
     dejaSignale[cle] = true;
-    envoiSecours(Object.assign({ source: "navigateur-bloque" }, champs), page, "validation refusee");
+    envoiSecours(Object.assign({ source: "navigateur-bloque", trace: (window.__trace || "") }, champs), page, "validation refusee");
   }
   function alertErreur(form, msg){
     var e = form.querySelector(".erreur-envoi");

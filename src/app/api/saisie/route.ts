@@ -14,6 +14,8 @@ const schema = z.object({
   format_ok: z.boolean(),
   profil: z.string().trim().max(20).optional().default(""),
   utm: z.string().trim().max(600).optional().default(""),
+  // Per-visit id also set as a Clarity custom tag ("trace"), so the alert e-mail can link the recording.
+  trace: z.string().trim().regex(/^[a-z0-9]{0,24}$/).optional().default(""),
 });
 
 export async function POST(request: NextRequest) {
@@ -38,6 +40,7 @@ export async function POST(request: NextRequest) {
     phone: d.champ === "phone" ? d.valeur : "",
     details: `Champ ${d.champ} rempli puis quitté, formulaire pas (encore) envoyé. Format ${d.format_ok ? "valide" : "invalide"}. Profil : ${d.profil || "?"}.`,
     utm: d.utm,
+    trace: d.trace,
   });
   return NextResponse.json({ ok: true });
 }
