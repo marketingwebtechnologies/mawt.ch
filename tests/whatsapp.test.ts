@@ -2,8 +2,16 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import {
-  verifierSignatureMeta, extraireEvenements, delaiReponseSecondes, andrewALaMain, masquerNumero, normaliserNumero,
+  verifierSignatureMeta, extraireEvenements, delaiReponseSecondes, andrewALaMain, masquerNumero, normaliserNumero, vientDuSite,
 } from "../src/lib/whatsapp/pur";
+
+test("origine : seul le texte prérempli du bouton WhatsApp du guide ouvre le double", () => {
+  assert.equal(vientDuSite("Bonjour, j'ai lu le guide MAWT et j'aimerais en discuter : les devis"), true);
+  assert.equal(vientDuSite("bonjour  J’AI lu le Guide mawt"), true);
+  assert.equal(vientDuSite("Salut Andrew, c'est Marc, on se voit ce soir ?"), false);
+  assert.equal(vientDuSite("Bonjour MAWT, je souhaite parler d'un projet."), false);
+  assert.equal(vientDuSite(""), false);
+});
 
 const SECRET = "secret-de-test";
 const corps = JSON.stringify({ object: "whatsapp_business_account", entry: [] });

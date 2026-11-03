@@ -86,6 +86,24 @@ export function andrewALaMain(dernierEchoMs: number | null, maintenantMs: number
   return maintenantMs - dernierEchoMs < 24 * 3600 * 1000;
 }
 
+/**
+ * Site origin (Andrew, 03.11.2026): the double only talks to people who came through the WhatsApp
+ * button of the guide page, recognised by the prefilled text of its wa.me link
+ * ("Bonjour, j'ai lu le guide MAWT et j'aimerais en discuter : "). Anyone else (friends, clients,
+ * unknown numbers) is stored and reported, never answered. Matching ignores case, accents and
+ * typographic apostrophes so a lightly edited message still counts.
+ */
+const MARQUEURS_SITE = ["j'ai lu le guide mawt"];
+
+function normaliserTexte(t: string): string {
+  return String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[’‘]/g, "'").replace(/\s+/g, " ").trim();
+}
+
+export function vientDuSite(texte: string): boolean {
+  const t = normaliserTexte(texte);
+  return t.length > 0 && MARQUEURS_SITE.some((m) => t.includes(m));
+}
+
 /** Phone number for logs: country code kept, middle hidden, last two digits kept. */
 export function masquerNumero(numero: string): string {
   const n = normaliserNumero(numero);

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { sendInternalMail } from "@/lib/mail";
 import { andrewALaMain, delaiReponseSecondes, masquerNumero } from "@/lib/whatsapp/pur";
-import { ajouterMessage, jobPlanifie, libererPlanification, lireConversation } from "@/lib/whatsapp/magasin";
+import { ajouterMessage, jobPlanifie, libererPlanification, lireConversation, origineSite } from "@/lib/whatsapp/magasin";
 import { verifierSignatureQstash } from "@/lib/whatsapp/qstash";
 import { envoyerTexte, marquerLuEtEcrire } from "@/lib/whatsapp/cloud";
 import { genererReponse } from "@/lib/whatsapp/double";
@@ -41,6 +41,8 @@ export async function POST(req: NextRequest) {
   }
   await libererPlanification(numero);
   if (mode === "off") return NextResponse.json({ ok: true, ignore: "mode off" });
+  // Second check of the origin gate: the double never writes to someone who did not come through the site.
+  if (!(await origineSite(numero))) return NextResponse.json({ ok: true, ignore: "pas venu du site" });
 
   const conv = await lireConversation(numero);
   const maintenant = Date.now();

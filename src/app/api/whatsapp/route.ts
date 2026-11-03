@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { secureEqual } from "@/lib/secure-compare";
 import { sendInternalMail } from "@/lib/mail";
-import { verifierSignatureMeta, extraireEvenements, delaiReponseSecondes, masquerNumero } from "@/lib/whatsapp/pur";
-import { ajouterMessage, lireConversation, magasinDisponible, premiereFois, reserverPlanification } from "@/lib/whatsapp/magasin";
+import { verifierSignatureMeta, extraireEvenements, delaiReponseSecondes, masquerNumero, vientDuSite } from "@/lib/whatsapp/pur";
+import { ajouterMessage, lireConversation, magasinDisponible, marquerOrigineSite, origineSite, premiereFois, reserverPlanification } from "@/lib/whatsapp/magasin";
 import { planifier, qstashDisponible } from "@/lib/whatsapp/qstash";
 
 // Meta webhook of the WhatsApp "double" (see mawt-microtest docs/briefs/whatsapp-double-ia.md).
@@ -63,15 +63,20 @@ export async function POST(req: NextRequest) {
       const avant = await lireConversation(ev.de);
       const premierMessage = avant.messages.length === 0;
       await ajouterMessage(ev.de, { de: "contact", texte: ev.texte, ts: ev.ts || Date.now(), id: ev.id });
-      logger.info("WhatsApp: message entrant enregistré", { de: masquerNumero(ev.de), premier: premierMessage });
+      // Origin gate (Andrew, 03.11.2026): only people who wrote through the guide page's WhatsApp
+      // button may get the double; everyone else is stored and reported, never answered.
+      if (vientDuSite(ev.texte)) await marquerOrigineSite(ev.de);
+      const duSite = await origineSite(ev.de);
+      logger.info("WhatsApp: message entrant enregistré", { de: masquerNumero(ev.de), premier: premierMessage, duSite });
 
       if (premierMessage) {
         void sendInternalMail(`[WhatsApp] Nouveau contact ${ev.nom || masquerNumero(ev.de)}`, [`Numéro : +${ev.de}`, `Nom WhatsApp : ${ev.nom || "(inconnu)"}`, "", "Premier message :", ev.texte, "",
+           `Origine : ${duSite ? "bouton WhatsApp du guide (le double peut répondre)" : "inconnue (le double se tait)"}`,
            `Mode du double : ${process.env.WHATSAPP_DOUBLE_MODE || "off"}`].join("\n"), ALERTE_A);
       }
 
       const mode = process.env.WHATSAPP_DOUBLE_MODE || "off";
-      if (mode === "off" || !qstashDisponible()) continue;
+      if (mode === "off" || !duSite || !qstashDisponible()) continue;
       const delai = delaiReponseSecondes(avant.reponsesDouble, 0);
       const idJob = `${ev.de}-${ev.id}`;
       if (!(await reserverPlanification(ev.de, idJob, delai + 120))) continue; // a job is already pending

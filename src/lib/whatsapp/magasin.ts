@@ -6,6 +6,7 @@ import "server-only";
 //   wa:reponses:<numero>        number of replies the double sent in this conversation
 //   wa:planifie:<numero>        id of the pending delayed job (dedup: one job per conversation)
 //   wa:traite:<message id>      seen-once guard for webhook retries
+//   wa:origine:<numero>         "site" once the contact wrote through the guide page's WhatsApp button
 
 const URL = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -62,6 +63,16 @@ export async function lireConversation(numero: string): Promise<{ messages: Mess
   ]);
   const messages = ((brut as string[]) || []).map((s) => JSON.parse(s) as MessageConv).reverse(); // oldest first
   return { messages, dernierAndrew: andrew ? Number(andrew) : null, reponsesDouble: Number(reponses || 0) };
+}
+
+/** Marks a contact as having come through the site's WhatsApp button (the only ones the double may answer). */
+export async function marquerOrigineSite(numero: string): Promise<void> {
+  await pipeline([["SET", `wa:origine:${numero}`, "site", "EX", String(TTL_CONV)]]);
+}
+
+export async function origineSite(numero: string): Promise<boolean> {
+  const [r] = await pipeline([["GET", `wa:origine:${numero}`]]);
+  return r === "site";
 }
 
 /** Records the pending delayed job; returns false if one is already pending for this number. */
