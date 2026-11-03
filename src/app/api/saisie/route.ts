@@ -8,7 +8,7 @@ import { backupLead } from "@/lib/lead-backup";
 // "Leads site" sheet, flagged as not submitted, to tell real entries from fake ones.
 const schema = z.object({
   // 03.11: the four Google landings also capture field entries; they were rejected here until now.
-  page: z.enum(["500-chf", "500-chf-en", "questions-ia", "agence-ia", "formation-ia", "logiciel-sur-mesure", "qa-tests-logiciels"]),
+  page: z.enum(["500-chf", "500-chf-en", "questions-ia", "agence-ia", "formation-ia", "logiciel-sur-mesure", "qa-tests-logiciels", "cours-ia"]),
   champ: z.enum(["email", "phone"]),
   domaine: z.string().trim().toLowerCase().max(80).optional().default(""),
   valeur: z.string().trim().max(200).optional().default(""),

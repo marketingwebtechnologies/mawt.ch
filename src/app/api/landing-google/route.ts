@@ -8,11 +8,11 @@ import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
 import { backupLead } from "@/lib/lead-backup";
 
-// Lead endpoint for the Google Ads landings (/fr/agence-ia, /fr/logiciel-sur-mesure, /fr/formation-ia, /fr/qa-tests-logiciels).
+// Lead endpoint for the Google Ads landings (/fr/agence-ia, /fr/logiciel-sur-mesure, /fr/formation-ia, /fr/qa-tests-logiciels, /fr/cours-ia).
 // Same pipeline as /api/landing-500 (honeypot, rate limit, backup sheet, Sanity,
 // notification) but no Meta Conversions API event: this traffic comes from
 // Google search and must not train the Meta campaign.
-const PAGES = ["agence-ia", "logiciel-sur-mesure", "formation-ia", "qa-tests-logiciels"] as const;
+const PAGES = ["agence-ia", "logiciel-sur-mesure", "formation-ia", "qa-tests-logiciels", "cours-ia"] as const;
 
 const landingSchema = z.object({
   page: z.enum(PAGES),
@@ -29,6 +29,8 @@ const landingSchema = z.object({
     z.enum(["dirigeant", "direction", "salarie", "independant", "autre"]).optional(),
   ),
   pain: z.string().trim().max(100).optional().default(""),
+  // cours-ia (individuals, 03.11.2026): level with AI instead of role and company size.
+  niveau: z.preprocess((v) => (v === "" ? undefined : v), z.enum(["jamais", "un-peu", "souvent"]).optional()),
   pain_detail: z.string().trim().max(200).optional().default(""),
   origin: z.string().trim().max(50).optional().default(""),
   utm: z.string().trim().max(600).optional().default(""),
@@ -45,6 +47,7 @@ const PAGE_LABELS: Record<(typeof PAGES)[number], string> = {
   "logiciel-sur-mesure": "Google Ads logiciel sur mesure",
   "formation-ia": "Google Ads formation IA",
   "qa-tests-logiciels": "Google Ads QA externalisée",
+  "cours-ia": "Google Ads cours IA particuliers",
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -69,7 +72,16 @@ const NEED_LABELS: Record<string, string> = {
   recette: "Tester avant chaque mise en production",
   "tests-auto": "Mettre en place des tests automatisés",
   externaliser: "Externaliser toute notre QA",
+  debuter: "Débuter avec l'IA",
+  travail: "M'en servir dans mon travail",
+  quotidien: "M'en servir au quotidien",
   autre: "Autre chose",
+};
+
+const NIVEAU_LABELS: Record<string, string> = {
+  jamais: "ne l'a jamais vraiment utilisée",
+  "un-peu": "l'utilise un peu",
+  souvent: "l'utilise souvent, veut aller plus loin",
 };
 
 const GENERIC_ERROR = "L'envoi a échoué. Réessayez, ou appelez-nous directement.";
@@ -101,7 +113,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Vérifiez les champs du formulaire." }, { status: 400 });
   }
 
-  const { page, name, phone, email, team, role, pain, pain_detail, origin, utm, event_id } =
+  const { page, name, phone, email, team, role, pain, pain_detail, niveau, origin, utm, event_id } =
     validated.data;
   // One usable contact channel: the e-mail for a video call, the phone otherwise.
   const mode = validated.data.mode;
@@ -115,7 +127,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   }
 
-  const qualified = !role || role === "dirigeant" || role === "direction";
+  // An individual on cours-ia is the buyer: never "non qualifié".
+  const qualified = page === "cours-ia" || !role || role === "dirigeant" || role === "direction";
   const message = [
     mode === "visio" ? "Session souhaitée : en visio (invitation par e-mail)" : "Session souhaitée : par téléphone",
     phone ? `Téléphone : ${phone}` : "Téléphone : non donné (visio choisie)",
@@ -123,6 +136,7 @@ export async function POST(request: NextRequest) {
     role ? `Rôle déclaré : ${ROLE_LABELS[role]}` : null,
     team ? `Taille de l'entreprise : ${team} personnes` : null,
     pain ? `Besoin : ${NEED_LABELS[pain] ?? pain}` : null,
+    niveau ? `Niveau IA : ${NIVEAU_LABELS[niveau]}` : null,
     pain_detail ? `Précision : ${pain_detail}` : null,
     origin ? `Origine du CTA : ${origin}` : null,
     utm ? `Google : ${utm}` : null,
