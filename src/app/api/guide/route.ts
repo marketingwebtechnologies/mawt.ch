@@ -23,7 +23,8 @@ const GUIDES = {
 
 const guideSchema = z.object({
   guide: z.enum(Object.keys(GUIDES) as [keyof typeof GUIDES, ...(keyof typeof GUIDES)[]]),
-  prenom: z.string().trim().min(2).max(60),
+  // Optional since 2026-11-03: the page asks for the e-mail only (prénom + consent text cost the downloads).
+  prenom: z.string().trim().max(60).optional().default(""),
   email: z.string().trim().toLowerCase().email().max(200),
   utm: z.string().trim().max(600).optional().default(""),
   event_id: z.string().trim().max(64).optional().default(""),
@@ -52,10 +53,12 @@ export async function POST(request: NextRequest) {
 
   const validated = guideSchema.safeParse(body);
   if (!validated.success) {
-    return NextResponse.json({ error: "Vérifiez votre prénom et votre e-mail." }, { status: 400 });
+    return NextResponse.json({ error: "Vérifiez votre e-mail." }, { status: 400 });
   }
 
-  const { guide, prenom, email, utm, event_id } = validated.data;
+  const { guide, email, utm, event_id } = validated.data;
+  // Without a first name, the lead is listed under the mailbox name (what the routine and the sheet show).
+  const prenom = validated.data.prenom || email.split("@")[0];
   if (event_id && !(await claimOnce(`lead:guide:${event_id}`, 60 * 60))) {
     logger.warn("Guide duplicate submission ignored", { event_id });
     return NextResponse.json({ success: true });
@@ -99,7 +102,7 @@ export async function POST(request: NextRequest) {
     logger.error("Guide Sanity write failed", err, { email: redactEmail(email) });
   }
 
-  await sendGuideEmail({ firstName: prenom, email }, { title, url });
+  await sendGuideEmail({ firstName: validated.data.prenom, email }, { title, url });
   await sendLeadNotification(lead);
   logger.info("Guide downloaded", { guide, email: redactEmail(email), utm });
   return NextResponse.json({ success: true });

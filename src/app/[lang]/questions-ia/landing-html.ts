@@ -216,7 +216,7 @@ function suivre(evt, params){
 
     <!-- 0 accueil -->
     <section class="ecran" data-id="accueil">
-      <h2>Trois r&eacute;ponses, vos coordonn&eacute;es, on s&rsquo;occupe du reste.</h2>
+      <h2>Trois r&eacute;ponses, puis vous choisissez votre cr&eacute;neau.</h2>
       <p class="pourquoi">Moins d&rsquo;une minute. Vos questions, on les prend de vive voix.</p>
       <p class="pourquoi" id="reprise" hidden>Vos r&eacute;ponses pr&eacute;c&eacute;dentes sont gard&eacute;es, vous pouvez les modifier.</p>
       <div class="suite"><button type="button" class="cta" data-suivant>C&rsquo;est parti</button><small>Entr&eacute;e &#8629;</small></div>
@@ -262,7 +262,7 @@ function suivre(evt, params){
       <span class="num" data-num-e="3" data-num-f="3">3</span>
       <h2>Comment pr&eacute;f&eacute;rez-vous faire la session&#8239;?</h2>
       <div class="options">
-        <button type="button" class="option" data-valeur="visio"><b>A</b>En visio, le lien arrive par e-mail</button>
+        <button type="button" class="option" data-valeur="visio"><b>A</b>En visio, invitation envoy&eacute;e par e-mail</button>
         <button type="button" class="option" data-valeur="telephone"><b>B</b>Par t&eacute;l&eacute;phone, on vous appelle</button>
       </div>
     </section>
@@ -270,11 +270,11 @@ function suivre(evt, params){
     <section class="ecran" data-id="coordonnees" data-type="coordonnees">
       <span class="num" data-num-e="4" data-num-f="4">4</span>
       <h2 id="coord-titre">O&ugrave; vous joindre pour la session</h2>
-      <div class="champ-groupe"><label for="c-nom">Votre nom</label><input id="c-nom" name="name" type="text" autocomplete="name" required><span class="erreur-msg">Indiquez votre nom.</span></div>
-      <div class="champ-groupe"><label for="c-mail">Votre e-mail <span id="c-mail-opt" class="opt"></span></label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email"><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide, c&rsquo;est l&agrave; qu&rsquo;arrive le lien.</span></div>
-      <div class="champ-groupe"><label for="c-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone <span id="c-tel-opt" class="opt"></span></label><input id="c-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required><span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span></div>
-      <p class="pourquoi" id="coord-aide">On vous appelle &agrave; ce num&eacute;ro pour la session, jamais de d&eacute;marchage.</p>
-      <div class="suite"><button type="button" class="cta" data-suivant id="coord-bouton">Recevoir mon appel</button></div>
+      <!-- 03.11 : plus de nom ; un seul champ selon le mode choisi (visio = e-mail, t&eacute;l&eacute;phone = num&eacute;ro) -->
+      <div class="champ-groupe" id="grp-mail"><label for="c-mail">Votre e-mail <span id="c-mail-opt" class="opt"></span></label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email" placeholder="prenom@entreprise.ch"><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide, c&rsquo;est l&agrave; qu&rsquo;arrive le lien.</span></div>
+      <div class="champ-groupe" id="grp-tel"><label for="c-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone <span id="c-tel-opt" class="opt"></span></label><input id="c-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required><span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span></div>
+      <p class="pourquoi" id="coord-aide">C&rsquo;est le num&eacute;ro qu&rsquo;on appelle &agrave; l&rsquo;heure que vous choisirez.</p>
+      <div class="suite"><button type="button" class="cta" data-suivant id="coord-bouton">Choisir mon cr&eacute;neau</button></div>
     </section>
 
     <section class="ecran engagement" data-id="engagement" data-champ="engagement" data-type="unique">
@@ -290,7 +290,7 @@ function suivre(evt, params){
     <!-- FINS -->
     <section class="ecran fin" data-id="fin-creneau">
       <h2>Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</h2>
-      <p class="succes-ou">Cliquez sur un jour, puis sur une heure. Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies. Rappel la veille par e-mail.</p>
+      <p class="succes-ou" id="creneau-aide">Cliquez sur un jour, puis sur une heure. Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies. Rappel la veille par e-mail.</p>
       <div id="cal-inline" style="min-height:520px;margin:12px 0"></div>
       <p class="pourquoi">Si l&rsquo;agenda ne s&rsquo;affiche pas&#8239;: <a class="cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">ouvrir l&rsquo;agenda dans un nouvel onglet</a>.</p>
     </section>
@@ -345,9 +345,9 @@ function suivre(evt, params){
   function sauver(){ ecrireStock("mawt-questions-ia", { reponses: reponses }); }
   function sauverContact(){
     var c = lireStock("mawt-contact") || {};
-    var nom = document.getElementById("c-nom").value.trim(), mail = document.getElementById("c-mail").value.trim(), tel = document.getElementById("c-tel").value.trim();
-    if (nom) c.name = nom; if (mail) c.email = mail; if (tel) c.phone = tel;
-    if (nom || mail || tel) ecrireStock("mawt-contact", c);
+    var mail = document.getElementById("c-mail").value.trim(), tel = document.getElementById("c-tel").value.trim();
+    if (mail) c.email = mail; if (tel) c.phone = tel;
+    if (mail || tel) ecrireStock("mawt-contact", c);
   }
   (function(){
     var repris = false, q = lireStock("mawt-questions-ia");
@@ -357,10 +357,10 @@ function suivre(evt, params){
     }
     var c = lireStock("mawt-contact");
     if (c) {
-      [["c-nom", c.name], ["c-mail", c.email], ["c-tel", c.phone]].forEach(function(p){ var i = document.getElementById(p[0]); if (p[1] && !i.value) { i.value = p[1]; repris = true; } });
+      [["c-mail", c.email], ["c-tel", c.phone]].forEach(function(p){ var i = document.getElementById(p[0]); if (p[1] && !i.value) { i.value = p[1]; repris = true; } });
     }
     if (repris) { var r = document.getElementById("reprise"); if (r) r.hidden = false; }
-    ["c-nom", "c-mail", "c-tel"].forEach(function(id){ document.getElementById(id).addEventListener("change", sauverContact); });
+    ["c-mail", "c-tel"].forEach(function(id){ document.getElementById(id).addEventListener("change", sauverContact); });
   })();
 
   function parcours(){
@@ -412,22 +412,26 @@ function suivre(evt, params){
     if (type === "unique") return !!reponses[champ];
     if (type === "multiple") return !!(reponses[champ] && reponses[champ].length);
     if (type === "coordonnees") {
-      var nom = document.getElementById("c-nom").value.trim(), mail = document.getElementById("c-mail").value.trim();
-      var tel = document.getElementById("c-tel").value.trim();
-      return !!(nom && mail && (reponses.mode === "visio" || tel));
+      /* Visio : l'e-mail suffit (invitation). Téléphone : le numéro suffit, l'e-mail est facultatif. */
+      var mail = document.getElementById("c-mail").value.trim(), tel = document.getElementById("c-tel").value.trim();
+      return !!(reponses.mode === "visio" ? mail : tel);
     }
     return false;
   }
-  /* L'e-mail est toujours demandé (Cal l'exige pour la confirmation et le rappel, toute adresse acceptée) ;
-     le téléphone seulement si la session est par téléphone. */
+  /* 03.11 : une seule information, celle qui sert au rendez-vous choisi. Visio = e-mail (le lien y arrive),
+     téléphone = numéro (on l'appelle). Plus de nom : Cal le demande une fois si la personne réserve. */
   function adapterCoordonnees(){
     var visio = reponses.mode === "visio";
-    document.getElementById("c-mail").required = true;
+    /* Visio : e-mail seul. Téléphone : numéro obligatoire, e-mail facultatif (03.11). */
+    document.getElementById("grp-mail").style.display = "";
+    document.getElementById("grp-tel").style.display = visio ? "none" : "";
+    document.getElementById("c-mail").required = visio;
     document.getElementById("c-tel").required = !visio;
-    document.getElementById("c-mail-opt").textContent = "";
-    document.getElementById("c-tel-opt").textContent = visio ? "(facultatif)" : "";
-    document.getElementById("coord-aide").textContent = visio ? "Le lien de la visio et le rappel arrivent à cette adresse. Jamais de démarchage." : "On vous appelle à ce numéro pour la session, jamais de démarchage.";
-    document.getElementById("coord-bouton").textContent = visio ? "Recevoir mon lien" : "Recevoir mon appel";
+    document.getElementById("c-mail-opt").textContent = visio ? "" : "(facultatif)";
+    document.getElementById("c-tel-opt").textContent = "";
+    if (!visio) { document.getElementById("grp-tel").parentNode.insertBefore(document.getElementById("grp-tel"), document.getElementById("grp-mail")); }
+    document.getElementById("coord-aide").textContent = visio ? "C'est là qu'arrive l'invitation à la visio, une fois votre créneau choisi." : "C'est le numéro qu'on appelle à l'heure que vous choisirez.";
+    document.getElementById("coord-bouton").textContent = "Choisir mon créneau";
   }
   function majAvancer(){
     avancer.disabled = envoiEnCours || !courant || courant.classList.contains("fin") || !repondu(courant);
@@ -513,7 +517,7 @@ function suivre(evt, params){
       reponses[ecran.getAttribute("data-champ")] = ta.value.trim();
       sauver();
     }
-    if (type === "coordonnees" && !validerCoordonnees(ecran)) { signalerBlocage({ name: document.getElementById("c-nom").value.trim(), email: document.getElementById("c-mail").value.trim(), phone: document.getElementById("c-tel").value.trim(), profil: reponses.profil || "", taille: reponses.taille || "", utm: (document.getElementById("utm") || {}).value || "" }, "questions-ia"); return; }
+    if (type === "coordonnees" && !validerCoordonnees(ecran)) { signalerBlocage({ name: "", email: document.getElementById("c-mail").value.trim(), phone: document.getElementById("c-tel").value.trim(), profil: reponses.profil || "", taille: reponses.taille || "", utm: (document.getElementById("utm") || {}).value || "" }, "questions-ia"); return; }
     suivant();
   });
 
@@ -529,7 +533,7 @@ function suivre(evt, params){
   avancer.addEventListener("click", function(){
     if (avancer.disabled) return;
     var type = courant.getAttribute("data-type");
-    if (type === "coordonnees" && !validerCoordonnees(courant)) { signalerBlocage({ name: document.getElementById("c-nom").value.trim(), email: document.getElementById("c-mail").value.trim(), phone: document.getElementById("c-tel").value.trim(), profil: reponses.profil || "", taille: reponses.taille || "", utm: (document.getElementById("utm") || {}).value || "" }, "questions-ia"); return; }
+    if (type === "coordonnees" && !validerCoordonnees(courant)) { signalerBlocage({ name: "", email: document.getElementById("c-mail").value.trim(), phone: document.getElementById("c-tel").value.trim(), profil: reponses.profil || "", taille: reponses.taille || "", utm: (document.getElementById("utm") || {}).value || "" }, "questions-ia"); return; }
     suivant();
   });
   /* les coordonnées : le bouton s'active au fil de la saisie */
@@ -561,26 +565,36 @@ function suivre(evt, params){
   function majCal(){
     var lien = form.querySelector(".cal-lien");
     var d = new FormData(form);
-    lien.dataset.nom = d.get("name") || ""; lien.dataset.mail = d.get("email") || "";
+    var visio = reponses.mode === "visio";
+    lien.dataset.mail = d.get("email") || "";
+    /* Plus de champ nom (03.11) : en visio, Cal reçoit la partie avant l'arobase, modifiable ; au téléphone, Cal demande le nom une fois. */
+    lien.dataset.nom = visio ? (lien.dataset.mail.split("@")[0] || "").replace(/[._-]+/g, " ").replace(/\\b\\w/g, function(c){ return c.toUpperCase(); }) : "";
+    /* Deux rendez-vous Cal : « appel » confirme par e-mail (visio), « appel-telephone » confirme par numéro (téléphone). */
+    lien.dataset.cal = visio ? "rdv-mawt/appel" : "rdv-mawt/appel-telephone";
     lien.dataset.notes = "[Session IA " + reponses.profil + "]";
+    var aide = document.getElementById("creneau-aide");
+    if (aide) { aide.textContent = visio ? "Réservez directement : un jour, puis une heure. Votre e-mail est déjà rempli." : "Réservez directement : un jour, puis une heure. Votre numéro est déjà rempli."; }
     /* 02.11 : le numéro déjà saisi est transmis à Cal (lieu « téléphone du participant »), il n'est plus redemandé.
        Même normalisation que le serveur : 079… devient +4179…, 0041 devient +41. */
     var tel = (d.get("phone") || "").replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41");
     if (/^0[1-9]\\d{8}$/.test(tel)) { tel = "+41" + tel.slice(1); }
     lien.dataset.tel = tel;
     /* Visio : lieu Cal Video (« integrations:daily ») ; téléphone : le numéro déjà saisi. */
-    var lieu = reponses.mode === "visio" ? JSON.stringify({ value: "integrations:daily", optionValue: "" }) : JSON.stringify({ value: "phone", optionValue: tel });
-    if (reponses.mode === "visio") { tel = ""; }
+    /* Au téléphone (03.11), le rendez-vous « appel-telephone » confirme par numéro et son lieu est fixe (« Appel téléphonique ») :
+       on ne transmet que le numéro, dans le champ de confirmation. */
+    var lieu = visio ? JSON.stringify({ value: "integrations:daily", optionValue: "" }) : "";
+    if (visio) { tel = ""; }
     lien.dataset.lieu = lieu;
-    lien.href = "https://cal.com/rdv-mawt/appel?name=" + encodeURIComponent(lien.dataset.nom) + "&email=" + encodeURIComponent(lien.dataset.mail) + "&notes=" + encodeURIComponent(lien.dataset.notes) + "&location=" + encodeURIComponent(lieu) + (tel ? "&attendeePhoneNumber=" + encodeURIComponent(tel) : "");
+    lien.href = "https://cal.com/" + lien.dataset.cal + "?name=" + encodeURIComponent(lien.dataset.nom) + "&email=" + encodeURIComponent(lien.dataset.mail) + "&notes=" + encodeURIComponent(lien.dataset.notes) + (lieu ? "&location=" + encodeURIComponent(lieu) : "") + (tel ? "&attendeePhoneNumber=" + encodeURIComponent(tel) : "");
     chargerCal();
     /* 02.11 : agenda intégré dans l'écran de merci, au lieu d'un nouvel onglet (perte non mesurée). */
     var zone = document.getElementById("cal-inline");
     if (zone && !zone.dataset.pret) {
       zone.dataset.pret = "1";
-      var config = { name: lien.dataset.nom, email: lien.dataset.mail, notes: lien.dataset.notes, theme: "light", location: lieu };
+      var config = { name: lien.dataset.nom, email: lien.dataset.mail, notes: lien.dataset.notes, theme: "light" };
+      if (lieu) { config.location = lieu; }
       if (tel) { config.attendeePhoneNumber = tel; }
-      try { Cal("inline", { elementOrSelector: "#cal-inline", calLink: "rdv-mawt/appel", layout: "month_view", config: config }); } catch (e) {}
+      try { Cal("inline", { elementOrSelector: "#cal-inline", calLink: lien.dataset.cal, layout: "month_view", config: config }); } catch (e) {}
     }
   }
   form.addEventListener("click", function(e){
@@ -591,7 +605,7 @@ function suivre(evt, params){
     var cfg = { name: a.dataset.nom || "", email: a.dataset.mail || "", notes: a.dataset.notes || "", theme: "light" };
     if (a.dataset.lieu) { cfg.location = a.dataset.lieu; }
     if (a.dataset.tel) { cfg.attendeePhoneNumber = a.dataset.tel; }
-    Cal("modal", { calLink: "rdv-mawt/appel", config: cfg });
+    Cal("modal", { calLink: a.dataset.cal || "rdv-mawt/appel", config: cfg });
   });
 
   /* Envoi de secours : si l'API du site ne répond pas, la réponse part directement

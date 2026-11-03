@@ -14,10 +14,13 @@ import { backupLead } from "@/lib/lead-backup";
 // conversion tracking) but with the landing's own fields: phone is the point
 // of the page, and pain/origin carry the CTA attribution to the sales call.
 const landingSchema = z.object({
-  name: z.string().trim().min(2).max(100),
+  // Optional since 2026-11-03: the page no longer asks for a name (e-mail or phone, by chosen mode).
+  name: z.string().trim().max(100).optional().default(""),
   // Anything the visitor typed is accepted (owner decision 2026-10-17); an
   // unrecognised format is flagged in the lead, never refused.
-  phone: z.string().trim().min(1).max(40),
+  phone: z.string().trim().max(40).optional().default(""),
+  // How the person wants the call (2026-11-03). Missing = legacy client = phone.
+  mode: z.enum(["visio", "telephone"]).optional(),
   // Never blocking (2026-10-17): any text, even empty; the phone is what matters.
   email: z.string().trim().toLowerCase().max(200).optional().default(""),
   // Company size, asked on the landing so the notification says whether the
@@ -81,6 +84,13 @@ export async function POST(request: NextRequest) {
 
   const { name, phone, email, team, role, pain, pain_detail, origin, utm, event_id } =
     validated.data;
+  // One usable contact channel: the e-mail for a video call, the phone otherwise.
+  const mode = validated.data.mode;
+  if (!(mode === "visio" ? email.includes("@") : phone !== "")) {
+    return NextResponse.json({ error: "Vérifiez les champs du formulaire." }, { status: 400 });
+  }
+  // No name asked: the lead is listed under the mailbox name or the phone number.
+  const nomAffiche = name || (email.includes("@") ? email.split("@")[0] : "") || phone || "Lead";
   // Same event_id within the hour = the same form sent again: one lead, one pixel event.
   if (event_id && !(await claimOnce(`lead:landing-500:${event_id}`, 60 * 60))) {
     logger.warn("Landing-500 duplicate submission ignored", { event_id });
@@ -93,14 +103,23 @@ export async function POST(request: NextRequest) {
     independant: "indépendant(e) sans équipe",
     autre: "autre situation",
   };
+  // The answer to "Qu'est-ce qui vous fait perdre le plus de temps ?", shown with
+  // the words the person actually picked, not the form's internal code.
+  const PAIN_LABELS: Record<string, string> = {
+    "copier-coller": "Mes équipes ressaisissent les mêmes données",
+    tete: "Tout est dans ma tête",
+    questions: "Tout passe par moi",
+    autre: "Autre chose",
+  };
   // Leads sent before the role field existed stay qualified by default.
   const qualified = !role || role === "dirigeant" || role === "direction";
   const message = [
-    `Téléphone : ${phone}`,
-    phoneLooksValid(phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
+    mode === "visio" ? "Session souhaitée : en visio (invitation par e-mail)" : "Session souhaitée : par téléphone",
+    phone ? `Téléphone : ${phone}` : "Téléphone : non donné (visio choisie)",
+    !phone || phoneLooksValid(phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
     role ? `Rôle déclaré : ${ROLE_LABELS[role]}` : null,
     team ? `Taille de l'entreprise : ${team} personnes` : null,
-    pain ? `Douleur choisie : ${pain}` : null,
+    pain ? `Ce qui lui fait perdre le plus de temps : ${PAIN_LABELS[pain] ?? pain}` : null,
     pain_detail ? `Précision : ${pain_detail}` : null,
     origin ? `Origine du CTA : ${origin}` : null,
     utm ? `Pub : ${utm}` : null,
@@ -113,7 +132,7 @@ export async function POST(request: NextRequest) {
     .join("\n");
 
   const lead = {
-    name,
+    name: nomAffiche,
     email,
     service: qualified ? "Landing 500 CHF" : "Landing 500 CHF (non qualifié)",
     timeline: origin || "landing",
@@ -124,7 +143,7 @@ export async function POST(request: NextRequest) {
   await backupLead({
     page: "500-chf",
     qualification: qualified ? "qualifie" : "non-qualifie",
-    name,
+    name: nomAffiche,
     email,
     phone,
     details: message,

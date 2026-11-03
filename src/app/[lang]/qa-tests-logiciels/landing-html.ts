@@ -124,6 +124,14 @@ const landingHtml = `<!doctype html>
   .succes-ou{margin:18px 0 0;font-size:15px;color:var(--corps)}
   a.cta{text-decoration:none;display:block}
   .erreur-msg{font-size:13px;color:#B4472E;display:none}
+  /* 03.11 : choix téléphone / visio dans le formulaire */
+  .champ-groupe.modes{clear:both;margin-top:10px}
+  .champ-groupe[hidden]{display:none !important}
+  .modes-choix{display:flex;gap:8px;flex-wrap:wrap}
+  .mode{flex:1 1 170px;display:flex;align-items:center;gap:9px;border:1px solid #D8D5CF;border-radius:8px;padding:11px 12px;cursor:pointer;font-weight:600;font-size:15px;line-height:1.3;margin:0}
+  .mode input{width:auto;margin:0;flex:none;accent-color:#1E9E72}
+  .mode:has(input:checked){border-color:#1E9E72;background:#F1FAF6}
+  .opt{font-weight:400;color:#5E7175;font-size:13px}
   .invalide input,.invalide select{border-color:#B4472E}
   .invalide .erreur-msg{display:block}
 
@@ -401,7 +409,7 @@ function suivre(nom, params){
     <p class="accroche" id="accroche-texte">On teste vos sites et vos logiciels &agrave; chaque version&#8239;: recette avant la mise en production, tests automatis&eacute;s, suivi des bugs. Vos d&eacute;veloppeurs livrent, on v&eacute;rifie.</p>
     <p class="promesse">Un appel de 30&#8239;minutes pour voir ce qui vaut la peine chez vous. Gratuit, sans engagement.</p>
     <button class="cta" data-origine="hero">R&eacute;server mon appel de 30&#8239;min</button>
-    <span class="micro">On vous rappelle sous 24&#8239;h ouvr&eacute;es.</span>
+    <span class="micro">Vous choisissez le cr&eacute;neau.</span>
     <div class="logos" aria-label="Ils nous ont fait confiance">
       <span>Ils nous ont fait confiance</span>
       <img src="/google-landing-assets/swixit-logo.png" alt="Swixit" width="114" height="33">
@@ -489,7 +497,7 @@ function suivre(nom, params){
   <section class="section-form revele" id="contact">
     <div class="conteneur">
       <h2>Parlons de votre projet.</h2>
-      <p style="margin:16px 0 0;font-size:16px;line-height:1.55;color:var(--corps)">Laissez votre num&eacute;ro, on vous rappelle pour un &eacute;change de 30&#8239;minutes. Vous repartez avec une id&eacute;e claire de ce qui vaut la peine d&rsquo;&ecirc;tre construit, et de ce qui ne l&rsquo;est pas.</p>
+      <p style="margin:16px 0 0;font-size:16px;line-height:1.55;color:var(--corps)">Dites-nous comment vous joindre, puis choisissez votre cr&eacute;neau pour un &eacute;change de 30&#8239;minutes. Vous repartez avec une id&eacute;e claire de ce qui vaut la peine d&rsquo;&ecirc;tre construit, et de ce qui ne l&rsquo;est pas.</p>
       <form id="form-final" class="etapes" novalidate>
         <p class="effort">4 questions, 30&#8239;secondes.</p>
         <div class="avance"><span class="avance-txt">&Eacute;tape <b>1</b> sur 4</span><span class="avance-barre"><i></i></span></div>
@@ -516,30 +524,31 @@ function suivre(nom, params){
           <label class="choix"><input type="radio" name="team" value="50+"><span>Plus de 50 personnes</span></label>
         </fieldset>
         <fieldset class="etape" data-etape="4">
-          <legend>O&ugrave; peut-on vous rappeler&#8239;?</legend>
-          <div class="champ-groupe">
-            <label for="f-nom">Votre nom</label>
-            <input id="f-nom" name="name" type="text" autocomplete="name" required>
-            <span class="erreur-msg">Indiquez votre nom.</span>
+          <legend>Comment vous joindre&#8239;?</legend>
+          <div class="champ-groupe modes">
+          <div class="modes-choix">
+            <label class="mode"><input type="radio" name="mode" value="telephone" id="f-mode-tel" checked> Par t&eacute;l&eacute;phone, on vous appelle</label>
+            <label class="mode"><input type="radio" name="mode" value="visio" id="f-mode-visio"> En visio, invitation par e-mail</label>
           </div>
-          <div class="champ-groupe">
+        </div>
+          <div class="champ-groupe" data-grp="tel">
             <label for="f-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label>
             <input id="f-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required>
             <span class="erreur-msg">Indiquez le num&eacute;ro o&ugrave; vous rappeler.</span>
           </div>
-          <div class="champ-groupe">
-            <label for="f-mail">Votre e-mail</label>
+          <div class="champ-groupe" data-grp="mail">
+            <label for="f-mail">Votre e-mail <span class="opt"></span></label>
             <input id="f-mail" name="email" type="email" autocomplete="email">
           </div>
           <button type="submit" class="cta">R&eacute;server mon appel de 30&#8239;min</button>
-          <span class="micro">Votre num&eacute;ro sert uniquement &agrave; vous rappeler, sous 24&#8239;h ouvr&eacute;es.</span>
+          <span class="micro">Cr&eacute;neau au choix juste apr&egrave;s.</span>
         </fieldset>
         <button type="button" class="retour" hidden>&larr; Retour</button>
         <input type="hidden" name="origin" value="footer-form">
         <input type="hidden" name="utm" value="">
         <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
       </form>
-      <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
+      <div class="succes"><p>Merci. Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</p><p class="succes-ou" data-aide-creneau>Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies.</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel-telephone" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
     </div>
   </section>
 </main>
@@ -594,23 +603,24 @@ function suivre(nom, params){
           <label class="choix"><input type="radio" name="team" value="50+"><span>Plus de 50 personnes</span></label>
         </fieldset>
         <fieldset class="etape" data-etape="4">
-          <legend>O&ugrave; peut-on vous rappeler&#8239;?</legend>
-          <div class="champ-groupe">
-            <label for="p-nom">Votre nom</label>
-            <input id="p-nom" name="name" type="text" autocomplete="name" required>
-            <span class="erreur-msg">Indiquez votre nom.</span>
+          <legend>Comment vous joindre&#8239;?</legend>
+          <div class="champ-groupe modes">
+          <div class="modes-choix">
+            <label class="mode"><input type="radio" name="mode" value="telephone" id="p-mode-tel" checked> Par t&eacute;l&eacute;phone, on vous appelle</label>
+            <label class="mode"><input type="radio" name="mode" value="visio" id="p-mode-visio"> En visio, invitation par e-mail</label>
           </div>
-          <div class="champ-groupe">
+        </div>
+          <div class="champ-groupe" data-grp="tel">
             <label for="p-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone</label>
             <input id="p-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required>
             <span class="erreur-msg">Indiquez le num&eacute;ro o&ugrave; vous rappeler.</span>
           </div>
-          <div class="champ-groupe">
-            <label for="p-mail">Votre e-mail</label>
+          <div class="champ-groupe" data-grp="mail">
+            <label for="p-mail">Votre e-mail <span class="opt"></span></label>
             <input id="p-mail" name="email" type="email" autocomplete="email">
           </div>
           <button type="submit" class="cta">R&eacute;server mon appel de 30&#8239;min</button>
-          <span class="micro">Votre num&eacute;ro sert uniquement &agrave; vous rappeler, sous 24&#8239;h ouvr&eacute;es.</span>
+          <span class="micro">Cr&eacute;neau au choix juste apr&egrave;s.</span>
         </fieldset>
         <button type="button" class="retour" hidden>&larr; Retour</button>
         <input type="hidden" name="origin" id="p-origine" value="">
@@ -618,7 +628,7 @@ function suivre(nom, params){
         <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
       </form>
   <span id="indice-origine" hidden></span>
-  <div class="succes"><p>Merci. On vous appelle sous 24&#8239;h ouvr&eacute;es.</p><p class="succes-ou">Vous voulez choisir le moment&#8239;?</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
+  <div class="succes"><p>Merci. Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</p><p class="succes-ou" data-aide-creneau>Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies.</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel-telephone" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
 </div>
 
 <script>
@@ -809,6 +819,26 @@ function suivre(nom, params){
   });
 
   /* Validation et faux envoi (le vrai envoi = action serveur Next.js) */
+  /* 03.11 : une seule saisie. Le visiteur dit comment il veut l'échange, et ne donne que ce qui sert :
+     téléphone = numéro (e-mail facultatif), visio = e-mail. Plus de nom : Cal le demande une fois.
+     Coordonnées gardées 30 jours dans ce navigateur (clé commune mawt-contact) et reprises au retour. */
+  function lireContact(){ try { var o = JSON.parse(localStorage.getItem("mawt-contact") || "null"); return (o && o.ts && Date.now() - o.ts < 30 * 86400000) ? o : {}; } catch (e) { return {}; } }
+  function sauverContact(form){ try { var c = lireContact(), d = new FormData(form); if (d.get("email")) c.email = String(d.get("email")).trim(); if (d.get("phone")) c.phone = String(d.get("phone")).trim(); c.ts = Date.now(); localStorage.setItem("mawt-contact", JSON.stringify(c)); } catch (e) {} }
+  function modeDe(form){ var r = form.querySelector("input[name=mode]:checked"); return r ? r.value : "telephone"; }
+  function adapterMode(form){
+    var visio = modeDe(form) === "visio";
+    var gTel = form.querySelector("[data-grp=tel]"), gMail = form.querySelector("[data-grp=mail]");
+    if (gTel) { gTel.hidden = visio; gTel.querySelector("input").required = !visio; if (visio) gTel.classList.remove("invalide"); }
+    if (gMail) { gMail.querySelector("input").required = visio; var o = gMail.querySelector(".opt"); if (o) o.textContent = visio ? "" : "(facultatif)"; if (!visio) gMail.classList.remove("invalide"); }
+  }
+  document.querySelectorAll("form").forEach(function(f){
+    var c = lireContact();
+    f.querySelectorAll("input[type=tel]").forEach(function(i){ if (c.phone && !i.value) i.value = c.phone; i.addEventListener("change", function(){ sauverContact(f); }); });
+    f.querySelectorAll("input[type=email]").forEach(function(i){ if (c.email && !i.value) i.value = c.email; i.addEventListener("change", function(){ sauverContact(f); }); });
+    f.querySelectorAll("input[name=mode]").forEach(function(r){ r.addEventListener("change", function(){ adapterMode(f); }); });
+    adapterMode(f);
+  });
+
   function brancher(form, conteneur){
   var calPret = false;
   function chargerCal(){
@@ -821,11 +851,20 @@ function suivre(nom, params){
   function majCal(form, conteneur){
     var lien = conteneur.querySelector(".cal-lien");
     if (!lien) return;
-    var d = new FormData(form);
-    lien.dataset.nom = d.get("name") || "";
-    lien.dataset.mail = d.get("email") || "";
-    lien.href = "https://cal.com/rdv-mawt/appel?name=" + encodeURIComponent(lien.dataset.nom)
-      + "&email=" + encodeURIComponent(lien.dataset.mail);
+    var d = new FormData(form), visio = modeDe(form) === "visio";
+    var mail = String(d.get("email") || "").trim();
+    var tel = String(d.get("phone") || "").replace(/[\\s.\\-()]/g, "").replace(/^0041/, "+41").replace(/^00/, "+").replace(/^\\+410/, "+41");
+    if (/^0[1-9]\\d{8}$/.test(tel)) { tel = "+41" + tel.slice(1); }
+    /* Visio : rendez-vous Cal « appel » (confirmation par e-mail, nom déduit de l'adresse, modifiable).
+       Téléphone : rendez-vous « appel-telephone » (confirmation par numéro, e-mail masqué). */
+    lien.dataset.nom = visio ? (mail.split("@")[0] || "").replace(/[._-]+/g, " ").replace(/\\b\\w/g, function(c){ return c.toUpperCase(); }) : "";
+    lien.dataset.mail = mail; lien.dataset.tel = visio ? "" : tel;
+    lien.dataset.cal = visio ? "rdv-mawt/appel" : "rdv-mawt/appel-telephone";
+    lien.dataset.lieu = visio ? JSON.stringify({ value: "integrations:daily", optionValue: "" }) : "";
+    lien.href = "https://cal.com/" + lien.dataset.cal + "?name=" + encodeURIComponent(lien.dataset.nom) + "&email=" + encodeURIComponent(mail)
+      + (lien.dataset.lieu ? "&location=" + encodeURIComponent(lien.dataset.lieu) : "") + (lien.dataset.tel ? "&attendeePhoneNumber=" + encodeURIComponent(lien.dataset.tel) : "");
+    var aide = conteneur.querySelector("[data-aide-creneau]");
+    if (aide) { aide.textContent = visio ? "Votre e-mail est déjà rempli." : "Votre numéro est déjà rempli."; }
     chargerCal();
   }
   document.addEventListener("click", function(e){
@@ -833,7 +872,10 @@ function suivre(nom, params){
     if (!a || !window.Cal) return;
     e.preventDefault();
     suivre("cal_open", {});
-    Cal("modal", { calLink: "rdv-mawt/appel", config: { name: a.dataset.nom || "", email: a.dataset.mail || "" } });
+    var cfg = { name: a.dataset.nom || "", email: a.dataset.mail || "", theme: "light" };
+    if (a.dataset.lieu) { cfg.location = a.dataset.lieu; }
+    if (a.dataset.tel) { cfg.attendeePhoneNumber = a.dataset.tel; }
+    Cal("modal", { calLink: a.dataset.cal || "rdv-mawt/appel", config: cfg });
   });
   /* Envoi de secours : si l'API du site ne répond pas, la réponse part directement
      vers la feuille Google (Apps Script), hors Vercel. Retourne true si le navigateur

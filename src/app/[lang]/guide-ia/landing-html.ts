@@ -9,7 +9,7 @@ const landingHtml = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Guide gratuit pour les entrepreneurs · MAWT</title>
+<title>Ebook gratuit pour les entrepreneurs · MAWT</title>
 <style>
 @font-face{font-family:'Gilroy';src:url('/500-chf-assets/fonts/SVN-Gilroy-Regular.otf') format('opentype');font-weight:400;font-display:swap}
 @font-face{font-family:'Gilroy';src:url('/500-chf-assets/fonts/SVN-Gilroy-SemiBold.otf') format('opentype');font-weight:600;font-display:swap}
@@ -35,8 +35,6 @@ input:focus{outline:2px solid var(--mint);border-color:var(--mint)}
 button{width:100%;font:inherit;font-weight:700;font-size:19px;background:var(--encre);color:#fff;border:0;border-radius:8px;padding:16px;cursor:pointer}
 button:hover{background:#0b3f4d}
 button[disabled]{opacity:.7;cursor:wait}
-.rassure{font-size:13px;line-height:1.5;color:var(--gris);margin-top:12px;text-align:center}
-.rassure a{color:var(--gris)}
 .erreur{display:none;color:#A33;font-size:15px;margin:-6px 0 12px}
 .merci{display:none;background:var(--fond);border:1px solid var(--filet);border-radius:10px;padding:28px}
 .merci h2{font-size:26px;margin-bottom:10px}
@@ -45,12 +43,29 @@ button[disabled]{opacity:.7;cursor:wait}
 .merci .apres{margin-top:22px;font-size:15px}
 .merci a.q{display:inline-flex;align-items:center;gap:10px;margin-top:8px;border:2px solid var(--mint);color:var(--encre);font-weight:600;padding:10px 20px;border-radius:999px;text-decoration:none}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-footer{border-top:1px solid var(--filet);padding:20px 24px;font-size:14px;color:var(--gris);text-align:center}
+/* 03.11 : ce qu'il y a dans l'ebook, montré avant de demander l'e-mail (0 téléchargement sur 42 visites, personne ne touchait le formulaire) */
+.dedans{margin-top:36px}
+.dedans h2{font-size:24px;margin-bottom:4px}
+.meta{color:var(--gris);font-size:15px;margin-bottom:14px}
+ol.sommaire{list-style:none;counter-reset:n;columns:2;column-gap:24px;margin-bottom:16px}
+ol.sommaire li{break-inside:avoid;padding:5px 0 5px 28px;position:relative;color:var(--corps);font-size:16px;line-height:1.4}
+ol.sommaire li::before{counter-increment:n;content:counter(n);position:absolute;left:0;top:7px;width:19px;height:19px;border-radius:4px;background:var(--mint);color:var(--encre);font-size:12px;font-weight:700;text-align:center;line-height:19px}
+ol.sommaire b{display:block;color:var(--encre)}
+.plus{color:var(--corps);margin-bottom:22px}
+.apercu{margin:0 0 20px}
+.apercu img{width:100%;max-width:420px;height:auto;display:block;border:1px solid var(--filet);border-radius:6px;box-shadow:0 12px 30px rgba(0,43,54,.12)}
+.apercu figcaption{font-size:14px;color:var(--gris);margin-top:8px}
+.signature{font-size:16px;color:var(--corps);margin-bottom:20px}
+.barre{display:none;position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--filet);z-index:5}
+.barre.visible{display:block}
+footer{border-top:1px solid var(--filet);padding:20px 24px 84px;font-size:14px;color:var(--gris);text-align:center}
+@media (min-width:821px){.barre{display:none !important}footer{padding-bottom:20px}}
 @media (max-width:820px){
   main{grid-template-columns:1fr;gap:28px;padding:28px 16px 48px}
   .couv{order:2}.texte{order:1}
   .couv img{max-width:300px;margin:0 auto}
   h1{font-size:30px}.st{font-size:18px}
+  ol.sommaire{columns:1}
 }
 </style>
 <script>
@@ -92,34 +107,49 @@ function suivre(nom){
 <main>
   <div class="couv"><img id="couv" src="/guide-ia/couv/d2-par-ou-commencer.webp" alt="Couverture du guide" width="420" height="594"></div>
   <div class="texte">
-    <span class="badge">GUIDE GRATUIT · PDF</span>
+    <span class="badge">EBOOK GRATUIT</span>
     <p class="cible">Pour les entrepreneurs et dirigeants de PME</p>
     <h1 id="titre">Par où commencer avec l'IA dans votre PME</h1>
     <p class="st" id="st">12 exemples concrets, un par métier, et la méthode pour choisir le vôtre.</p>
-    <ul class="dedans">
-      <li>12 exemples concrets, un par métier : bâtiment, fiduciaire, RH, régie, commerce…</li>
-      <li>Pour chacun : ce que fait l'IA, et ce qu'il vous reste à faire</li>
-      <li>3 questions pour choisir votre première tâche</li>
-    </ul>
     <form id="form" novalidate>
-      <label for="prenom">Votre prénom</label>
-      <input id="prenom" name="prenom" autocomplete="given-name" required maxlength="60">
       <label for="email">Votre e-mail</label>
-      <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="200">
-      <p class="erreur" id="erreur">Vérifiez votre prénom et votre e-mail.</p>
+      <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="200" placeholder="prenom@entreprise.ch">
+      <p class="erreur" id="erreur">Vérifiez votre e-mail.</p>
       <input class="hp" name="mawt_hp" id="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <button type="submit" id="envoyer">Recevoir le guide gratuit</button>
-      <p class="rassure">En demandant le guide, vous acceptez que MAWT vous recontacte par e-mail au sujet de l'IA dans votre entreprise. Désinscription en un clic, à tout moment. <a href="/fr/confidentialite" target="_blank" rel="noopener">Confidentialité</a></p>
+      <button type="submit" id="envoyer">Recevoir l'ebook</button>
     </form>
     <div class="merci" id="merci">
-      <h2>C'est parti, <span id="nom"></span> !</h2>
-      <p>Votre guide est prêt. Vous le recevez aussi par e-mail pour le garder.</p>
-      <a class="dl" id="dl" href="/guide-ia/pdf/d2-par-ou-commencer.pdf" download>Télécharger le guide →</a>
+      <h2>C'est parti !</h2>
+      <p>Votre ebook est prêt. Vous le recevez aussi par e-mail pour le garder.</p>
+      <a class="dl" id="dl" href="/guide-ia/pdf/d2-par-ou-commencer.pdf" download>Télécharger l'ebook →</a>
       <p class="apres">Vous voulez en discuter ?</p>
       <a class="q" id="wa" href="https://wa.me/41766363333?text=Bonjour%2C%20j%27ai%20lu%20le%20guide%20MAWT%20et%20j%27aimerais%20en%20discuter%20%3A%20"><img src="/guide-ia/whatsapp.svg" alt="" width="22" height="22">Écrivez-moi sur WhatsApp →</a>
     </div>
+    <section class="dedans" id="dedans">
+      <h2>Dans l'ebook</h2>
+      <p class="meta">10 pages · 10 minutes de lecture · un exemple par métier</p>
+      <ol class="sommaire">
+        <li><b>Bâtiment</b>remplir une soumission</li>
+        <li><b>Fiduciaire</b>pièces comptables et justificatifs manquants</li>
+        <li><b>RH et intérim</b>trier les candidatures</li>
+        <li><b>Régie immobilière</b>les demandes des locataires</li>
+        <li><b>Commerce et grossiste</b>les commandes reçues par e-mail ou message vocal</li>
+        <li><b>Logistique et transport</b>tournées et avis de passage</li>
+        <li><b>Agence de communication</b>décliner une campagne</li>
+        <li><b>Restaurant et traiteur</b>devis d'événement et commandes fournisseurs</li>
+        <li><b>Cabinet et thérapeute</b>rendez-vous et rappels</li>
+        <li><b>Artisan et services à domicile</b>du chantier au devis</li>
+        <li><b>Vente B2B</b>la proposition après l'appel</li>
+        <li><b>Administration, tous métiers</b>la boîte de réception</li>
+      </ol>
+      <p class="plus">Pour chaque exemple : ce que fait l'IA, et ce qu'il vous reste à faire. Puis 3 questions pour choisir votre première tâche.</p>
+      <figure class="apercu"><img id="apercu" src="/guide-ia/apercu/d2-par-ou-commencer.webp" alt="Page 3 de l'ebook" width="833" height="1179" loading="lazy"><figcaption>Page 3 de l'ebook : bâtiment, remplir une soumission.</figcaption></figure>
+      <p class="signature"><b>Andrew Awad</b>, fondateur de MAWT, Carouge. On construit l'IA qui rend des heures aux PME romandes.</p>
+      <button type="button" id="cta2">Recevoir l'ebook</button>
+    </section>
   </div>
 </main>
+<div class="barre" id="barre"><button type="button" id="barre-btn">Recevoir l'ebook</button></div>
 <footer>MAWT · Automatisation et IA pour les PME romandes · Rue de la Fontenette 23, 1227 Carouge</footer>
 <script>
 (function(){
@@ -141,28 +171,41 @@ function suivre(nom){
   document.getElementById("titre").textContent = g[1];
   document.getElementById("st").textContent = g[2];
   document.getElementById("dl").href = "/guide-ia/pdf/" + g[0] + ".pdf";
-  document.title = g[1] + " · Guide gratuit MAWT";
+  document.getElementById("apercu").src = "/guide-ia/apercu/" + g[0] + ".webp";
+  document.title = g[1] + " · Ebook gratuit MAWT";
   var utm = [];
   ["utm_source","utm_medium","utm_campaign","utm_content","fbclid"].forEach(function(k){ var x = q.get(k); if (x) utm.push(k + "=" + x.slice(0, 120)); });
   var eventId = "gd-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
   var envoi = false;
   var form = document.getElementById("form");
+  var champMail = document.getElementById("email");
+  /* Une seule saisie : l'e-mail déjà donné ailleurs sur le site est repris (clé commune mawt-contact) */
+  try { var deja = JSON.parse(localStorage.getItem("mawt-contact") || "null"); if (deja && deja.email && !champMail.value) champMail.value = deja.email; } catch (e) {}
+  /* Bouton de fin de page et barre fixe mobile : ramènent au formulaire */
+  function versFormulaire(){ form.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function(){ champMail.focus(); }, 450); }
+  document.getElementById("cta2").addEventListener("click", versFormulaire);
+  document.getElementById("barre-btn").addEventListener("click", versFormulaire);
+  var barre = document.getElementById("barre");
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function (entries) { barre.classList.toggle("visible", !entries[0].isIntersecting && !envoi); }, { threshold: 0.2 }).observe(form);
+  }
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (envoi) return;
-    var p = document.getElementById("prenom"), m = document.getElementById("email"), err = document.getElementById("erreur");
-    var prenom = p.value.trim(), email = m.value.trim();
-    if (prenom.length < 2 || !/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)) { err.style.display = "block"; (prenom.length < 2 ? p : m).focus(); return; }
+    var m = champMail, err = document.getElementById("erreur");
+    var prenom = "", email = m.value.trim();
+    if (!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)) { err.style.display = "block"; m.focus(); return; }
     err.style.display = "none";
+    barre.classList.remove("visible");
     envoi = true;
     var bouton = document.getElementById("envoyer");
     bouton.disabled = true; bouton.textContent = "Envoi…";
     var finir = function () {
       /* 02.11 : l'e-mail (et le prénom s'il n'y a pas déjà un nom) restent dans ce navigateur,
          clé commune « mawt-contact » : /questions-ia les reprend, la personne ne les retape pas. */
-      try { var c = JSON.parse(localStorage.getItem("mawt-contact") || "{}") || {}; if (!c.name && prenom) c.name = prenom; c.email = email; c.ts = Date.now(); localStorage.setItem("mawt-contact", JSON.stringify(c)); } catch (e) {}
-      document.getElementById("nom").textContent = prenom;
+      try { var c = JSON.parse(localStorage.getItem("mawt-contact") || "{}") || {}; c.email = email; c.ts = Date.now(); localStorage.setItem("mawt-contact", JSON.stringify(c)); } catch (e) {}
       form.style.display = "none";
+      document.getElementById("dedans").style.display = "none";
       document.getElementById("merci").style.display = "block";
       suivre("guide_telecharge");
       if (window.fbq) { fbq("trackCustom", "GuideTelecharge", { guide: g[0] }, { eventID: eventId }); }

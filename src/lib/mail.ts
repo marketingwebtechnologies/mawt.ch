@@ -126,11 +126,11 @@ export async function sendGuideEmail(to: { firstName: string; email: string }, g
     await deliver({
       to: to.email,
       replyTo: "aa@mawt.ch",
-      subject: sanitizeHeaderValue(`Votre guide : ${guide.title}`),
+      subject: sanitizeHeaderValue(`Votre ebook : ${guide.title}`),
       text: [
-        `Bonjour ${to.firstName},`,
+        to.firstName ? `Bonjour ${to.firstName},` : "Bonjour,",
         "",
-        "Voici votre guide, comme promis :",
+        "Voici votre ebook, comme promis :",
         guide.url,
         "",
         "Il se lit en 10 minutes. Cherchez la fiche de votre métier, ou celle qui y ressemble le plus.",

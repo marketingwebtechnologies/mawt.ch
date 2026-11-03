@@ -20,7 +20,8 @@ const FREE_MAIL =
   /@(gmail|googlemail|hotmail|outlook|live|msn|yahoo|icloud|me|mac|bluewin|gmx|protonmail|proton|sunrise|hispeed|aol|free|orange|wanadoo|laposte)\./i;
 
 const sessionSchema = z.object({
-  name: z.string().trim().min(2).max(100),
+  // Optional since 2026-11-03: the page no longer asks for a name (e-mail or phone only, by chosen mode).
+  name: z.string().trim().max(100).optional().default(""),
   // Never blocking (2026-10-17): any text, even empty; the phone is what matters.
   email: z.string().trim().toLowerCase().max(200).optional().default(""),
   // Anything the visitor typed is accepted (owner decision 2026-10-17); an
@@ -161,8 +162,10 @@ export async function POST(request: NextRequest) {
     .filter((l): l is string => l !== null)
     .join("\n");
 
+  // No name given: the lead is listed under the mailbox name or the phone number.
+  const nomAffiche = d.name || (d.email.includes("@") ? d.email.split("@")[0] : "") || d.phone || "Session IA";
   const lead = {
-    name: d.name,
+    name: nomAffiche,
     email: d.email,
     service: SERVICE[qualification],
     timeline: d.profil === "entreprise" ? d.delai ?? "questions-ia" : "formation",
@@ -173,7 +176,7 @@ export async function POST(request: NextRequest) {
   await backupLead({
     page: "questions-ia",
     qualification,
-    name: d.name,
+    name: nomAffiche,
     email: d.email,
     phone: d.phone,
     details: message,

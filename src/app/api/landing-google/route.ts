@@ -16,9 +16,12 @@ const PAGES = ["agence-ia", "logiciel-sur-mesure", "formation-ia", "qa-tests-log
 
 const landingSchema = z.object({
   page: z.enum(PAGES),
-  name: z.string().trim().min(2).max(100),
+  // Optional since 2026-11-03: the page no longer asks for a name (e-mail or phone, by chosen mode).
+  name: z.string().trim().max(100).optional().default(""),
   // Anything typed is accepted, as on the 500-chf landing; a bad format is flagged, never refused.
-  phone: z.string().trim().min(1).max(40),
+  phone: z.string().trim().max(40).optional().default(""),
+  // How the person wants the call (2026-11-03). Missing = legacy client = phone.
+  mode: z.enum(["visio", "telephone"]).optional(),
   email: z.string().trim().toLowerCase().max(200).optional().default(""),
   team: z.preprocess((v) => (v === "" ? undefined : v), z.enum(["1-4", "5-20", "21-50", "50+"]).optional()),
   role: z.preprocess(
@@ -100,6 +103,13 @@ export async function POST(request: NextRequest) {
 
   const { page, name, phone, email, team, role, pain, pain_detail, origin, utm, event_id } =
     validated.data;
+  // One usable contact channel: the e-mail for a video call, the phone otherwise.
+  const mode = validated.data.mode;
+  if (!(mode === "visio" ? email.includes("@") : phone !== "")) {
+    return NextResponse.json({ error: "Vérifiez les champs du formulaire." }, { status: 400 });
+  }
+  // No name asked: the lead is listed under the mailbox name or the phone number.
+  const nomAffiche = name || (email.includes("@") ? email.split("@")[0] : "") || phone || "Lead";
   if (event_id && !(await claimOnce(`lead:landing-google:${event_id}`, 60 * 60))) {
     logger.warn("Landing-google duplicate submission ignored", { event_id });
     return NextResponse.json({ success: true });
@@ -107,8 +117,9 @@ export async function POST(request: NextRequest) {
 
   const qualified = !role || role === "dirigeant" || role === "direction";
   const message = [
-    `Téléphone : ${phone}`,
-    phoneLooksValid(phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
+    mode === "visio" ? "Session souhaitée : en visio (invitation par e-mail)" : "Session souhaitée : par téléphone",
+    phone ? `Téléphone : ${phone}` : "Téléphone : non donné (visio choisie)",
+    !phone || phoneLooksValid(phone) ? null : "Téléphone : format non reconnu, à vérifier avant d'appeler",
     role ? `Rôle déclaré : ${ROLE_LABELS[role]}` : null,
     team ? `Taille de l'entreprise : ${team} personnes` : null,
     pain ? `Besoin : ${NEED_LABELS[pain] ?? pain}` : null,
@@ -124,7 +135,7 @@ export async function POST(request: NextRequest) {
     .join("\n");
 
   const lead = {
-    name,
+    name: nomAffiche,
     email,
     service: qualified ? PAGE_LABELS[page] : `${PAGE_LABELS[page]} (non qualifié)`,
     timeline: origin || "landing",
@@ -135,7 +146,7 @@ export async function POST(request: NextRequest) {
   await backupLead({
     page,
     qualification: qualified ? "qualifie" : "non-qualifie",
-    name,
+    name: nomAffiche,
     email,
     phone,
     details: message,
