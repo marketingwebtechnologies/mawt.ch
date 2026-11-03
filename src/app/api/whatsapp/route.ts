@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { secureEqual } from "@/lib/secure-compare";
 import { sendInternalMail } from "@/lib/mail";
-import { verifierSignatureMeta, extraireEvenements, delaiReponseSecondes, masquerNumero, vientDuSite, PROPOSITION_PREMIER_MESSAGE } from "@/lib/whatsapp/pur";
+import { verifierSignatureMeta, extraireEvenements, delaiReponseSecondes, masquerNumero, vientDuSite, estPreremplSeul, PROPOSITION_PREMIER_MESSAGE } from "@/lib/whatsapp/pur";
 import { ajouterMessage, lireConversation, magasinDisponible, marquerOrigineSite, origineSite, premiereFois, reserverPlanification } from "@/lib/whatsapp/magasin";
 import { planifier, qstashDisponible } from "@/lib/whatsapp/qstash";
 
@@ -73,7 +73,11 @@ export async function POST(req: NextRequest) {
         void sendInternalMail(`[WhatsApp] Nouveau contact ${ev.nom || masquerNumero(ev.de)}`, [`Numéro : +${ev.de}`, `Nom WhatsApp : ${ev.nom || "(inconnu)"}`, "", "Premier message :", ev.texte, "",
            `Origine : ${duSite ? "bouton WhatsApp du guide (le double peut répondre)" : "inconnue (le double se tait)"}`,
            `Mode du double : ${process.env.WHATSAPP_DOUBLE_MODE || "off"}`,
-           ...(duSite ? ["", "Réponse proposée (à copier dans ton appli WhatsApp) :", PROPOSITION_PREMIER_MESSAGE] : [])].join("\n"), ALERTE_A);
+           ...(duSite
+             ? (estPreremplSeul(ev.texte)
+               ? ["", "Réponse proposée (à copier dans ton appli WhatsApp) :", PROPOSITION_PREMIER_MESSAGE]
+               : ["", "Le contact a ajouté une question ou un détail : lis-le et réponds-y directement (pas de formule toute faite)."])
+             : [])].join("\n"), ALERTE_A);
       }
 
       const mode = process.env.WHATSAPP_DOUBLE_MODE || "off";

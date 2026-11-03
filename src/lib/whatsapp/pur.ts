@@ -100,6 +100,25 @@ const MARQUEURS_SITE = ["j'ai lu l'ebook", "j'ai lu le guide mawt"];
  * Reply suggested in the "new contact" e-mail for a contact who came through the guide button
  * (Andrew's wording, 03.11.2026), to copy into the WhatsApp Business app while the double is off.
  */
+/** Prefilled texts of the guide button, current and previous wording. */
+const TEXTES_PREREMPLIS = [
+  "bonjour, j'ai lu l'ebook, j'aurais des questions.",
+  "bonjour, j'ai lu le guide mawt et j'aimerais en discuter :",
+];
+
+function squelette(t: string): string {
+  return normaliserTexte(t).replace(/[^a-z0-9]+/g, "");
+}
+
+/**
+ * True when the contact sent the prefilled text alone (nothing added): only then does the
+ * fixed opening formula fit. A message with an actual question gets a reply to that question.
+ */
+export function estPreremplSeul(texte: string): boolean {
+  const s = squelette(texte);
+  return s.length > 0 && TEXTES_PREREMPLIS.some((p) => squelette(p) === s);
+}
+
 export const PROPOSITION_PREMIER_MESSAGE =
   "Bonjour, ravi que vous ayez pris la peine de le lire. Avez-vous des questions concernant ce document, ou souhaitez-vous en discuter de vive voix ?";
 

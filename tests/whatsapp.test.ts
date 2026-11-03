@@ -2,8 +2,17 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import {
-  verifierSignatureMeta, extraireEvenements, delaiReponseSecondes, andrewALaMain, masquerNumero, normaliserNumero, vientDuSite,
+  verifierSignatureMeta, extraireEvenements, delaiReponseSecondes, andrewALaMain, masquerNumero, normaliserNumero, vientDuSite, estPreremplSeul,
 } from "../src/lib/whatsapp/pur";
+
+test("formule d'ouverture : seulement si le message prérempli est envoyé seul", () => {
+  assert.equal(estPreremplSeul("Bonjour, j'ai lu l'ebook, j'aurais des questions."), true);
+  assert.equal(estPreremplSeul("bonjour j’ai lu l’ebook j’aurais des questions"), true);
+  assert.equal(estPreremplSeul("Bonjour, j'ai lu le guide MAWT et j'aimerais en discuter : "), true);
+  assert.equal(estPreremplSeul("Bonjour, j'ai lu l'ebook, j'aurais des questions. Ça marche pour une fiduciaire ?"), false);
+  assert.equal(estPreremplSeul("Bonjour, j'ai lu le guide MAWT et j'aimerais en discuter : les devis"), false);
+  assert.equal(estPreremplSeul(""), false);
+});
 
 test("origine : seul le texte prérempli du bouton WhatsApp du guide ouvre le double", () => {
   assert.equal(vientDuSite("Bonjour, j'ai lu l'ebook, j'aurais des questions."), true);
