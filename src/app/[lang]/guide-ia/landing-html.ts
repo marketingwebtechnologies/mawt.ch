@@ -181,6 +181,17 @@ function suivre(nom){
   var champMail = document.getElementById("email");
   /* Une seule saisie : l'e-mail déjà donné ailleurs sur le site est repris (clé commune mawt-contact) */
   try { var deja = JSON.parse(localStorage.getItem("mawt-contact") || "null"); if (deja && deja.email && !champMail.value) champMail.value = deja.email; } catch (e) {}
+  /* Saisie non envoyée (03.11, comme sur les autres landings) : à la sortie du champ, l'e-mail tapé part
+     vers /api/saisie, une fois par valeur ; pas celui repris de ce navigateur, déjà connu. */
+  var dejaMail = champMail.value, vusMail = {};
+  champMail.addEventListener("blur", function () {
+    var val = champMail.value.trim();
+    if (!val || val === dejaMail || vusMail[val] || envoi) return;
+    vusMail[val] = true;
+    var m = /@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$/.exec(val);
+    var corps = { page: "guide-ia", champ: "email", valeur: val.slice(0, 200), format_ok: !!m, domaine: m ? m[1].toLowerCase() : "", utm: utm.join("&").slice(0, 600) };
+    try { fetch("/api/saisie", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corps) }); } catch (e) {}
+  });
   /* Bouton de fin de page et barre fixe mobile : ramènent au formulaire */
   function versFormulaire(){ form.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function(){ champMail.focus(); }, 450); }
   document.getElementById("cta2").addEventListener("click", versFormulaire);

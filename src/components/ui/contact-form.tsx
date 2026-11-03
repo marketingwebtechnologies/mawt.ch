@@ -85,6 +85,20 @@ const defaultLabels = {
   sending: "Sending...",
 };
 
+// 03.11 (owner: field capture everywhere): the e-mail typed then left is sent to /api/saisie,
+// once per value, flagged as not submitted, as on the landing pages.
+const saisiesVues = new Set<string>();
+function signalerSaisie(valeur: string) {
+  const v = valeur.trim();
+  if (!v || saisiesVues.has(v)) return;
+  saisiesVues.add(v);
+  const m = /@([A-Za-z0-9.-]+\.[A-Za-z]{2,})$/.exec(v);
+  const corps = { page: "contact", champ: "email", valeur: v.slice(0, 200), format_ok: !!m, domaine: m ? m[1].toLowerCase() : "" };
+  try {
+    fetch("/api/saisie", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corps) }).catch(() => {});
+  } catch {}
+}
+
 export function ContactForm({ dict, lang = "en" }: ContactFormProps) {
   const labels = {
     ...defaultLabels,
@@ -323,6 +337,7 @@ export function ContactForm({ dict, lang = "en" }: ContactFormProps) {
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      onBlur={(e) => signalerSaisie(e.currentTarget.value)}
                       aria-describedby={clientErrors.email || serverFieldError("email") ? "contact-email-error" : undefined}
                       aria-invalid={!!(clientErrors.email || serverFieldError("email"))}
                       className={cn(
