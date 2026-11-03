@@ -120,6 +120,13 @@ const landingHtml = `<!doctype html>
   .fin .succes-ou{margin:18px 0 0;font-size:15px;color:var(--corps)}
   a.cta{text-decoration:none;display:block}
   .erreur-envoi{color:var(--rouge);font-size:14px;font-weight:600;margin:10px 0 0}
+  /* 03.11 : l'ebook est remis après le lead, sur les écrans de fin (playbook : jamais promis dans la pub) */
+  .fin .ebook{margin:22px 0 0;display:flex;gap:14px;align-items:center;padding:14px 16px;background:#fff;border:1px solid var(--filet);border-radius:10px}
+  .fin .ebook img{width:56px;height:79px;object-fit:cover;border-radius:4px;flex:none;box-shadow:0 2px 8px rgba(0,43,54,.18)}
+  .fin .ebook div{min-width:0}
+  .fin .ebook small{display:block;font-size:13px;color:var(--gris)}
+  .fin .ebook b{display:block;margin:2px 0 6px;font-size:15px;line-height:1.3;color:var(--encre)}
+  .fin .ebook a{font-weight:700;font-size:15px;color:var(--mint-fonce);text-decoration:none}
 </style>
 <script>
 (function(){
@@ -185,7 +192,12 @@ function suivre(evt, params){
   (function(){
     var c = (new URLSearchParams(location.search).get("utm_content") || "").toLowerCase();
     var t = document.getElementById("hero-titre"), p = document.getElementById("hero-texte");
-    if (c.slice(0, 2) === "v3") {
+    if (c.slice(0, 2) === "c2") {
+      /* 03.11 : titre validé par le microtest (c2, CTR 1,55 %), repris mot pour mot ; l'ebook est remis après le lead */
+      t.innerHTML = "L&rsquo;IA en PME&#8239;: ce qui marche vraiment, et ce qui ne sert &agrave; rien";
+      p.innerHTML = "On vous le dit pour votre entreprise, pas en g&eacute;n&eacute;ral&#8239;: 30&#8239;minutes de questions-r&eacute;ponses, gratuitement, en visio ou par t&eacute;l&eacute;phone.";
+      document.documentElement.setAttribute("data-miroir", "c2");
+    } else if (c.slice(0, 2) === "v3") {
       t.innerHTML = "Perdu avec l&rsquo;IA&#8239;?";
       p.innerHTML = "On regarde comment vous travaillez et on vous dit o&ugrave; elle vous aide vraiment. Pas un webinaire, pas un argumentaire&#8239;: 30&#8239;minutes pour vos questions, gratuitement.";
       document.documentElement.setAttribute("data-miroir", "v3");
@@ -290,19 +302,22 @@ function suivre(evt, params){
     <!-- FINS -->
     <section class="ecran fin" data-id="fin-creneau">
       <h2>Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</h2>
-      <p class="succes-ou" id="creneau-aide">Cliquez sur un jour, puis sur une heure. Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies. Rappel la veille par e-mail.</p>
+      <p class="succes-ou" id="creneau-aide">Cliquez sur un jour, puis sur une heure. Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies.</p>
       <div id="cal-inline" style="min-height:520px;margin:12px 0"></div>
       <p class="pourquoi">Si l&rsquo;agenda ne s&rsquo;affiche pas&#8239;: <a class="cal-lien" href="https://cal.com/rdv-mawt/appel" target="_blank" rel="noopener">ouvrir l&rsquo;agenda dans un nouvel onglet</a>.</p>
+      <div class="ebook" data-ebook></div>
     </section>
 
     <section class="ecran fin" data-id="fin-ressource">
       <h2>Merci pour vos r&eacute;ponses.</h2>
-      <p class="succes-ou">Au vu de ce que vous d&eacute;crivez, une session de 30 minutes ne serait pas le bon format pour vous aujourd&rsquo;hui. On vous envoie par e-mail de quoi avancer seul(e), et la porte reste ouverte quand le moment viendra.</p>
+      <p class="succes-ou">Au vu de ce que vous d&eacute;crivez, une session de 30 minutes ne serait pas le bon format pour vous aujourd&rsquo;hui. Voici de quoi avancer seul(e), et la porte reste ouverte quand le moment viendra.</p>
+      <div class="ebook" data-ebook></div>
     </section>
 
     <section class="ecran fin" data-id="fin-non">
       <h2>Pas de souci, on vous contacte.</h2>
       <p class="succes-ou">On revient vers vous, par t&eacute;l&eacute;phone ou par e-mail selon ce que vous avez indiqu&eacute;, pour convenir d&rsquo;un moment qui vous arrange. Pas de relance insistante&#8239;: un message, et vous d&eacute;cidez.</p>
+      <div class="ebook" data-ebook></div>
     </section>
 
     <input type="hidden" name="origin" id="origine" value="hero">
@@ -538,6 +553,22 @@ function suivre(evt, params){
   });
   /* les coordonnées : le bouton s'active au fil de la saisie */
   form.addEventListener("input", majAvancer);
+
+  /* 03.11 : ebook remis après le lead, sur chaque écran de fin. Jamais promis dans la pub (playbook « Après validation ») :
+     c2 pour les visites venues de la pub c2, sinon « Par où commencer ». Fichiers publics de /guide-ia, même pixel que la page ebook. */
+  (function(){
+    var c = (new URLSearchParams(location.search).get("utm_content") || "").toLowerCase();
+    var e = c.slice(0, 2) === "c2" ? { slug: "c2-ce-qui-marche", titre: "L'IA en PME : ce qui marche vraiment, et ce qui ne sert à rien" }
+                                   : { slug: "d2-par-ou-commencer", titre: "Par où commencer avec l'IA dans votre PME" };
+    form.querySelectorAll("[data-ebook]").forEach(function(b){
+      var img = document.createElement("img"); img.src = "/guide-ia/couv/" + e.slug + ".webp"; img.alt = ""; img.width = 56; img.height = 79; img.loading = "lazy";
+      var d = document.createElement("div"), s = document.createElement("small"), t = document.createElement("b"), a = document.createElement("a");
+      s.textContent = "En attendant, votre ebook"; t.textContent = e.titre;
+      a.href = "/guide-ia/pdf/" + e.slug + ".pdf"; a.setAttribute("download", ""); a.textContent = "Télécharger l'ebook →";
+      a.addEventListener("click", function(){ suivre("guide_telecharge", { ebook: e.slug, origine: "questions-ia" }); try { if (window.fbq) fbq("trackCustom", "GuideTelecharge", { content_name: e.slug, origine: "questions-ia" }); } catch (x) {} });
+      d.appendChild(s); d.appendChild(t); d.appendChild(a); b.appendChild(img); b.appendChild(d);
+    });
+  })();
 
   /* Routage de fin */
   function destination(){
