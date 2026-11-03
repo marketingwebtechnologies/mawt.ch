@@ -54,11 +54,14 @@ async function deliver(mail: {
   to: string;
   subject: string;
   text: string;
+  html?: string;
   replyTo?: string;
+  from?: string;
 }) {
   const transport = getSmtpTransport();
   if (transport) {
-    await transport.sendMail({ from: defaultFrom(), ...mail });
+    const { from, ...reste } = mail;
+    await transport.sendMail({ from: from || defaultFrom(), ...reste });
     return true;
   }
 
@@ -72,11 +75,12 @@ async function deliver(mail: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: defaultFrom(),
+        from: mail.from || defaultFrom(),
         to: [mail.to],
         ...(mail.replyTo ? { reply_to: mail.replyTo } : {}),
         subject: mail.subject,
         text: mail.text,
+        ...(mail.html ? { html: mail.html } : {}),
       }),
     });
     if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
@@ -95,6 +99,20 @@ export async function sendInternalMail(subject: string, text: string, to?: strin
     return await deliver({ to: to || process.env.CONTACT_NOTIFY_TO || "info@mawt.ch", subject: sanitizeHeaderValue(subject), text });
   } catch (err) {
     logger.error("Internal mail failed", err, { subject });
+    return false;
+  }
+}
+
+/**
+ * Personal e-mail to a prospect in Andrew's name (Cal booking confirmation and reminder):
+ * HTML with his signature, answers go to aa@mawt.ch. Never throws.
+ */
+export async function sendProspectMail(to: string, subject: string, text: string, html: string): Promise<boolean> {
+  try {
+    const boite = process.env.SMTP_USER || "info@mawt.ch";
+    return await deliver({ to, subject: sanitizeHeaderValue(subject), text, html, replyTo: "aa@mawt.ch", from: `Andrew Awad, MAWT <${boite}>` });
+  } catch (err) {
+    logger.error("Prospect mail failed", err, { subject });
     return false;
   }
 }
