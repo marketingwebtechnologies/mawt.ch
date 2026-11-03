@@ -6,6 +6,8 @@ import {
 } from "../src/lib/whatsapp/pur";
 
 test("origine : seul le texte prérempli du bouton WhatsApp du guide ouvre le double", () => {
+  assert.equal(vientDuSite("Bonjour, j'ai lu l'ebook, j'aurais des questions."), true);
+  assert.equal(vientDuSite("Bonjour, j’ai lu l’ebook, j’aurais des questions sur les devis"), true);
   assert.equal(vientDuSite("Bonjour, j'ai lu le guide MAWT et j'aimerais en discuter : les devis"), true);
   assert.equal(vientDuSite("bonjour  J’AI lu le Guide mawt"), true);
   assert.equal(vientDuSite("Salut Andrew, c'est Marc, on se voit ce soir ?"), false);

@@ -89,11 +89,19 @@ export function andrewALaMain(dernierEchoMs: number | null, maintenantMs: number
 /**
  * Site origin (Andrew, 03.11.2026): the double only talks to people who came through the WhatsApp
  * button of the guide page, recognised by the prefilled text of its wa.me link
- * ("Bonjour, j'ai lu le guide MAWT et j'aimerais en discuter : "). Anyone else (friends, clients,
- * unknown numbers) is stored and reported, never answered. Matching ignores case, accents and
- * typographic apostrophes so a lightly edited message still counts.
+ * ("Bonjour, j'ai lu l'ebook, j'aurais des questions." since 03.11 12 h; the older wording
+ * "j'ai lu le guide MAWT" is still accepted for pages opened before). Anyone else (friends,
+ * clients, unknown numbers) is stored and reported, never answered. Matching ignores case,
+ * accents and typographic apostrophes so a lightly edited message still counts.
  */
-const MARQUEURS_SITE = ["j'ai lu le guide mawt"];
+const MARQUEURS_SITE = ["j'ai lu l'ebook", "j'ai lu le guide mawt"];
+
+/**
+ * Reply suggested in the "new contact" e-mail for a contact who came through the guide button
+ * (Andrew's wording, 03.11.2026), to copy into the WhatsApp Business app while the double is off.
+ */
+export const PROPOSITION_PREMIER_MESSAGE =
+  "Bonjour, ravi que vous ayez pris la peine de le lire. Avez-vous des questions concernant ce document, ou souhaitez-vous en discuter de vive voix ?";
 
 function normaliserTexte(t: string): string {
   return String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[’‘]/g, "'").replace(/\s+/g, " ").trim();

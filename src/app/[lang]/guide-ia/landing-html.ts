@@ -123,7 +123,7 @@ function suivre(nom){
       <p>Votre ebook est prêt. Vous le recevez aussi par e-mail pour le garder.</p>
       <a class="dl" id="dl" href="/guide-ia/pdf/d2-par-ou-commencer.pdf" download>Télécharger l'ebook →</a>
       <p class="apres">Vous voulez en discuter ?</p>
-      <a class="q" id="wa" href="https://wa.me/41766363333?text=Bonjour%2C%20j%27ai%20lu%20le%20guide%20MAWT%20et%20j%27aimerais%20en%20discuter%20%3A%20"><img src="/guide-ia/whatsapp.svg" alt="" width="22" height="22">Écrivez-moi sur WhatsApp →</a>
+      <a class="q" id="wa" href="https://wa.me/41766363333?text=Bonjour%2C%20j%27ai%20lu%20l%27ebook%2C%20j%27aurais%20des%20questions."><img src="/guide-ia/whatsapp.svg" alt="" width="22" height="22">Écrivez-moi sur WhatsApp →</a>
     </div>
     <section class="dedans" id="dedans">
       <h2>Dans l'ebook</h2>
