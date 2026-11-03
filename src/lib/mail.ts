@@ -89,6 +89,16 @@ async function deliver(mail: {
   return false;
 }
 
+/** Internal plain-text mail to the team mailbox (alerts, WhatsApp journal). Never throws. */
+export async function sendInternalMail(subject: string, text: string, to?: string): Promise<boolean> {
+  try {
+    return await deliver({ to: to || process.env.CONTACT_NOTIFY_TO || "info@mawt.ch", subject: sanitizeHeaderValue(subject), text });
+  } catch (err) {
+    logger.error("Internal mail failed", err, { subject });
+    return false;
+  }
+}
+
 /** Internal notification: a new lead landed. */
 export async function sendLeadNotification(lead: Lead) {
   const to = process.env.CONTACT_NOTIFY_TO || "info@mawt.ch";
