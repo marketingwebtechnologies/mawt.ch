@@ -14,7 +14,8 @@ export function qstashDisponible(): boolean {
 export async function planifier(url: string, corps: Record<string, unknown>, delaiSecondes: number, idDedup: string): Promise<string> {
   const jeton = process.env.QSTASH_TOKEN;
   if (!jeton) throw new Error("QStash non configuré");
-  const res = await fetch(`https://qstash.upstash.io/v2/publish/${url}`, {
+  const base = (process.env.QSTASH_URL || "https://qstash.upstash.io").replace(/\/+$/, "");
+  const res = await fetch(`${base}/v2/publish/${url}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${jeton}`,
