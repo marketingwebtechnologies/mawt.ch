@@ -14,7 +14,7 @@ export function verifierSignatureCal(corpsBrut: string, enTete: string | null, s
 }
 
 /** Only the two discovery-call links trigger the prospect e-mails. */
-export const SLUGS_APPEL = ["appel", "appel-telephone"];
+export const SLUGS_APPEL = ["appel", "appel-telephone", "cours-ia", "cours-ia-telephone"];
 
 export type Reservation = {
   evenement: "creee" | "replanifiee" | "annulee" | "autre";

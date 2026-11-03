@@ -511,7 +511,7 @@ function suivre(nom, params){
         <input type="hidden" name="utm" value="">
         <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
       </form>
-      <div class="succes"><p>Merci. Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</p><p class="succes-ou" data-aide-creneau>Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies.</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel-telephone" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
+      <div class="succes"><p>Merci. Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</p><p class="succes-ou" data-aide-creneau>Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies.</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/cours-ia-telephone" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
     </div>
   </section>
 </main>
@@ -582,7 +582,7 @@ function suivre(nom, params){
         <input type="text" name="mawt_hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0">
       </form>
   <span id="indice-origine" hidden></span>
-  <div class="succes"><p>Merci. Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</p><p class="succes-ou" data-aide-creneau>Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies.</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/appel-telephone" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
+  <div class="succes"><p>Merci. Derni&egrave;re &eacute;tape&#8239;: choisissez votre cr&eacute;neau.</p><p class="succes-ou" data-aide-creneau>Vos coordonn&eacute;es sont d&eacute;j&agrave; remplies.</p><a class="cta cal-lien" href="https://cal.com/rdv-mawt/cours-ia-telephone" target="_blank" rel="noopener">Choisir mon cr&eacute;neau maintenant</a></div><div class="refus"><p>Merci pour votre demande.</p><p class="succes-ou">Cet appel s&rsquo;adresse aux personnes qui dirigent une entreprise ou une &eacute;quipe. Nous gardons vos coordonn&eacute;es et revenons vers vous si nous pouvons vous aider.</p></div>
 </div>
 
 <script>
@@ -813,7 +813,7 @@ function suivre(nom, params){
        Téléphone : rendez-vous « appel-telephone » (confirmation par numéro, e-mail masqué). */
     lien.dataset.nom = visio ? (mail.split("@")[0] || "").replace(/[._-]+/g, " ").replace(/\\b\\w/g, function(c){ return c.toUpperCase(); }) : "";
     lien.dataset.mail = mail; lien.dataset.tel = visio ? "" : tel;
-    lien.dataset.cal = visio ? "rdv-mawt/appel" : "rdv-mawt/appel-telephone";
+    lien.dataset.cal = visio ? "rdv-mawt/cours-ia" : "rdv-mawt/cours-ia-telephone";
     lien.dataset.lieu = visio ? JSON.stringify({ value: "integrations:daily", optionValue: "" }) : "";
     lien.href = "https://cal.com/" + lien.dataset.cal + "?name=" + encodeURIComponent(lien.dataset.nom) + "&email=" + encodeURIComponent(mail)
       + (lien.dataset.lieu ? "&location=" + encodeURIComponent(lien.dataset.lieu) : "") + (lien.dataset.tel ? "&attendeePhoneNumber=" + encodeURIComponent(lien.dataset.tel) : "");
@@ -829,7 +829,7 @@ function suivre(nom, params){
     var cfg = { name: a.dataset.nom || "", email: a.dataset.mail || "", theme: "light" };
     if (a.dataset.lieu) { cfg.location = a.dataset.lieu; }
     if (a.dataset.tel) { cfg.attendeePhoneNumber = a.dataset.tel; }
-    Cal("modal", { calLink: a.dataset.cal || "rdv-mawt/appel", config: cfg });
+    Cal("modal", { calLink: a.dataset.cal || "rdv-mawt/cours-ia", config: cfg });
   });
   /* Envoi de secours : si l'API du site ne répond pas, la réponse part directement
      vers la feuille Google (Apps Script), hors Vercel. Retourne true si le navigateur
