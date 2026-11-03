@@ -408,8 +408,8 @@ function suivre(nom, params){
 
 <main>
   <section class="hero conteneur" id="hero">
-    <h1 id="accroche-titre">Int&eacute;grer l&rsquo;IA. Former vos &eacute;quipes.</h1>
-    <p class="accroche" id="accroche-texte">Pas un cours th&eacute;orique&#8239;: on part de vos t&acirc;ches r&eacute;elles, on met l&rsquo;IA en place avec vous, et vos &eacute;quipes apprennent &agrave; s&rsquo;en servir sur leur propre travail.</p>
+    <h1 id="accroche-titre">Formation IA sur mesure, selon vos besoins.</h1>
+    <p class="accroche" id="accroche-texte">D&eacute;butant ou d&eacute;j&agrave; &agrave; l&rsquo;aise, pas un cours th&eacute;orique&#8239;: on part de vos t&acirc;ches r&eacute;elles, on met l&rsquo;IA en place avec vous, et vos &eacute;quipes apprennent &agrave; s&rsquo;en servir sur leur propre travail.</p>
     <p class="promesse">Un appel de 30&#8239;minutes pour voir ce qui vaut la peine chez vous. Gratuit, sans engagement.</p>
     <button class="cta" data-origine="hero">R&eacute;server mon appel de 30&#8239;min</button>
     <span class="micro">Vous choisissez le cr&eacute;neau.</span>
