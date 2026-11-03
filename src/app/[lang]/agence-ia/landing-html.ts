@@ -900,6 +900,8 @@ function suivre(nom, params){
   function signalerBlocage(champs, page){
     var cle = JSON.stringify(champs);
     if (dejaSignale[cle] || !(champs.email || champs.phone)) return;
+    /* 03.11 : les parcours de test remplissent le pot de miel ; leurs blocages ne vont pas dans la feuille */
+    if (Array.prototype.some.call(document.querySelectorAll('input[name=mawt_hp]'), function(i){ return i.value; })) return;
     dejaSignale[cle] = true;
     envoiSecours(Object.assign({ source: "navigateur-bloque" }, champs), page, "validation refusee");
   }
