@@ -395,6 +395,7 @@ function suivre(evt, params){
   }
   function ecranParId(id){ return ecrans.filter(function(e){ return e.getAttribute("data-id") === id; })[0]; }
 
+  var etapesVues = {};
   function montrer(ecran){
     if (courant) { courant.classList.remove("actif"); }
     courant = ecran;
@@ -422,6 +423,9 @@ function suivre(evt, params){
     var premier = ecran.querySelector("textarea, input:not([type=hidden]), .option, .cta");
     if (premier && !fin) { setTimeout(function(){ premier.focus({ preventScroll: true }); }, 60); }
     suivre("quiz_step", { step: ecran.getAttribute("data-id"), profil: reponses.profil || "" });
+    /* 04.11 : un nom d'événement par écran, une fois par visite, pour lire l'abandon écran par écran dans GA4 sans dimension personnalisée */
+    var idE = ecran.getAttribute("data-id");
+    if (["profil", "taille", "investir", "coordonnees"].indexOf(idE) !== -1 && !etapesVues[idE]) { etapesVues[idE] = true; suivre("etape_" + idE, { profil: reponses.profil || "" }); }
   }
 
   /* « Suivant » n'est actif que si l'écran courant a sa réponse ; on ne saute jamais une question */
@@ -606,7 +610,7 @@ function suivre(evt, params){
     Cal("init", { origin: "https://app.cal.com" });
     /* 02.11 : sans l'en-tête de l'événement, le calendrier est la première chose visible */
     Cal("ui", { theme: "light", cssVarsPerTheme: { light: { "cal-brand": "#1E9E72" } }, hideEventTypeDetails: true });
-    Cal("on", { action: "bookingSuccessful", callback: function(){ if (window.oaiq) { oaiq("measure", "appointment_scheduled", { type: "customer_action" }); } } });
+    Cal("on", { action: "bookingSuccessful", callback: function(){ suivre("cal_reserve", { profil: reponses.profil || "" }); if (window.oaiq) { oaiq("measure", "appointment_scheduled", { type: "customer_action" }); } } });
   }
   function majCal(){
     var lien = form.querySelector(".cal-lien");
