@@ -221,6 +221,13 @@ function suivre(evt, params){
       t.innerHTML = "L&rsquo;IA en PME&#8239;: ce qui marche vraiment, et ce qui ne sert &agrave; rien";
       p.innerHTML = "On vous le dit pour votre entreprise, pas en g&eacute;n&eacute;ral&#8239;: 30&#8239;minutes de questions-r&eacute;ponses, gratuitement, en visio ou par t&eacute;l&eacute;phone.";
       document.documentElement.setAttribute("data-miroir", "c2");
+      /* 04.11 : la pub site offert annonce le bonus, la page le reprend sous le texte (jamais en titre, decision du 03.11) */
+      if (c === "c2-site-offert") { p.innerHTML += "<br><br><strong>En bonus&#8239;: un site internet d&rsquo;une valeur de 3&#8239;000&nbsp;CHF offert pour tout accompagnement.</strong>"; }
+    } else if (c.slice(0, 7) === "soirees") {
+      /* 04.11 : video soirees habillee, accroche retenue par Andrew (« Encore au bureau ce soir ? ») */
+      t.innerHTML = "Encore au bureau ce soir&#8239;?";
+      p.innerHTML = "Devis, relances, factures&#8239;: l&rsquo;IA les pr&eacute;pare et les envoie, vous validez. On vous montre comment, pour votre entreprise, en 30&#8239;minutes gratuites, en visio ou par t&eacute;l&eacute;phone.";
+      document.documentElement.setAttribute("data-miroir", "soirees");
     } else if (c.slice(0, 2) === "v3") {
       t.innerHTML = "Perdu avec l&rsquo;IA&#8239;?";
       p.innerHTML = "On regarde comment vous travaillez et on vous dit o&ugrave; elle vous aide vraiment. Pas un webinaire, pas un argumentaire&#8239;: 30&#8239;minutes pour vos questions, gratuitement.";
