@@ -425,7 +425,9 @@ function suivre(evt, params){
     suivre("quiz_step", { step: ecran.getAttribute("data-id"), profil: reponses.profil || "" });
     /* 04.11 : un nom d'événement par écran, une fois par visite, pour lire l'abandon écran par écran dans GA4 sans dimension personnalisée */
     var idE = ecran.getAttribute("data-id");
-    if (["profil", "taille", "investir", "coordonnees"].indexOf(idE) !== -1 && !etapesVues[idE]) { etapesVues[idE] = true; suivre("etape_" + idE, { profil: reponses.profil || "" }); }
+    if (["profil", "taille", "investir", "coordonnees"].indexOf(idE) !== -1 && !etapesVues[idE]) { etapesVues[idE] = true; suivre("etape_" + idE, { profil: reponses.profil || "" });
+      /* 04.11 : l'écran des coordonnées part aussi au pixel Meta, signal plus fréquent que le lead pour optimiser plus tard */
+      if (idE === "coordonnees" && window.fbq) { fbq("trackCustom", "EtapeCoordonnees", { profil: reponses.profil || "", taille: reponses.taille || "" }); } }
   }
 
   /* « Suivant » n'est actif que si l'écran courant a sa réponse ; on ne saute jamais une question */
@@ -754,6 +756,7 @@ function suivre(evt, params){
   function ouvrir(origine){
     document.getElementById("origine").value = origine || "hero";
     suivre("cta_click", { origin: origine || "hero" });
+    if (window.fbq && !window.__formOuvert) { window.__formOuvert = true; fbq("trackCustom", "FormulaireOuvert", { origin: origine || "hero" }); }
     quiz.classList.add("ouvert");
     posScroll = window.scrollY || 0;
     document.body.style.overflow = "hidden";
