@@ -339,6 +339,23 @@ const landingHtml = `<!doctype html>
   else { setTimeout(chargerGA, 1500); }
   /* Microsoft Clarity : sessions + heatmaps */
   (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ynxcutb3fv");
+  /* 04.11 : signal d'arrivée (trafic payant seulement) pour l'alerte du tableau de pilotage, avec la session Clarity à suivre en live */
+  try {
+    (function () {
+      var q = new URLSearchParams(location.search);
+      try { if (q.get("interne") === "1") localStorage.setItem("mawt-interne", "1"); if (localStorage.getItem("mawt-interne")) return; } catch (e) {}
+      var src = (q.get("utm_source") || "").toLowerCase();
+      if (navigator.webdriver || !(q.get("gclid") || q.get("fbclid") || /^(meta|facebook|instagram|google|chatgpt|openai)$/.test(src))) return;
+      var envoye = false;
+      var envoyer = function (m) {
+        if (envoye) return; envoye = true;
+        var corps = { page: "agence-ia", utm: location.search.slice(1, 600), ref: document.referrer.slice(0, 200), clarity_u: (m && m.userId) || "", clarity_s: (m && m.sessionId) || "", trace: window.__trace || "" };
+        try { fetch("/api/arrivee", { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corps) }); } catch (e) {}
+      };
+      try { clarity("metadata", function (m) { envoyer(m); }, false); } catch (e) {}
+      setTimeout(function () { envoyer(null); }, 6000);
+    })();
+  } catch (e) {}
   try {
     var pq = new URLSearchParams(location.search);
     clarity("set", "landing", "agence-ia");
