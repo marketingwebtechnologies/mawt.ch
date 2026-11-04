@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
-import { sendInternalMail, sendProspectMail } from "@/lib/mail";
+import { dateHeureSuisse, sendInternalMail, sendProspectMail } from "@/lib/mail";
 import { SLUGS_APPEL, SAUT_MAX_SECONDES, delaiRappelSecondes, formaterCreneau, lireReservation, verifierSignatureCal } from "@/lib/cal/pur";
 import { mailConfirmation, messageWhatsAppAndrew } from "@/lib/cal/textes";
 import { annulerRdv, enregistrerRdv, magasinCalDisponible } from "@/lib/cal/magasin";
@@ -65,21 +65,42 @@ export async function POST(req: NextRequest) {
     // 3. Andrew's same-day message (text 2), ready to send.
     const { jour, heure } = formaterCreneau(r.debut);
     const wa = messageWhatsAppAndrew(r);
+    const qui = `${r.nom} (${r.email}${r.telephone ? `, ${r.telephone}` : ""})`;
+    const quand = `Appel : ${jour} à ${heure} (${r.slug === "appel-telephone" ? "téléphone" : "visio ou téléphone"})`;
+    const echap = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    // 04.11 : bouton dans la version HTML, jamais le lien wa.me brut (il ressemblait à un virus)
+    const recu = `Réservé le ${dateHeureSuisse(new Date())}`;
+    const html = [
+      `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5;color:#111">`,
+      `<p style="margin:0 0 12px;color:#666;font-size:13px">${echap(recu)}</p>`,
+      `<p style="margin:0 0 4px"><b>${echap(qui)}</b></p>`,
+      `<p style="margin:0 0 16px">${echap(quand)}</p>`,
+      `<p style="margin:0 0 6px">Envoie-lui ce message aujourd'hui sur WhatsApp :</p>`,
+      `<p style="margin:0 0 16px;padding:10px 12px;background:#f3f4f2;border-radius:8px">${echap(wa.texte)}</p>`,
+      wa.lien
+        ? `<p style="margin:0 0 20px"><a href="${echap(wa.lien)}" style="display:inline-block;padding:10px 18px;background:#25D366;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold">Ouvrir WhatsApp avec le message</a></p>`
+        : `<p style="margin:0 0 20px">Pas de numéro exploitable pour WhatsApp : envoie-le par e-mail.</p>`,
+      `<p style="margin:0;color:#666;font-size:13px">E-mail de confirmation au prospect : ${echap(confirmation)}<br>Rappel de la veille : ${echap(rappel)}</p>`,
+      `</div>`,
+    ].join("");
     void sendInternalMail(
       `[Cal] ${r.evenement === "replanifiee" ? "Rendez-vous décalé" : "Nouveau rendez-vous"} : ${r.nom || r.email}, ${jour} ${heure}`,
       [
-        `${r.nom} (${r.email}${r.telephone ? `, ${r.telephone}` : ""})`,
-        `Appel : ${jour} à ${heure} (${r.slug === "appel-telephone" ? "téléphone" : "visio ou téléphone"})`,
+        recu,
+        "",
+        qui,
+        quand,
         "",
         "Envoie-lui ce message aujourd'hui, depuis ton appli WhatsApp :",
         wa.texte,
         "",
-        wa.lien ? `En un geste (ouvre WhatsApp avec le message prêt) : ${wa.lien}` : "Pas de numéro exploitable pour WhatsApp : envoie-le par e-mail.",
+        wa.lien ? "Le bouton « Ouvrir WhatsApp » est dans la version HTML de cet e-mail." : "Pas de numéro exploitable pour WhatsApp : envoie-le par e-mail.",
         "",
         `E-mail de confirmation au prospect : ${confirmation}`,
         `Rappel de la veille : ${rappel}`,
       ].join("\n"),
       ANDREW,
+      html,
     );
     logger.info("Cal webhook: rendez-vous traité", { evenement: r.evenement, slug: r.slug, confirmation, rappel });
   } catch (err) {

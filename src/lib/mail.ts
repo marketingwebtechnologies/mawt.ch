@@ -94,9 +94,9 @@ async function deliver(mail: {
 }
 
 /** Internal plain-text mail to the team mailbox (alerts, WhatsApp journal). Never throws. */
-export async function sendInternalMail(subject: string, text: string, to?: string): Promise<boolean> {
+export async function sendInternalMail(subject: string, text: string, to?: string, html?: string): Promise<boolean> {
   try {
-    return await deliver({ to: to || process.env.CONTACT_NOTIFY_TO || "info@mawt.ch", subject: sanitizeHeaderValue(subject), text });
+    return await deliver({ to: to || process.env.CONTACT_NOTIFY_TO || "info@mawt.ch", subject: sanitizeHeaderValue(subject), text, ...(html ? { html } : {}) });
   } catch (err) {
     logger.error("Internal mail failed", err, { subject });
     return false;
@@ -117,6 +117,13 @@ export async function sendProspectMail(to: string, subject: string, text: string
   }
 }
 
+/** « mercredi 4 novembre 2026 à 17 h 13 », heure suisse, pour les e-mails internes. */
+export function dateHeureSuisse(d: Date): string {
+  const jour = new Intl.DateTimeFormat("fr-CH", { timeZone: "Europe/Zurich", weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(d).replace(",", "");
+  const [h, m] = new Intl.DateTimeFormat("fr-CH", { timeZone: "Europe/Zurich", hour: "2-digit", minute: "2-digit", hour12: false }).format(d).split(":");
+  return `${jour} à ${Number(h)} h ${m}`;
+}
+
 /** Internal notification: a new lead landed. */
 export async function sendLeadNotification(lead: Lead) {
   const to = process.env.CONTACT_NOTIFY_TO || "info@mawt.ch";
@@ -131,6 +138,8 @@ export async function sendLeadNotification(lead: Lead) {
         `Nouveau lead : ${lead.name}${lead.service ? ` (${lead.service})` : ""}`,
       ),
       text: [
+        `Reçu le ${dateHeureSuisse(new Date())}`, // 04.11 : date et heure demandées par Andrew
+        "",
         `Nom : ${lead.name}`,
         `Email : ${lead.email}`,
         lead.service ? `Service : ${lead.service}` : null,

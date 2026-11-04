@@ -104,17 +104,26 @@ export function SiteFooter({
                   the entity from visible HTML, not only from the schema).
                   tel: is RFC 3966 (no separators); the label stays formatted. */}
               {dict.address && (
-                <address className="not-italic text-xs-fluid text-black/60 space-y-1">
-                  <p>MAWT, {dict.address}</p>
+                <address className="not-italic text-xs-fluid text-black/60 space-y-3">
+                  {/* 04.11 : rue et code postal sur deux lignes, adresse ouverte dans Maps */}
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`MAWT, ${dict.address}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block leading-relaxed underline decoration-black/20 underline-offset-4 hover:text-black transition-colors"
+                  >
+                    <span className="block">MAWT</span>
+                    {String(dict.address).split(", ").map((ligne: string) => (
+                      <span key={ligne} className="block">{ligne}</span>
+                    ))}
+                  </a>
                   {dict.phoneDisplay && (
-                    <p>
-                      <a
-                        href={`tel:${String(dict.phoneDisplay).replace(/[^+\d]/g, "")}`}
-                        className="hover:text-black transition-colors"
-                      >
-                        {dict.phoneDisplay}
-                      </a>
-                    </p>
+                    <a
+                      href={`tel:${String(dict.phoneDisplay).replace(/[^+\d]/g, "")}`}
+                      className="block underline decoration-black/20 underline-offset-4 hover:text-black transition-colors"
+                    >
+                      {dict.phoneDisplay}
+                    </a>
                   )}
                 </address>
               )}

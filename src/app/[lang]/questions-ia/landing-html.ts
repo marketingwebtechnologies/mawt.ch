@@ -13,6 +13,11 @@ const landingHtml = `<!doctype html>
 @font-face{font-family:'Gilroy';src:url('/500-chf-assets/fonts/SVN-Gilroy-Regular.otf') format('opentype');font-weight:400;font-display:swap}
 @font-face{font-family:'Gilroy';src:url('/500-chf-assets/fonts/SVN-Gilroy-SemiBold.otf') format('opentype');font-weight:600;font-display:swap}
 @font-face{font-family:'Gilroy';src:url('/500-chf-assets/fonts/SVN-Gilroy-Bold.otf') format('opentype');font-weight:800;font-display:swap}
+  /* 04.11 : contact visible en bas de chaque landing (e-mail, numéro, adresse cliquables) */
+  footer .conteneur{flex-wrap:wrap}
+  .contact-mawt{font-style:normal;display:flex;flex-direction:column;gap:6px;margin-top:14px;flex-basis:100%;font-size:13px;line-height:1.5}
+  .contact-mawt a{color:inherit;text-decoration:underline;text-decoration-color:currentColor;text-decoration-thickness:1px;text-underline-offset:3px;opacity:.85}
+  .contact-mawt span{display:block}
 </style>
 <style>
   :root{
@@ -248,6 +253,7 @@ function suivre(evt, params){
       <a href="https://mawt.ch/fr/legal">Mentions l&eacute;gales</a>
       <a href="https://mawt.ch/fr/cookies">Confidentialit&eacute;</a>
     </div>
+    <address class="contact-mawt"><a href="mailto:aa@mawt.ch">aa@mawt.ch</a><a href="tel:+41766363333">+41 76 636 33 33</a><a href="https://www.google.com/maps/search/?api=1&amp;query=MAWT%2C%20Rue%20de%20la%20Fontenette%2023%2C%201227%20Carouge" target="_blank" rel="noopener"><span>Rue de la Fontenette 23</span><span>1227 Carouge (Gen&egrave;ve)</span></a></address>
   </div>
 </footer>
 

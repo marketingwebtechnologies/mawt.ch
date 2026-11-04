@@ -67,6 +67,11 @@ footer{border-top:1px solid var(--filet);padding:20px 24px 84px;font-size:14px;c
   h1{font-size:30px}.st{font-size:18px}
   ol.sommaire{columns:1}
 }
+  /* 04.11 : contact visible en bas de chaque landing (e-mail, numéro, adresse cliquables) */
+  footer .conteneur{flex-wrap:wrap}
+  .contact-mawt{font-style:normal;display:flex;flex-direction:column;gap:6px;margin-top:14px;flex-basis:100%;font-size:13px;line-height:1.5}
+  .contact-mawt a{color:inherit;text-decoration:underline;text-decoration-color:currentColor;text-decoration-thickness:1px;text-underline-offset:3px;opacity:.85}
+  .contact-mawt span{display:block}
 </style>
 <script>
 (function(){
@@ -167,7 +172,7 @@ function suivre(nom){
   </div>
 </main>
 <div class="barre" id="barre"><button type="button" id="barre-btn">Recevoir l'ebook</button></div>
-<footer>MAWT · Automatisation et IA pour les PME romandes · Rue de la Fontenette 23, 1227 Carouge</footer>
+<footer><div>MAWT &middot; Automatisation et IA pour les PME romandes</div><address class="contact-mawt"><a href="mailto:aa@mawt.ch">aa@mawt.ch</a><a href="tel:+41766363333">+41 76 636 33 33</a><a href="https://www.google.com/maps/search/?api=1&amp;query=MAWT%2C%20Rue%20de%20la%20Fontenette%2023%2C%201227%20Carouge" target="_blank" rel="noopener"><span>Rue de la Fontenette 23</span><span>1227 Carouge (Gen&egrave;ve)</span></a></address></footer>
 <script>
 (function(){
   var G = {
