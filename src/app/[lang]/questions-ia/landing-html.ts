@@ -110,6 +110,10 @@ const landingHtml = `<!doctype html>
   .retour{width:52px;height:44px;border:none;background:var(--mint);font-family:inherit;font-weight:800;font-size:18px;color:var(--encre);border-radius:8px;cursor:pointer}
   .retour[disabled]{background:var(--filet);color:var(--gris);cursor:default}
   .compteur{font-size:13px;color:var(--gris)}
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 4px}
+  .choix-mode{padding:14px 12px;background:#FFFFFF;border:1.5px solid var(--champ);border-radius:10px;font-family:inherit;font-size:16px;font-weight:600;color:var(--encre);cursor:pointer;transition:border-color .12s ease,background .12s ease}
+  .choix-mode.choisi{border-color:var(--mint-fonce);background:#EEF9F4}
+  .modes.invalide .choix-mode{border-color:#C0392B}
   .engagement p{margin:14px 0 0;font-size:16px;line-height:1.5;color:var(--corps)}
   .engagement strong{color:var(--encre)}
 
@@ -256,7 +260,6 @@ function suivre(evt, params){
 
     <!-- 1 profil -->
     <section class="ecran" data-id="profil" data-champ="profil" data-type="unique">
-      <span class="num">1</span>
       <h2>Ce qui vous d&eacute;crit le mieux</h2>
       <div class="options">
         <button type="button" class="option" data-valeur="entreprise"><b>A</b>Je dirige une entreprise et je veux savoir comment l&rsquo;IA peut m&rsquo;aider concr&egrave;tement</button>
@@ -266,7 +269,6 @@ function suivre(evt, params){
 
     <!-- ENTREPRISE -->
     <section class="ecran" data-id="taille" data-branche="entreprise" data-champ="taille" data-type="unique">
-      <span class="num">2</span>
       <h2>Combien de personnes travaillent dans votre entreprise&#8239;?</h2>
       <div class="options">
         <button type="button" class="option" data-valeur="1-4"><b>A</b>1 &agrave; 4</button>
@@ -278,7 +280,6 @@ function suivre(evt, params){
 
 <!-- FORMATION -->
 <section class="ecran" data-id="investir" data-branche="formation" data-champ="investir" data-type="unique">
-      <span class="num">2</span>
       <h2>Si la session vous donne un plan clair, seriez-vous pr&ecirc;t(e) &agrave; investir dans une formation&#8239;?</h2>
       <div class="options">
         <button type="button" class="option" data-valeur="oui"><b>A</b>Oui, si &ccedil;a correspond &agrave; mon besoin</button>
@@ -289,34 +290,18 @@ function suivre(evt, params){
     </section>
 
 <!-- COMMUN -->
-    <!-- 02.11 : visio ou téléphone, au choix ; en visio le numéro n'est plus demandé -->
-    <section class="ecran" data-id="mode" data-champ="mode" data-type="unique">
-      <span class="num" data-num-e="3" data-num-f="3">3</span>
-      <h2>Comment pr&eacute;f&eacute;rez-vous faire la session&#8239;?</h2>
-      <div class="options">
-        <button type="button" class="option" data-valeur="visio"><b>A</b>En visio, invitation envoy&eacute;e par e-mail</button>
-        <button type="button" class="option" data-valeur="telephone"><b>B</b>Par t&eacute;l&eacute;phone, on vous appelle</button>
-      </div>
-    </section>
-
     <section class="ecran" data-id="coordonnees" data-type="coordonnees">
-      <span class="num" data-num-e="4" data-num-f="4">4</span>
       <h2 id="coord-titre">O&ugrave; vous joindre pour la session</h2>
-      <!-- 03.11 : plus de nom ; un seul champ selon le mode choisi (visio = e-mail, t&eacute;l&eacute;phone = num&eacute;ro) -->
+      <p class="pourquoi">Derni&egrave;re &eacute;tape, 20 secondes, puis vous choisissez votre cr&eacute;neau.</p>
+      <!-- 04.11 : visio ou appel choisi ici, au-dessus des deux champs (un seul écran) -->
+      <div class="modes" role="group" aria-label="Format de la session">
+        <button type="button" class="choix-mode" data-mode="visio">En visio</button>
+        <button type="button" class="choix-mode" data-mode="telephone">Par t&eacute;l&eacute;phone</button>
+      </div>
       <div class="champ-groupe" id="grp-mail"><label for="c-mail">Votre e-mail <span id="c-mail-opt" class="opt"></span></label><input id="c-mail" name="email" type="email" autocomplete="email" inputmode="email" placeholder="prenom@entreprise.ch"><span class="erreur-msg" data-msg-generique="Indiquez un e-mail valide." data-msg-pro="Pour une entreprise, indiquez l&rsquo;adresse de votre soci&eacute;t&eacute;, pas une adresse personnelle.">Indiquez un e-mail valide, c&rsquo;est l&agrave; qu&rsquo;arrive le lien.</span></div>
       <div class="champ-groupe" id="grp-tel"><label for="c-tel">Votre num&eacute;ro de t&eacute;l&eacute;phone <span id="c-tel-opt" class="opt"></span></label><input id="c-tel" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="079 &hellip;" required><span class="erreur-msg">Un num&eacute;ro suisse valide, c&rsquo;est lui qu&rsquo;on appelle&#8239;: +41 79 123 45 67 ou 079 123 45 67.</span></div>
       <p class="pourquoi" id="coord-aide">C&rsquo;est le num&eacute;ro qu&rsquo;on appelle &agrave; l&rsquo;heure que vous choisirez.</p>
       <div class="suite"><button type="button" class="cta" data-suivant id="coord-bouton">Choisir mon cr&eacute;neau</button></div>
-    </section>
-
-    <section class="ecran engagement" data-id="engagement" data-champ="engagement" data-type="unique">
-      <span class="num" data-num-e="5" data-num-f="5">5</span>
-      <h2>Merci, c&rsquo;est not&eacute;. Un vrai cr&eacute;neau, rien qu&rsquo;&agrave; vous.</h2>
-      <p>La session est un rendez-vous personnel de 30&nbsp;minutes, tenu par l&rsquo;un de nous, pas un appel de masse. Si vous ne pouvez plus venir, <strong>pr&eacute;venez-nous la veille</strong> et on d&eacute;place.</p>
-      <div class="options">
-        <button type="button" class="option" data-valeur="oui"><b>A</b>Je serai pr&eacute;sent(e), je choisis mon cr&eacute;neau</button>
-        <button type="button" class="option" data-valeur="non"><b>B</b>Pas maintenant, appelez-moi plut&ocirc;t pour convenir d&rsquo;un moment</button>
-      </div>
     </section>
 
     <!-- FINS -->
@@ -447,27 +432,34 @@ function suivre(evt, params){
     if (type === "unique") return !!reponses[champ];
     if (type === "multiple") return !!(reponses[champ] && reponses[champ].length);
     if (type === "coordonnees") {
-      /* Visio : l'e-mail suffit (invitation). Téléphone : le numéro suffit, l'e-mail est facultatif. */
+      /* 04.11 : l'e-mail suffit, le numéro est facultatif. */
       var mail = document.getElementById("c-mail").value.trim(), tel = document.getElementById("c-tel").value.trim();
-      return !!(reponses.mode === "visio" ? mail : tel);
+      return !!(reponses.mode && (reponses.mode === "visio" ? mail : tel));
     }
     return false;
   }
   /* 03.11 : une seule information, celle qui sert au rendez-vous choisi. Visio = e-mail (le lien y arrive),
      téléphone = numéro (on l'appelle). Plus de nom : Cal le demande une fois si la personne réserve. */
   function adapterCoordonnees(){
-    var visio = reponses.mode === "visio";
-    /* Visio : e-mail seul. Téléphone : numéro obligatoire, e-mail facultatif (03.11). */
-    document.getElementById("grp-mail").style.display = "";
-    document.getElementById("grp-tel").style.display = visio ? "none" : "";
+    /* 04.11 : visio ou appel choisi sur cet écran ; les deux champs restent visibles.
+       Visio = e-mail obligatoire, numéro facultatif. Téléphone = numéro obligatoire, e-mail facultatif. */
+    var mode = reponses.mode, visio = mode === "visio";
+    document.querySelectorAll(".choix-mode").forEach(function(b){ b.classList.toggle("choisi", b.getAttribute("data-mode") === mode); });
     document.getElementById("c-mail").required = visio;
-    document.getElementById("c-tel").required = !visio;
-    document.getElementById("c-mail-opt").textContent = visio ? "" : "(facultatif)";
-    document.getElementById("c-tel-opt").textContent = "";
-    if (!visio) { document.getElementById("grp-tel").parentNode.insertBefore(document.getElementById("grp-tel"), document.getElementById("grp-mail")); }
-    document.getElementById("coord-aide").textContent = visio ? "C'est là qu'arrive l'invitation à la visio, une fois votre créneau choisi." : "C'est le numéro qu'on appelle à l'heure que vous choisirez.";
+    document.getElementById("c-tel").required = mode === "telephone";
+    document.getElementById("c-mail-opt").textContent = mode === "telephone" ? "(facultatif)" : "";
+    document.getElementById("c-tel-opt").textContent = visio ? "(facultatif)" : "";
+    /* changement de format : les erreurs affichées pour l'autre format ne valent plus */
+    ["grp-mail", "grp-tel"].forEach(function(id){ document.getElementById(id).classList.remove("invalide"); });
+    var modes = document.querySelector(".modes"); if (modes && mode) modes.classList.remove("invalide");
+    var aide = document.getElementById("coord-aide");
+    aide.hidden = !mode;
+    aide.textContent = visio ? "Le lien de la visio arrive sur cet e-mail." : "C'est ce numéro qu'on appelle à l'heure choisie.";
     document.getElementById("coord-bouton").textContent = "Choisir mon créneau";
   }
+  document.querySelectorAll(".choix-mode").forEach(function(b){
+    b.addEventListener("click", function(){ reponses.mode = b.getAttribute("data-mode"); sauver(); adapterCoordonnees(); majAvancer(); });
+  });
   function majAvancer(){
     avancer.disabled = envoiEnCours || !courant || courant.classList.contains("fin") || !repondu(courant);
   }
@@ -522,6 +514,9 @@ function suivre(evt, params){
 
   function validerCoordonnees(ecran){
     var ok = true;
+    /* 04.11 : sans choix visio ou appel, on ne sait pas quel champ compte */
+    var modes = ecran.querySelector(".modes");
+    if (modes) { modes.classList.toggle("invalide", !reponses.mode); if (!reponses.mode) ok = false; }
     ecran.querySelectorAll(".champ-groupe").forEach(function(g){
       var input = g.querySelector("input[required]");
       if (!input) { g.classList.remove("invalide"); return; } /* champ facultatif (e-mail) : jamais bloquant */
@@ -721,7 +716,8 @@ function suivre(evt, params){
     function fini(){
       envoye = true; envoiEnCours = false;
       /* Lead enregistré : l'écran d'engagement vient après, et ne conditionne plus l'envoi */
-      pile = []; montrer(ecranParId(dest === "fin-creneau" ? "engagement" : dest));
+      /* 04.11 : plus de question de presence, agenda tout de suite (Andrew : le plus simple possible) */
+      pile = []; montrer(ecranParId(dest)); if (dest === "fin-creneau") { majCal(); }
       suivre("form_submit", { profil: donnees.profil, qualification: donnees.qualification });
       if (window.fbq) {
         if (donnees.qualification === "entreprise") { fbq("track", "Lead", { content_name: "session-ia-entreprise" }, { eventID: donnees.event_id }); }
