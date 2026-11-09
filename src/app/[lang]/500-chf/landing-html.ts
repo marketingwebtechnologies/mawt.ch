@@ -49,6 +49,19 @@ const landingHtml = `<!doctype html>
 
   /* Hero */
   .hero{padding:88px 28px 48px}
+  /* Premier écran complet (07.11, étude « pages qui convertissent ») : qui, résultat, visuel du travail, bouton, preuve */
+  .hero-visuel{margin:24px auto 0;width:100%;max-width:300px}
+  .hero-visuel video{width:100%;border-radius:18px;display:block;box-shadow:0 12px 32px rgba(0,43,54,.10)}
+  .preuve{margin-top:18px}
+  .preuve-chiffre{margin:0;font-size:14px;line-height:1.4;color:var(--corps)}
+  .preuve-chiffre strong{color:var(--encre)}
+  .logos{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+  .logos img{height:20px;width:auto;opacity:.8}
+  .logos img.haut{height:30px}
+  html[data-miroir="f8"] .hero{padding-top:28px}
+  html[data-miroir="f8"] h1{font-size:clamp(34px,9vw,56px)}
+  html[data-miroir="f8"] .hero p.accroche{font-size:18px;font-weight:500;color:var(--corps)}
+  html[data-miroir="f8"] .hero .promesse{display:none}
   .kicker{font-size:12px;font-weight:600;color:var(--gris)}
   h1{margin:16px 0 0;font-size:clamp(40px,11vw,56px);line-height:1.02;font-weight:800}
   .hero p{margin:20px 0 0;font-size:18px;line-height:1.45;color:var(--corps)}
@@ -91,6 +104,51 @@ const landingHtml = `<!doctype html>
   .douleur p{margin:16px 0 0;font-size:16px;line-height:1.55;color:var(--corps)}
   .douleur .resultat{font-size:18px;line-height:1.45;font-weight:600;color:var(--encre)}
   .douleur .resultat strong{color:var(--mint-fonce);font-weight:800}
+  /* 09.11 : avant / après et bloc surprise */
+  .avant-apres{margin-top:22px;display:grid;gap:12px}
+  .avant-apres > div{border:1px solid var(--filet);border-radius:12px;padding:16px 18px;background:#FFFFFF}
+  .avant-apres span{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gris)}
+  .avant-apres .apres{border-color:var(--mint)}
+  .avant-apres .apres span{color:var(--mint-fonce)}
+  .avant-apres p{margin:8px 0 0;font-size:15px;line-height:1.5}
+  .douleur .cta{margin-top:24px}
+  /* 09.11 : deux photos avant / après, bulles animées sur la seconde (mots d'Andrew) */
+  .duo{margin-top:24px;display:grid;gap:22px}
+  .photo{position:relative;margin:0}
+  .photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:14px}
+  .photo figcaption{margin-top:10px;font-size:14px;font-weight:600;color:var(--gris)}
+  .photo.apres figcaption{color:var(--mint-fonce)}
+  /* 09.11 : panneau ChatGPT, même design que la démo de la vidéo ; la liste des tâches monte ligne après ligne et chaque ligne reçoit sa coche */
+  .gpt{position:absolute;right:4%;top:50%;transform:translateY(-50%);width:52%;max-width:300px;background:#fff;border-radius:16px;box-shadow:0 14px 36px rgba(0,20,30,.32);font-family:'Segoe UI',system-ui,sans-serif;color:#0D0D0D;overflow:hidden;pointer-events:none}
+  .gpt-tete{display:flex;align-items:center;gap:6px;padding:9px 12px 7px;font-size:12px;font-weight:600}
+  .gpt-tete img{width:15px;height:15px}
+  .gpt-tete small{font-size:10px;color:#8F8F8F}
+  .gpt-fil{height:138px;padding:0 10px 10px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+  .gpt-liste{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .gpt-liste li{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1.5px solid #E5E5E5;border-radius:11px;background:#fff;font-size:11px;font-weight:600;line-height:1.2;max-height:40px;opacity:0;transform:translateY(10px);transition:opacity .35s ease,transform .35s ease,max-height .4s ease,padding .4s ease,margin .4s ease,border-width .4s ease}
+  .gpt-liste li.visible{opacity:1;transform:none}
+  .gpt-liste li.sort{max-height:0;padding-top:0;padding-bottom:0;border-width:0;margin-top:-6px;opacity:0;transform:none}
+  .gpt-liste b{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ic{flex:none;width:22px;height:22px;border-radius:6px;background:#FF5588;color:#fff;font-size:7px;font-weight:700;display:flex;align-items:center;justify-content:center;letter-spacing:.02em}
+  .ic.mail{background:#0D0D0D;font-size:12px}
+  .vu{flex:none;width:16px;height:16px;border-radius:50%;background:#E5E5E5;position:relative;transform:scale(.6);transition:background .25s ease,transform .3s cubic-bezier(.34,1.56,.64,1)}
+  .vu::after{content:"";position:absolute;left:5px;top:2px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);opacity:0;transition:opacity .2s ease .1s}
+  li.fait .vu{background:#19C37D;transform:none}
+  li.fait .vu::after{opacity:1}
+  .gpt-saisie{display:none}
+  @media (prefers-reduced-motion: reduce){.gpt-liste li{transform:none;transition:opacity .35s ease,max-height .4s ease,padding .4s ease,margin .4s ease,border-width .4s ease}.vu{transform:none;transition:background .25s ease}}
+  /* 09.11 (Andrew) : les deux photos côte à côte sur ordinateur, sur une largeur élargie pour que le panneau reste lisible ; sur mobile l'une après l'autre */
+  @media (min-width:900px){
+    .duo{grid-template-columns:1fr 1fr;position:relative;left:50%;transform:translateX(-50%);width:min(1040px, calc(100vw - 96px))}
+    .duo .gpt{width:50%}
+  }
+  #surprise{background:var(--encre);border-top:none}
+  #surprise[hidden]{display:none}
+  html[data-surprise="1"] #surprise[hidden]{display:block}
+  #surprise .kicker{color:var(--mint)}
+  #surprise h2{color:#FFFFFF}
+  #surprise p{color:#D5E3E0}
+  #surprise .capture{display:block;width:calc(100% - 56px);max-width:980px;height:auto;margin:28px auto 0}
 
   /* Carrousel fondu pilote par le defilement */
   .defile-espace{height:340vh;position:relative}
@@ -154,6 +212,16 @@ const landingHtml = `<!doctype html>
     .hero p{font-size:22px}
     .promesse{font-size:22px}
     .hero .cta{width:auto;padding:19px 56px;font-size:18px}
+    /* f8 sur ordinateur : texte à gauche, démo à droite, tout dans le premier écran */
+    html[data-miroir="f8"] .hero.conteneur{max-width:1120px;min-height:0;display:grid;grid-template-columns:1fr 380px;column-gap:64px;align-items:center;text-align:left;padding:72px 28px 56px}
+    html[data-miroir="f8"] .hero > *:not(.hero-visuel){grid-column:1}
+    html[data-miroir="f8"] .hero-visuel{grid-column:2;grid-row:1 / span 7;max-width:380px;margin:0}
+    html[data-miroir="f8"] h1{font-size:64px}
+    html[data-miroir="f8"] .hero p.accroche{font-size:21px}
+    html[data-miroir="f8"] .hero .cta{justify-self:start}
+    .preuve-chiffre{font-size:15px}
+    .logos img{height:24px}
+    .logos img.haut{height:36px}
     .douleur{padding:104px 0}
     .douleur .conteneur{max-width:min(640px, calc(100% - 160px))}
     .douleur svg{width:46px;height:46px}
@@ -161,6 +229,24 @@ const landingHtml = `<!doctype html>
     .douleur p{font-size:18px}
     .douleur .resultat{font-size:21px}
     .douleur .cta{width:auto;padding:17px 44px;font-size:17px}
+    .avant-apres{grid-template-columns:1fr 1fr;gap:20px}
+    .duo{gap:28px}
+    .gpt{width:46%;max-width:none;border-radius:20px}
+    .gpt-tete{padding:12px 16px 9px;font-size:14px}
+    .gpt-tete img{width:18px;height:18px}
+    .gpt-fil{height:176px;padding:0 14px 12px}
+    .gpt-liste{gap:8px}
+    .gpt-liste li{font-size:13px;padding:8px 10px;border-radius:13px;max-height:48px;gap:10px}
+    .gpt-liste li.sort{margin-top:-8px}
+    .ic{width:28px;height:28px;border-radius:8px;font-size:8px}
+    .ic.mail{font-size:15px}
+    .vu{width:18px;height:18px}
+    .vu::after{left:6px;top:2px;width:4px;height:9px}
+    .gpt-saisie{display:flex;align-items:center;gap:8px;margin:0 14px 14px;padding:8px 10px 8px 14px;border:1.5px solid #E3E3E3;border-radius:999px;font-size:12px;color:#8F8F8F}
+    .gpt-saisie span{flex:1}
+    .gpt-saisie i{width:22px;height:22px;border-radius:50%;background:#0D0D0D;color:#fff;font-style:normal;font-size:13px;display:flex;align-items:center;justify-content:center}
+    .avant-apres p{font-size:16px}
+    #surprise .capture{margin-top:40px}
     .section-form{padding:104px 0}
     .section-form .conteneur{max-width:min(520px, calc(100% - 160px))}
     .section-form .cta{width:100%}
@@ -332,33 +418,94 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     <h1 id="accroche-titre">Perdu avec l&rsquo;IA&#8239;?</h1>
     <p class="accroche" id="accroche-texte">Vous voulez enfin profiter de vos proches et arr&ecirc;ter de travailler le soir ou le week-end&#8239;?</p>
     <p class="promesse">Posez-nous vos questions. 30&#8239;minutes au t&eacute;l&eacute;phone, gratuites.</p>
-    <button class="cta" data-origine="hero">Poser mes questions</button>
-    <span class="micro">Vous choisissez le cr&eacute;neau.</span>
+    <button class="cta" data-origine="hero">Choisir mon cr&eacute;neau de 30&#8239;min</button>
+    <div class="preuve">
+      <p class="preuve-chiffre"><strong>Ils nous ont fait confiance&#8239;:</strong> Swixit, fiduciaire &middot; Mellender, immobilier &middot; Crown, club de sport.</p>
+      <div class="logos" aria-label="Ils nous ont fait confiance">
+        <img src="/google-landing-assets/swixit-logo.png" alt="Swixit" width="114" height="33">
+        <img src="/google-landing-assets/mellender-logo.png" alt="Mellender Real Estate" width="120" height="30">
+        <img src="/google-landing-assets/crown-logo.svg" alt="Crown Wellness Club" width="74" height="48" class="haut">
+      </div>
+    </div>
+    <div class="hero-visuel">
+      <video src="/500-chf-assets/demo-soumission-devis-email.mp4" autoplay muted loop playsinline preload="auto" aria-label="D&eacute;monstration : l'assistant remplit une soumission, pr&eacute;pare un devis et envoie l'e-mail"></video>
+    </div>
   </section>
   <script>
   /* Miroir de la pub (31.10) : le haut de page reprend les mots de la pub d'origine (utm_content),
      sans changer le lien de la pub, donc sans réapprentissage côté Meta. Les autres visites gardent le texte par défaut. */
   (function(){
     var c = (new URLSearchParams(location.search).get("utm_content") || "").toLowerCase();
-    if (c.slice(0, 2) === "f8") {
+    if (c.slice(0, 2) === "f8" || c.indexOf("surprise") === 0) {
       document.getElementById("accroche-titre").innerHTML = "O&ugrave; perdez-vous une journ&eacute;e par semaine&#8239;?";
-      document.getElementById("accroche-texte").innerHTML = "Vous qui faites des soumissions&#8239;: combien d&rsquo;heures par semaine &agrave; ressaisir positions, prix et quantit&eacute;s&#8239;?";
-      document.querySelector("#hero .promesse").innerHTML = "L&rsquo;IA lit la demande, g&eacute;n&egrave;re la soumission et envoie l&rsquo;e-mail. Vous validez. On vous explique comment, pour votre m&eacute;tier&#8239;: 30&#8239;minutes, gratuitement.";
+      document.querySelector("#hero .kicker").innerHTML = "Soumissions et devis &middot; 30&#8239;min offertes";
+      document.getElementById("accroche-texte").innerHTML = "Votre ChatGPT, branch&eacute; sur vos e-mails et vos anciens devis, remplit vos soumissions. Vous validez.";
+      if (c.indexOf("surprise") === 0) {
+        /* 09.11 : miroir de la vidéo « surprise » (titre de la bande, phrase de la voix, bloc site offert plus bas) */
+        document.getElementById("accroche-titre").innerHTML = "Vos soumissions en 1&#8239;min";
+        document.querySelector("#hero .kicker").innerHTML = "Patrons de PME romandes &middot; 30&#8239;min offertes";
+        document.getElementById("accroche-texte").innerHTML = "Votre ChatGPT lit vos e-mails, cr&eacute;e vos devis et remplit vos soumissions. Vous validez.";
+        document.documentElement.setAttribute("data-surprise", "1");
+      }
       document.documentElement.setAttribute("data-miroir", "f8");
     }
   })();
   </script>
 
-  <section class="rassure" id="rassure">
+  <!-- 09.11 : bloc de réassurance retiré à la demande d'Andrew -->
+  <!-- 09.11 : le gain personnel du patron, un cas concret par section (mots validés : soumissions, devis, e-mails, soirées) -->
+  <section class="douleur revele">
     <div class="conteneur">
-      <ul>
-        <li><strong>Un vrai &eacute;change</strong> avec quelqu&rsquo;un qui l&rsquo;a d&eacute;j&agrave; fait pour des entreprises romandes.</li>
-        <li><strong>Des r&eacute;ponses pour votre cas</strong>, pas un argumentaire&#8239;: ce qui marche, ce qui ne sert &agrave; rien, par o&ugrave; commencer.</li>
-        <li><strong>Rien &agrave; pr&eacute;parer</strong>, rien &agrave; installer, aucun engagement.</li>
-      </ul>
+      <h2>Fini les soir&eacute;es pass&eacute;es sur l&rsquo;admin.</h2>
+      <p>Les soumissions et les devis se font dans la journ&eacute;e, par votre ChatGPT. Vous relisez, vous validez, vous rentrez &agrave; l&rsquo;heure.</p>
+      <div class="duo">
+        <figure class="photo">
+          <img src="/500-chf-assets/cuisine-22h.webp" alt="Un patron seul &agrave; sa table de cuisine &agrave; 22 h, le visage &eacute;clair&eacute; par l&rsquo;&eacute;cran de son ordinateur" width="1440" height="960" loading="lazy">
+          <figcaption>22&#8239;h, la soumission pour demain.</figcaption>
+        </figure>
+        <figure class="photo apres">
+          <img src="/500-chf-assets/cuisine-17h30.webp" alt="Le m&ecirc;me patron &agrave; 17&#8239;h&#8239;30, veste &agrave; l&rsquo;&eacute;paule, qui regarde son t&eacute;l&eacute;phone en souriant ; &agrave; c&ocirc;t&eacute; de lui, son ChatGPT liste les t&acirc;ches faites" width="1440" height="960" loading="lazy">
+          <div class="gpt" aria-hidden="true">
+            <div class="gpt-tete"><img src="/500-chf-assets/chatgpt-logo.svg" alt="" width="18" height="18">ChatGPT <small>&#9662;</small></div>
+            <div class="gpt-fil"><ul class="gpt-liste" data-taches="Devis fait|Rapport fait|E-mail r&eacute;pondu|Soumission remplie"></ul></div>
+            <div class="gpt-saisie"><span>Poser une question</span><i>&uarr;</i></div>
+          </div>
+          <figcaption>17&#8239;h&#8239;30, relue et envoy&eacute;e.</figcaption>
+        </figure>
+      </div>
+      <button class="cta" data-origine="soirees">Choisir mon cr&eacute;neau de 30&#8239;min</button>
     </div>
   </section>
 
+  <section class="douleur revele">
+    <div class="conteneur">
+      <h2>Vos e-mails ne s&rsquo;empilent plus.</h2>
+      <p>Il lit vos e-mails, rep&egrave;re les demandes de devis et pr&eacute;pare chaque r&eacute;ponse, devis joint. Vous envoyez.</p>
+      <div class="avant-apres">
+        <div class="avant"><span>Avant</span><p>Trois demandes de devis dans la bo&icirc;te, trois r&eacute;ponses &agrave; &eacute;crire, et le week-end pour rattraper.</p></div>
+        <div class="apres"><span>Apr&egrave;s</span><p>&laquo;&#8239;Quoi de neuf dans mes e-mails&#8239;?&#8239;&raquo; Les trois r&eacute;ponses sont pr&ecirc;tes. Vous validez.</p></div>
+      </div>
+      <button class="cta" data-origine="emails">Choisir mon cr&eacute;neau de 30&#8239;min</button>
+    </div>
+  </section>
+
+  <section class="douleur revele">
+    <div class="conteneur">
+      <h2>Pas de logiciel &agrave; apprendre.</h2>
+      <p>Rien &agrave; installer, personne &agrave; former. On branche votre ChatGPT sur vos e-mails et vos anciens devis, et vous continuez de travailler comme aujourd&rsquo;hui.</p>
+      <button class="cta" data-origine="logiciel">Choisir mon cr&eacute;neau de 30&#8239;min</button>
+    </div>
+  </section>
+
+  <section class="douleur revele" id="surprise" hidden>
+    <div class="conteneur">
+      <span class="kicker">La surprise de la vid&eacute;o</span>
+      <h2>Votre site internet offert.</h2>
+      <p>Pour tout accompagnement, votre site internet d&rsquo;une valeur de 3&#8239;000&#8239;CHF est offert. Comme celui de Crown Wellness Club, r&eacute;alis&eacute; par MAWT.</p>
+    </div>
+    <img class="capture" src="/google-landing-assets/crown-site.webp" alt="Page d&rsquo;accueil du site de Crown Wellness Club" width="1440" height="900" loading="lazy">
+    <div class="conteneur"><button class="cta" data-origine="surprise">Choisir mon cr&eacute;neau de 30&#8239;min</button></div>
+  </section>
 
   <section class="section-form revele" id="contact">
     <div class="conteneur">
@@ -408,6 +555,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
         <div class="champ-groupe">
           <label for="f-pain">Qu&rsquo;est-ce qui vous fait perdre le plus de temps&#8239;?</label>
           <select id="f-pain" name="pain">
+            <option value="soumissions">Les soumissions et les devis</option>
             <option value="copier-coller">Mes &eacute;quipes ressaisissent les m&ecirc;mes donn&eacute;es</option>
             <option value="tete">Tout est dans ma t&ecirc;te</option>
             <option value="questions">Tout passe par moi</option>
@@ -443,7 +591,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
 <div class="barre" id="barre" aria-hidden="true">
   <div class="conteneur">
     <span>30&#8239;minutes au t&eacute;l&eacute;phone, gratuites</span>
-    <button data-origine="barre">Poser mes questions</button>
+    <button data-origine="barre">Choisir mon cr&eacute;neau</button>
   </div>
 </div>
 
@@ -498,6 +646,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
     <div class="champ-groupe">
       <label for="p-pain">Qu&rsquo;est-ce qui vous fait perdre le plus de temps&#8239;?</label>
       <select id="p-pain" name="pain">
+        <option value="soumissions">Les soumissions et les devis</option>
         <option value="copier-coller">Mes &eacute;quipes ressaisissent les m&ecirc;mes donn&eacute;es</option>
         <option value="tete">Tout est dans ma t&ecirc;te</option>
         <option value="questions">Tout passe par moi</option>
@@ -534,6 +683,40 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
   } else {
     reveles.forEach(function(el){ el.classList.add("visible"); });
   }
+
+  /* 09.11 : panneau ChatGPT de la section « soirées » : la liste des tâches monte ligne après ligne et chaque ligne se coche */
+  (function(){
+    var ul = document.querySelector(".gpt-liste");
+    if (!ul) return;
+    var taches = ul.getAttribute("data-taches").split("|");
+    var icones = {};
+    icones["E-mail répondu"] = ["@", "ic mail"];
+    icones["Rapport fait"] = ["DOC", "ic"];
+    function ligne(t){
+      var li = document.createElement("li");
+      var ic = icones[t] || ["PDF", "ic"];
+      var s = document.createElement("span"); s.className = ic[1]; s.textContent = ic[0];
+      var b = document.createElement("b"); b.textContent = t;
+      var v = document.createElement("i"); v.className = "vu";
+      li.appendChild(s); li.appendChild(b); li.appendChild(v);
+      return li;
+    }
+    /* Avec « réduire les animations » (réglage Windows ou macOS), la liste défile quand même, en fondu seulement : voir le CSS prefers-reduced-motion. */
+    var i = 0, visibles = 3;
+    function pas(){
+      var li = ligne(taches[i % taches.length]); i++;
+      ul.appendChild(li);
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ li.classList.add("visible"); }); });
+      setTimeout(function(){ li.classList.add("fait"); }, 750);
+      if (ul.children.length > visibles) {
+        var premier = ul.children[0];
+        premier.classList.add("sort");
+        setTimeout(function(){ if (premier.parentNode) premier.parentNode.removeChild(premier); }, 450);
+      }
+    }
+    pas();
+    setInterval(pas, 1600);
+  })();
 
   /* Barre collante : apparait apres le hero */
   var barre = document.getElementById("barre");
@@ -603,7 +786,8 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
      Seul le menu « ce qui vous prend du temps » est présélectionné pour la pub ressaisie (v6). */
   (function(){
     var c = (new URLSearchParams(location.search).get("utm_content") || "").toLowerCase();
-    if (c.slice(0, 2) === "v6" || c.slice(0, 2) === "f8") { document.querySelectorAll("select[name=pain]").forEach(function(sel){ sel.value = "copier-coller"; sel.dispatchEvent(new Event("change")); }); }
+    var pre = c.slice(0, 2) === "v6" ? "copier-coller" : (c.slice(0, 2) === "f8" || c.indexOf("surprise") === 0) ? "soumissions" : "";
+    if (pre) { document.querySelectorAll("select[name=pain]").forEach(function(sel){ sel.value = pre; sel.dispatchEvent(new Event("change")); }); }
   })();
   /* UTM et identifiant de pub, pour relier chaque lead à la pub qui l'a produite (comme questions-ia) */
   (function(){

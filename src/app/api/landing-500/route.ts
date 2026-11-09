@@ -106,6 +106,7 @@ export async function POST(request: NextRequest) {
   // The answer to "Qu'est-ce qui vous fait perdre le plus de temps ?", shown with
   // the words the person actually picked, not the form's internal code.
   const PAIN_LABELS: Record<string, string> = {
+    soumissions: "Les soumissions et les devis",
     "copier-coller": "Mes équipes ressaisissent les mêmes données",
     tete: "Tout est dans ma tête",
     questions: "Tout passe par moi",
