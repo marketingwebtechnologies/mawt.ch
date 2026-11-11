@@ -600,7 +600,7 @@ function suivre(nom, params){ if (window.gtag) { gtag("event", nom, params || {}
   (function(){
     var p = new URLSearchParams(location.search), out = [];
     ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","fbclid","ad_id","adset_id","campaign_id"].forEach(function(k){
-      var v = p.get(k); if (v) out.push(k + "=" + v.slice(0, 80));
+      var v = p.get(k); if (v) out.push(k + "=" + v.slice(0, /clid$|braid$/.test(k) ? 300 : 80));
     });
     var val = out.join("&");
     document.querySelectorAll("input[name=utm]").forEach(function(i){ i.value = val; });
