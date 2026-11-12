@@ -972,6 +972,8 @@ function suivre(nom, params){
       var reel = location.hostname.indexOf("mawt.ch") !== -1;
       var donnees = {};
       new FormData(form).forEach(function(v, k){ donnees[k] = v; });
+      /* 12.11 : une adresse saisie dans l'autre formulaire de la page (ou remplie par le navigateur) part aussi avec l'envoi */
+      if (!donnees.email) { var autreMail = Array.prototype.map.call(document.querySelectorAll("input[type=email]"), function(i){ return (i.value || "").trim(); }).filter(Boolean)[0]; if (autreMail) donnees.email = autreMail; }
       // Shared with the server copy sent to the Conversions API, so Meta counts the lead once.
       donnees.page = "formation-ia";
       donnees.event_id = "lg-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);

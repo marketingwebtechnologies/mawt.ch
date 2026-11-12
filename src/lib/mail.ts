@@ -125,8 +125,46 @@ export function dateHeureSuisse(d: Date): string {
 }
 
 /** Internal notification: a new lead landed. */
-export async function sendLeadNotification(lead: Lead) {
+/** Where a lead comes from, in plain words for the notification e-mail (12.11.2026, asked by Andrew). */
+export type LeadSource = { page?: string; utm?: string; phone?: string };
+
+const PAGE_NAMES: Record<string, string> = {
+  "500-chf": "Landing 500 CHF",
+  "questions-ia": "Questionnaire IA",
+  "guide-ia": "Ebook IA en PME (téléchargement)",
+  "agence-ia": "Agence IA",
+  "formation-ia": "Formation IA en entreprise",
+  "logiciel-sur-mesure": "Logiciel sur mesure",
+  "qa-tests-logiciels": "QA et tests logiciels",
+  "cours-ia": "Cours IA pour particuliers",
+};
+
+export function describeLeadSource(source: LeadSource): string[] {
+  const q = new URLSearchParams(source.utm || "");
+  const src = (q.get("utm_source") || "").toLowerCase();
+  let canal = "Accès direct ou origine inconnue";
+  if (q.get("gclid") || q.get("gbraid") || q.get("wbraid") || src === "google") canal = "Google Ads (recherche)";
+  else if (q.get("fbclid") || ["facebook", "instagram", "meta", "fb", "ig"].includes(src)) canal = "Meta (Facebook / Instagram)";
+  else if (src === "guide") canal = "Lien dans l'ebook PDF";
+  else if (src) canal = src;
+  const page = source.page || "";
+  return [
+    `Vient de : ${canal}`,
+    `Pub : ${q.get("utm_content") || "non renseignée"}`,
+    q.get("utm_campaign") ? `Campagne : ${q.get("utm_campaign")}` : null,
+    q.get("utm_term") ? `Recherche ou mot clé : ${q.get("utm_term")}` : null,
+    page ? `Page : mawt.ch/fr/${page}` : null,
+    page ? `Service : ${PAGE_NAMES[page] || page}` : null,
+  ].filter((l): l is string => l !== null);
+}
+
+export async function sendLeadNotification(lead: Lead, source?: LeadSource) {
   const to = process.env.CONTACT_NOTIFY_TO || "info@mawt.ch";
+  const origine = source ? describeLeadSource(source) : [];
+  const canalCourt = origine.length ? origine[0].replace("Vient de : ", "").replace(/ \(.*\)$/, "") : "";
+  const serviceCourt = source?.page ? PAGE_NAMES[source.page] || source.page : lead.service || "";
+  // Without a name field, the "name" is the mailbox name or the phone number: say what it really is.
+  const contact = lead.email.includes("@") ? lead.email : source?.phone || lead.name;
   try {
     await deliver({
       to,
@@ -135,15 +173,20 @@ export async function sendLeadNotification(lead: Lead) {
       // User-controlled values interpolated into a header MUST be sanitized:
       // a name containing \r\n could inject extra headers (Bcc, etc.).
       subject: sanitizeHeaderValue(
-        `Nouveau lead : ${lead.name}${lead.service ? ` (${lead.service})` : ""}`,
+        source
+          ? `Nouveau lead ${canalCourt} : ${serviceCourt} (${contact})`
+          : `Nouveau lead : ${lead.name}${lead.service ? ` (${lead.service})` : ""}`,
       ),
       text: [
         `Reçu le ${dateHeureSuisse(new Date())}`, // 04.11 : date et heure demandées par Andrew
         "",
-        `Nom : ${lead.name}`,
-        `Email : ${lead.email}`,
-        lead.service ? `Service : ${lead.service}` : null,
-        lead.timeline ? `Délai : ${lead.timeline}` : null,
+        ...origine,
+        origine.length ? "" : null,
+        source ? null : `Nom : ${lead.name}`,
+        `E-mail : ${lead.email.includes("@") ? lead.email : "non donné"}`,
+        source ? `Téléphone : ${source.phone || "non donné"}` : null,
+        !source && lead.service ? `Service : ${lead.service}` : null,
+        lead.timeline ? `${source ? "Bouton ou variante" : "Délai"} : ${lead.timeline}` : null,
         "",
         lead.message,
         "",

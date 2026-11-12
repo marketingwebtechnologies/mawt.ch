@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
   }
 
   await sendGuideEmail({ firstName: validated.data.prenom, email }, { title, url });
-  await sendLeadNotification(lead);
+  await sendLeadNotification(lead, { page: "guide-ia", utm });
   logger.info("Guide downloaded", { guide, email: redactEmail(email), utm });
   return NextResponse.json({ success: true });
 }

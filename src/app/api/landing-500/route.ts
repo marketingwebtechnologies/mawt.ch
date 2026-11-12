@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
       console.log("Mocking landing-500 lead creation:", lead);
     }
 
-    await sendLeadNotification(lead);
+    await sendLeadNotification(lead, { page: "500-chf", utm, phone });
     if (qualified) {
       await trackConversion({
         type: "lead",

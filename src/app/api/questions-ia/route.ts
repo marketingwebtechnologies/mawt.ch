@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
       console.log("Mocking questions-ia lead creation:", lead);
     }
 
-    await sendLeadNotification(lead);
+    await sendLeadNotification(lead, { page: "questions-ia", utm: d.utm, phone: d.phone });
     if (qualification !== "non") {
       await trackConversion({
         type: "lead",

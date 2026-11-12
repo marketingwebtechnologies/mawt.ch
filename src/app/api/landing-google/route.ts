@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
       console.log("Mocking landing-google lead creation:", lead);
     }
 
-    await sendLeadNotification(lead);
+    await sendLeadNotification(lead, { page, utm, phone });
     if (qualified) {
       await trackConversion({
         type: "lead",
