@@ -69,3 +69,56 @@ test("textes : confirmation, rappel et message WhatsApp", () => {
   assert.match(wa.lien, /^https:\/\/wa\.me\/41791281156\?text=/);
   for (const t of [c.texte, mailRappelVeille(r).texte, wa.texte]) assert.doesNotMatch(t, /CHF|prix|tarif|—/);
 });
+
+// 20.11.2026 : le rendez-vous Cal rejoint la feuille des leads et l'e-mail interne reprend la fiche du formulaire.
+import { estFausseAdresseCal, clesContact, resumeFiche, ligneRdv } from "../src/lib/cal/pur";
+
+const rdvTel = lireReservation({
+  triggerEvent: "BOOKING_CREATED",
+  payload: {
+    type: "appel-telephone", uid: "u1", startTime: "2026-11-25T10:00:00Z",
+    attendees: [{ name: "Jean Test", email: "41791234567@sms.cal.com" }],
+    responses: { attendeePhoneNumber: { value: "+41791234567" } },
+  },
+});
+const fiche = {
+  page: "500-chf", email: "jean@exemple.ch", telephone: "0791234567", utm: "utm_content=surprise-video",
+  details: "Session souhaitée : par téléphone\nTéléphone : 0791234567\nRôle déclaré : dirige l'entreprise\nTaille de l'entreprise : 1-4 personnes\nCe qui lui fait perdre le plus de temps : Les soumissions et les devis\nOrigine du CTA : footer-form\nPub : utm_content=surprise-video\n\nLead landing 500 CHF",
+};
+
+test("fausse adresse Cal des rendez-vous par téléphone", () => {
+  assert.equal(estFausseAdresseCal("41791234567@sms.cal.com"), true);
+  assert.equal(estFausseAdresseCal("jean@exemple.ch"), false);
+});
+
+test("clés de contact : même clé pour 079… et +41 79…, jamais la fausse adresse", () => {
+  assert.deepEqual(clesContact("079 123 45 67", "Jean@Exemple.ch"), ["tel:41791234567", "mail:jean@exemple.ch"]);
+  assert.deepEqual(clesContact("+41791234567", "41791234567@sms.cal.com"), ["tel:41791234567"]);
+  assert.deepEqual(clesContact("", ""), []);
+});
+
+test("résumé de la fiche : seulement ce qui sert avant l'appel", () => {
+  assert.deepEqual(resumeFiche(fiche.details), [
+    "Rôle déclaré : dirige l'entreprise",
+    "Taille de l'entreprise : 1-4 personnes",
+    "Ce qui lui fait perdre le plus de temps : Les soumissions et les devis",
+  ]);
+});
+
+test("ligne de rendez-vous pour la feuille, avec la fiche du formulaire", () => {
+  const l = ligneRdv(rdvTel, fiche);
+  assert.equal(l.page, "500-chf");
+  assert.equal(l.qualification, "rdv");
+  assert.equal(l.email, "jean@exemple.ch");
+  assert.equal(l.phone, "+41791234567");
+  assert.equal(l.utm, "utm_content=surprise-video");
+  assert.match(l.details, /^Rendez-vous : mercredi 25 novembre à 11 h \(téléphone\)/);
+  assert.match(l.details, /soumissions et les devis/);
+});
+
+test("ligne de rendez-vous sans fiche : page tirée du lien Cal, pas de fausse adresse", () => {
+  const l = ligneRdv(rdvTel, null);
+  assert.equal(l.page, "cal-appel-telephone");
+  assert.equal(l.email, "");
+  assert.equal(l.utm, "");
+});

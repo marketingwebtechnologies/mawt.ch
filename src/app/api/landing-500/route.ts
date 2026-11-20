@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger";
 import { redactEmail } from "@/lib/text-sanitize";
 import { capiContextFromRequest, fbclidFromUtm, sendMetaCapiEvent } from "@/lib/meta-capi";
 import { backupLead } from "@/lib/lead-backup";
+import { memoriserLead } from "@/lib/cal/magasin";
 
 // Lead endpoint for the "500 CHF" landing page (/fr/500-chf). Mirrors the
 // submitContactForm pipeline (honeypot, rate limit, Sanity, notification,
@@ -152,6 +153,12 @@ export async function POST(request: NextRequest) {
     origin,
     event_id,
   });
+  // Kept 30 days so the Cal booking can be matched to this form (sheet row + Andrew's e-mail). Never blocking.
+  try {
+    await memoriserLead({ page: "500-chf", email, telephone: phone, details: message, utm: utm || "" });
+  } catch (err) {
+    logger.warn("Fiche lead non mémorisée pour Cal", { error: String(err) });
+  }
 
   try {
     const client = getSanityWriteClient();

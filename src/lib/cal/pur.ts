@@ -110,3 +110,43 @@ export function delaiRappelSecondes(debutIso: string, maintenantMs: number): num
 }
 
 export const lienReplanifier = (uid: string) => `https://cal.com/reschedule/${encodeURIComponent(uid)}`;
+
+// --- 20.11.2026: the booking joins the leads sheet, and Andrew's e-mail carries the form answers. ---
+
+/** What the landing form knew about the person, kept so the booking can be matched to it. */
+export type FicheLead = { page: string; email: string; telephone: string; details: string; utm: string };
+
+/** Phone bookings carry a made-up address (4179…@sms.cal.com): never show or store it as an e-mail. */
+export const estFausseAdresseCal = (email: string) => /@sms\.cal\.com$/i.test(String(email || "").trim());
+
+/** Lookup keys shared by the form and the booking: normalised phone first, then the real e-mail. */
+export function clesContact(telephone: string, email: string): string[] {
+  const cles: string[] = [];
+  const tel = numeroWhatsApp(telephone);
+  if (tel) cles.push(`tel:${tel}`);
+  const mail = String(email || "").trim().toLowerCase();
+  if (mail.includes("@") && !estFausseAdresseCal(mail)) cles.push(`mail:${mail}`);
+  return cles;
+}
+
+/** The form lines worth reading before the call (role, size, pain, detail). */
+export function resumeFiche(details: string): string[] {
+  return String(details || "").split("\n").map((l) => l.trim())
+    .filter((l) => /^(Rôle déclaré|Taille de l'entreprise|Ce qui lui fait perdre le plus de temps|Précision)\s*:/.test(l));
+}
+
+/** Row appended to the leads sheet for a booking (qualification "rdv"), enriched with the form when known. */
+export function ligneRdv(r: Reservation, fiche: FicheLead | null) {
+  const { jour, heure } = formaterCreneau(r.debut);
+  const canal = /telephone/.test(r.slug) ? "téléphone" : "visio ou téléphone";
+  const email = estFausseAdresseCal(r.email) ? (fiche?.email || "") : (r.email || fiche?.email || "");
+  return {
+    page: fiche?.page || `cal-${r.slug}`,
+    qualification: "rdv",
+    name: r.nom,
+    email,
+    phone: r.telephone || fiche?.telephone || "",
+    details: [`Rendez-vous : ${jour} à ${heure} (${canal})`, ...(fiche ? resumeFiche(fiche.details) : ["Formulaire d'origine non retrouvé."])].join("\n"),
+    utm: fiche?.utm || "",
+  };
+}

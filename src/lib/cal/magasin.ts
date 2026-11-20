@@ -1,7 +1,8 @@
 import "server-only";
 // Booking state on the same Upstash Redis REST store as the WhatsApp double:
 //   cal:rdv:<uid>  JSON of the booking (Reservation), "annulee" once cancelled or rescheduled, kept 60 days
-import type { Reservation } from "./pur";
+import type { FicheLead, Reservation } from "./pur";
+import { clesContact } from "./pur";
 
 const URL = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -36,4 +37,26 @@ export async function lireRdv(uid: string): Promise<Reservation | null> {
   const v = await commande(["GET", `cal:rdv:${uid}`]);
   if (typeof v !== "string" || v === "annulee") return null;
   try { return JSON.parse(v) as Reservation; } catch { return null; }
+}
+
+// 20.11.2026: the landing form leaves its answers here for 30 days (cal:lead:<tel|mail key>),
+// so the booking webhook can tell Andrew who is calling and fill the leads sheet. Best effort.
+const TTL_LEAD = 30 * 86400;
+
+export async function memoriserLead(fiche: FicheLead): Promise<void> {
+  if (!magasinCalDisponible()) return;
+  for (const cle of clesContact(fiche.telephone, fiche.email)) {
+    await commande(["SET", `cal:lead:${cle}`, JSON.stringify(fiche), "EX", String(TTL_LEAD)]);
+  }
+}
+
+export async function lireLead(telephone: string, email: string): Promise<FicheLead | null> {
+  if (!magasinCalDisponible()) return null;
+  for (const cle of clesContact(telephone, email)) {
+    const v = await commande(["GET", `cal:lead:${cle}`]);
+    if (typeof v === "string") {
+      try { return JSON.parse(v) as FicheLead; } catch { /* try the next key */ }
+    }
+  }
+  return null;
 }

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { dateHeureSuisse, sendInternalMail, sendProspectMail } from "@/lib/mail";
-import { SLUGS_APPEL, SAUT_MAX_SECONDES, delaiRappelSecondes, formaterCreneau, lireReservation, verifierSignatureCal } from "@/lib/cal/pur";
+import { SLUGS_APPEL, SAUT_MAX_SECONDES, delaiRappelSecondes, estFausseAdresseCal, formaterCreneau, ligneRdv, lireReservation, resumeFiche, verifierSignatureCal } from "@/lib/cal/pur";
+import type { FicheLead } from "@/lib/cal/pur";
+import { backupLead } from "@/lib/lead-backup";
 import { mailConfirmation, messageWhatsAppAndrew } from "@/lib/cal/textes";
-import { annulerRdv, enregistrerRdv, magasinCalDisponible } from "@/lib/cal/magasin";
+import { annulerRdv, enregistrerRdv, lireLead, magasinCalDisponible } from "@/lib/cal/magasin";
 import { planifier, qstashDisponible } from "@/lib/whatsapp/qstash";
 
 // Cal.com booking webhook (Andrew, 03.11.2026: the free Cal plan cannot customise its e-mails).
@@ -45,9 +47,17 @@ export async function POST(req: NextRequest) {
       await enregistrerRdv(r);
     }
 
-    // 1. Confirmation to the prospect (text 1).
+    // 0. Match the booking to the landing form and put it on the leads sheet (20.11.2026).
+    let fiche: FicheLead | null = null;
+    try { fiche = await lireLead(r.telephone, r.email); } catch (err) { logger.warn("Cal webhook: fiche lead illisible", { error: String(err) }); }
+    const ligne = ligneRdv(r, fiche);
+    const feuille = (await backupLead(ligne)) ? "ajouté à la feuille des leads" : "NON ajouté à la feuille des leads";
+
+    // 1. Confirmation to the prospect (text 1). Never to the made-up address of a phone booking.
     let confirmation = "non envoyée (mode andrew)";
-    if (mode === "on" && r.email.includes("@")) {
+    if (mode === "on" && estFausseAdresseCal(r.email)) {
+      confirmation = "non envoyée (rendez-vous par téléphone, adresse fictive de Cal)";
+    } else if (mode === "on" && r.email.includes("@")) {
       const m = mailConfirmation(r);
       confirmation = (await sendProspectMail(r.email, m.sujet, m.texte, m.html)) ? "envoyée" : "ÉCHEC d'envoi";
     }
@@ -65,7 +75,11 @@ export async function POST(req: NextRequest) {
     // 3. Andrew's same-day message (text 2), ready to send.
     const { jour, heure } = formaterCreneau(r.debut);
     const wa = messageWhatsAppAndrew(r);
-    const qui = `${r.nom} (${r.email}${r.telephone ? `, ${r.telephone}` : ""})`;
+    const contacts = [ligne.email, r.telephone].filter(Boolean).join(", ");
+    const qui = `${r.nom || ligne.email || r.telephone}${contacts ? ` (${contacts})` : ""}`;
+    const formulaire = fiche ? resumeFiche(fiche.details) : ["Formulaire d'origine non retrouvé (réservation directe sur Cal)."];
+    const origine = fiche?.utm ? (/utm_content=([^&]+)/.exec(fiche.utm)?.[1] || "") : "";
+    if (origine) formulaire.push(`Pub d'origine : ${origine}`);
     const quand = `Appel : ${jour} à ${heure} (${r.slug === "appel-telephone" ? "téléphone" : "visio ou téléphone"})`;
     const echap = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     // 04.11 : bouton dans la version HTML, jamais le lien wa.me brut (il ressemblait à un virus)
@@ -75,21 +89,23 @@ export async function POST(req: NextRequest) {
       `<p style="margin:0 0 12px;color:#666;font-size:13px">${echap(recu)}</p>`,
       `<p style="margin:0 0 4px"><b>${echap(qui)}</b></p>`,
       `<p style="margin:0 0 16px">${echap(quand)}</p>`,
+      `<p style="margin:0 0 16px">${formulaire.map(echap).join("<br>")}</p>`,
       `<p style="margin:0 0 6px">Envoie-lui ce message aujourd'hui sur WhatsApp :</p>`,
       `<p style="margin:0 0 16px;padding:10px 12px;background:#f3f4f2;border-radius:8px">${echap(wa.texte)}</p>`,
       wa.lien
         ? `<p style="margin:0 0 20px"><a href="${echap(wa.lien)}" style="display:inline-block;padding:10px 18px;background:#25D366;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold">Ouvrir WhatsApp avec le message</a></p>`
         : `<p style="margin:0 0 20px">Pas de numéro exploitable pour WhatsApp : envoie-le par e-mail.</p>`,
-      `<p style="margin:0;color:#666;font-size:13px">E-mail de confirmation au prospect : ${echap(confirmation)}<br>Rappel de la veille : ${echap(rappel)}</p>`,
+      `<p style="margin:0;color:#666;font-size:13px">E-mail de confirmation au prospect : ${echap(confirmation)}<br>Rappel de la veille : ${echap(rappel)}<br>Suivi : ${echap(feuille)}</p>`,
       `</div>`,
     ].join("");
     void sendInternalMail(
-      `[Cal] ${r.evenement === "replanifiee" ? "Rendez-vous décalé" : "Nouveau rendez-vous"} : ${r.nom || r.email}, ${jour} ${heure}`,
+      `[Cal] ${r.evenement === "replanifiee" ? "Rendez-vous décalé" : "Nouveau rendez-vous"} : ${r.nom || ligne.email || r.telephone}, ${jour} ${heure}`,
       [
         recu,
         "",
         qui,
         quand,
+        ...formulaire,
         "",
         "Envoie-lui ce message aujourd'hui, depuis ton appli WhatsApp :",
         wa.texte,
@@ -98,6 +114,7 @@ export async function POST(req: NextRequest) {
         "",
         `E-mail de confirmation au prospect : ${confirmation}`,
         `Rappel de la veille : ${rappel}`,
+        `Suivi : ${feuille}`,
       ].join("\n"),
       ANDREW,
       html,
